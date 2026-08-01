@@ -27,7 +27,7 @@
 - [ ] **Vídeo** 8–15 min (link Loom ou similar)
 - [ ] **Protótipo navegável** (link Vercel)
 - [ ] **AI Appendix** — transcript completo + como usei IA + onde ela errou + o que eu sobrescrevi
-- [ ] **E-mail** de submissão para gabriela@comp.vc e leonardo.sabo@comp.vc
+- [ ] **E-mail** de submissão para os dois contatos da Comp
 
 ---
 

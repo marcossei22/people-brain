@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# People Brain
 
-## Getting Started
+> O Brain lembra. As pessoas decidem.
 
-First, run the development server:
+Protótipo de um sistema de gestão de performance que **não mata o ciclo — mata o formulário**.
+A tese é que avaliação de pessoas é um problema de *memória*, não de processo: o que quebra não é
+o ritual, é o gestor tentando reconstruir seis meses de trabalho na véspera do fechamento.
+
+O sistema observa o trabalho onde ele acontece, pergunta quando não sabe, e chega no fechamento
+com o dossiê montado e a evidência linkada até a fonte. **A IA nunca pontua ninguém.** Ela lembra,
+organiza e declara o que não sabe — o julgamento continua sendo humano.
+
+## Documentos
+
+| Doc | O que é |
+|---|---|
+| [PLANO.md](PLANO.md) | A tese: premissas, reframe, as quatro fases, métricas |
+| [ARQUITETURA.md](ARQUITETURA.md) | Spec de build: tipos, telas, tools, skills, ordem de construção |
+| [ROADMAP.md](ROADMAP.md) | Estado, registro de decisões e o log do AI Appendix |
+| [TESTES-CHAT.md](TESTES-CHAT.md) | Casos adversariais para o chat antes da gravação |
+
+## Telas
+
+| Rota | O que faz |
+|---|---|
+| `/org` | Pessoas a que o observador tem acesso — a permissão desenhada |
+| `/org/[id]` | Dossiê. Um componente, dois observadores |
+| `/feedback` | Pendências de atenção da semana, com orçamento de pergunta |
+| `/diretrizes` | O conteúdo fixo da empresa: régua, cultura, contexto, política |
+| `/integrations` | De onde vem a evidência — e o que fica de fora de cada fonte |
+
+Não há login. O seletor no rodapé da barra lateral troca **quem está olhando** —
+gestora, colaboradora ou CHRO — sem sair da página. É assim que "sem arquivo secreto"
+deixa de ser promessa: a mesma tela, com campos governados por permissão em código.
+
+## Rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O `prebuild` roda `data/validar.ts`, que falha o build em qualquer contradição referencial
+entre pessoas, eventos, episódios, temas, lacunas e régua.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Next.js 16 (App Router) · Tailwind 4 · shadcn/ui · TypeScript. Sem banco, sem auth, sem
+persistência entre reloads — é um protótipo, e os não-objetivos estão declarados na
+[ARQUITETURA §14](ARQUITETURA.md).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feito com [Claude Code](https://claude.com/claude-code). O registro de onde a IA errou e do que
+foi sobrescrito está no [ROADMAP §6](ROADMAP.md).
