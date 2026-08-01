@@ -14,10 +14,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 const NIVEIS = { baixa: 1, media: 2, alta: 3 } as const
 
 const LEGENDA: Record<keyof typeof NIVEIS, string> = {
-  alta: 'Muito rastro registrado. O sistema observa e pergunta pouco.',
-  media: 'Rastro parcial. O sistema observa e pergunta.',
-  baixa:
-    'Pouco rastro. O sistema pergunta mais — não sabe menos por preguiça, sabe menos porque este trabalho deixa menos marca.',
+  alta: 'Bastante evidência registrada no período.',
+  media: 'Evidência parcial no período.',
+  baixa: 'Pouca evidência registrada. O Brain pergunta mais para completar.',
 }
 
 export function Densidade({

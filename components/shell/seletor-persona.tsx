@@ -6,9 +6,6 @@
  * Fica sempre visível, no rodapé da sidebar, e é instrumento de avaliação do
  * case: é ele que permite trocar de ângulo SEM SAIR DA PÁGINA. É esse gesto
  * que transforma "sem arquivo secreto" de promessa em fato apontável.
- *
- * Por isso cada opção declara o que prova. O avaliador não deveria ter que
- * adivinhar por que trocaria de persona.
  */
 
 import { Check, ChevronsUpDown, RotateCcw } from 'lucide-react'
@@ -50,9 +47,7 @@ export function SeletorPersona() {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="start" side="top" sideOffset={8} className="w-[19rem] p-0">
-          <DropdownMenuLabel className="etiqueta px-3 pb-1.5 pt-3">
-            Ver o mesmo produto de outro ângulo
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="etiqueta px-3 pb-1.5 pt-3">Trocar de visão</DropdownMenuLabel>
 
           {PERSONAS.map((p) => {
             const alvo = pessoa(p.pessoaId)
@@ -67,7 +62,7 @@ export function SeletorPersona() {
                 <span className="min-w-0 flex-1">
                   <span className="display block text-[0.95rem] leading-tight">{alvo?.nome}</span>
                   <span className="mt-0.5 block text-[0.72rem] text-muted-foreground">
-                    {alvo?.cargo} · <span className="italic">{p.prova}</span>
+                    {alvo?.cargo}
                   </span>
                 </span>
               </DropdownMenuItem>
@@ -80,7 +75,7 @@ export function SeletorPersona() {
             className="flex cursor-pointer items-center gap-2.5 px-3 py-2.5 text-[0.8rem]"
           >
             <RotateCcw className="size-3.5 text-muted-foreground" />
-            Recomeçar a demonstração
+            Recomeçar
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

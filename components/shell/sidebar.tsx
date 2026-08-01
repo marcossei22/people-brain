@@ -98,9 +98,8 @@ export function Sidebar() {
         </div>
 
         <ScrollArea className="min-h-0 flex-1">
-          <p className="prosa px-2.5 text-[0.78rem] leading-snug text-muted-foreground/70">
-            Nenhuma conversa ainda. O chat abre por cima de qualquer tela — a
-            pergunta nasce olhando outra coisa.
+          <p className="px-2.5 text-[0.78rem] leading-snug text-muted-foreground/70">
+            Nenhuma conversa ainda.
           </p>
         </ScrollArea>
       </div>

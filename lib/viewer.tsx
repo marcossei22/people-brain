@@ -22,16 +22,12 @@ export interface Viewer {
   papel: Papel
 }
 
-export interface Persona extends Viewer {
-  /** O que esta persona existe para provar. Aparece no seletor: o avaliador
-   *  não deveria ter que adivinhar por que trocaria de ângulo. */
-  prova: string
-}
+export type Persona = Viewer
 
 export const PERSONAS: Persona[] = [
-  { pessoaId: 'marina', papel: 'gestor', prova: 'O loop de atenção e a estrela' },
-  { pessoaId: 'carla', papel: 'colaborador', prova: 'Sem arquivo secreto' },
-  { pessoaId: 'helena', papel: 'chro', prova: 'Diagnóstico de organização' },
+  { pessoaId: 'marina', papel: 'gestor' },
+  { pessoaId: 'carla', papel: 'colaborador' },
+  { pessoaId: 'helena', papel: 'chro' },
 ]
 
 export const PERSONA_PADRAO = PERSONAS[0]

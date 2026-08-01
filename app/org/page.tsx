@@ -16,26 +16,23 @@ import { ArrowUpRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Densidade } from '@/components/shell/densidade'
-import { pessoasVisiveis, podeVerDiagnosticoOrg } from '@/lib/agente/permissoes'
+import { pessoasVisiveis } from '@/lib/agente/permissoes'
 import { diasDesde, resumoDe } from '@/lib/memoria'
-import { NOME_DO_PAPEL, useViewer } from '@/lib/viewer'
-import { pessoa as buscarPessoa } from '@/lib/memoria'
+import { useViewer } from '@/lib/viewer'
 
 export default function PaginaOrg() {
   const { viewer, geracao } = useViewer()
-  const eu = buscarPessoa(viewer.pessoaId)
   const visiveis = pessoasVisiveis(viewer)
-  const agregado = podeVerDiagnosticoOrg(viewer)
 
   return (
     <div key={geracao} className="mx-auto max-w-5xl px-10 py-12">
       <header className="surgir">
         <p className="etiqueta">Organização</p>
         <h2 className="display mt-3 text-[2.1rem] leading-[1.1] tracking-tight">
-          {agregado ? 'A organização inteira' : 'Quem você alcança'}
+          {titulo(viewer.papel)}
         </h2>
         <p className="prosa mt-3 max-w-xl text-[0.98rem] leading-relaxed text-muted-foreground">
-          {textoDoEscopo(viewer.papel, visiveis.length)}
+          {subtitulo(viewer.papel)}
         </p>
       </header>
 
@@ -99,27 +96,24 @@ export default function PaginaOrg() {
         })}
       </ul>
 
-      <p className="prosa mt-8 max-w-2xl text-[0.86rem] leading-relaxed text-muted-foreground/85">
-        Esta lista não é um diretório — é a sua permissão, desenhada. Troque a
-        persona no canto inferior esquerdo e veja a lista mudar sem a página
-        recarregar: a regra de acesso vive no código, não numa instrução ao
-        modelo. <span className="text-foreground/60">Você está vendo como {NOME_DO_PAPEL[viewer.papel].toLowerCase()}
-        {eu ? `, ${eu.nome}` : ''}.</span>
-      </p>
     </div>
   )
 }
 
-function textoDoEscopo(papel: string, n: number) {
-  if (papel === 'chro')
-    return 'Escopo agregado: a CHRO enxerga a organização para diagnosticá-la, não para vigiar indivíduos. O que aparece aqui são padrões e cobertura — o registro pessoa a pessoa continua sendo de cada pessoa e do gestor dela.'
-  if (papel === 'colaborador')
-    return 'Você vê o seu próprio registro — inteiro, sem versão oculta. Pares não consultam o registro de pares, e essa regra vale para você tanto quanto para os outros.'
-  return `Seus ${n - 1} reports diretos, e você. Um gestor não consulta o time de outro gestor: o registro segue a linha de reporte, não a curiosidade.`
+function titulo(papel: string) {
+  if (papel === 'chro') return 'Organização'
+  if (papel === 'colaborador') return 'Seu registro'
+  return 'Seu time'
+}
+
+function subtitulo(papel: string) {
+  if (papel === 'chro') return 'Todos os colaboradores da organização.'
+  if (papel === 'colaborador') return 'O que está registrado sobre o seu trabalho neste semestre.'
+  return 'Abaixo você vê os colaboradores conectados a você.'
 }
 
 function textoDoSilencio(dias?: number) {
-  if (dias === undefined) return 'nenhum registro no semestre'
+  if (dias === undefined) return 'sem registro no semestre'
   if (dias <= 21) return `último registro há ${dias} dias`
-  return `silêncio há ${dias} dias`
+  return `sem registro há ${dias} dias`
 }
