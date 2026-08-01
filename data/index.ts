@@ -1,0 +1,7 @@
+export * from './tipos'
+export { pessoas, porId } from './pessoas'
+export { eventos, eventoPorId } from './eventos'
+export { episodios, episodioPorId } from './episodios'
+export { temas, temasDe } from './temas'
+export { lacunas, lacunasDe } from './lacunas'
+export { regua, lerRegua, comportamentoIds } from './regua'

@@ -1,12 +1,14 @@
 {
-  "name": "pbscaffold",
+  "name": "people-brain",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prebuild": "tsx data/validar.ts",
+    "validar": "tsx data/validar.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -28,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "tailwindcss": "^4",
+    "tsx": "^4.23.1",
     "typescript": "^5"
   }
 }
