@@ -13,6 +13,8 @@
 
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { Densidade } from '@/components/shell/densidade'
 import { pessoasVisiveis, podeVerDiagnosticoOrg } from '@/lib/agente/permissoes'
 import { diasDesde, resumoDe } from '@/lib/memoria'
@@ -37,11 +39,14 @@ export default function PaginaOrg() {
         </p>
       </header>
 
-      <div className="mt-10 flex items-baseline justify-between border-b border-border pb-2.5">
-        <p className="etiqueta">
-          {visiveis.length} {visiveis.length === 1 ? 'pessoa' : 'pessoas'}
-        </p>
-        <p className="etiqueta">Densidade de evidência</p>
+      <div className="mt-10">
+        <div className="flex items-baseline justify-between pb-2.5">
+          <p className="etiqueta">
+            {visiveis.length} {visiveis.length === 1 ? 'pessoa' : 'pessoas'}
+          </p>
+          <p className="etiqueta">Densidade de evidência</p>
+        </div>
+        <Separator />
       </div>
 
       <ul>
@@ -61,9 +66,12 @@ export default function PaginaOrg() {
                       {p.nome}
                     </h3>
                     {souEu && (
-                      <span className="etiqueta rounded-full border border-border px-1.5 py-[3px] leading-none">
+                      <Badge
+                        variant="outline"
+                        className="etiqueta border-comp/35 bg-comp-suave/40 px-1.5 py-[3px] text-comp"
+                      >
                         você
-                      </span>
+                      </Badge>
                     )}
                     <ArrowUpRight className="size-3.5 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
                   </div>

@@ -12,6 +12,7 @@
  */
 
 import { Check, ChevronsUpDown, RotateCcw } from 'lucide-react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,9 +32,11 @@ export function SeletorPersona() {
     <div className="border-t border-sidebar-border">
       <DropdownMenu>
         <DropdownMenuTrigger className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-sidebar-accent focus-visible:bg-sidebar-accent focus-visible:outline-none">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground/[0.07] text-[0.7rem] font-medium tracking-wide text-foreground/70">
-            {iniciais(atual?.nome)}
-          </span>
+          <Avatar className="size-9 shrink-0">
+            <AvatarFallback className="bg-foreground/[0.07] text-[0.7rem] font-medium tracking-wide text-foreground/70">
+              {iniciais(atual?.nome)}
+            </AvatarFallback>
+          </Avatar>
           <span className="min-w-0 flex-1">
             <span className="etiqueta block">Vendo como</span>
             <span className="display mt-1 block truncate text-[0.95rem] leading-none">
@@ -60,13 +63,9 @@ export function SeletorPersona() {
                 onSelect={() => trocarPersona(p.pessoaId)}
                 className="flex cursor-pointer items-start gap-3 px-3 py-2.5"
               >
-                <Check
-                  className={`mt-1 size-3.5 shrink-0 ${ativa ? 'text-ocre' : 'invisible'}`}
-                />
+                <Check className={`mt-1 size-3.5 shrink-0 ${ativa ? 'text-comp' : 'invisible'}`} />
                 <span className="min-w-0 flex-1">
-                  <span className="display block text-[0.95rem] leading-tight">
-                    {alvo?.nome}
-                  </span>
+                  <span className="display block text-[0.95rem] leading-tight">{alvo?.nome}</span>
                   <span className="mt-0.5 block text-[0.72rem] text-muted-foreground">
                     {alvo?.cargo} · <span className="italic">{p.prova}</span>
                   </span>
@@ -85,10 +84,6 @@ export function SeletorPersona() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <p className="px-4 pb-3 text-[0.68rem] leading-relaxed text-muted-foreground/80">
-        Não é login. É o mesmo produto visto de outro ângulo — a página não muda.
-      </p>
     </div>
   )
 }

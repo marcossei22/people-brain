@@ -51,9 +51,9 @@
 
 /* ───────────────────────────────────────────────────────────────────────────
    People Brain — registro editorial.
-   Papel quente e tinta, não branco clínico. Um acento só: ocre, reservado ao
-   reconhecimento. Nada de verde/vermelho de avaliação — a cor não julga
-   ninguém, porque o produto não julga ninguém.
+   Papel quente e tinta, não branco clínico. Um acento só: o vermelho da Comp,
+   e ele marca presença — nunca status. Não existe semáforo aqui: a cor não
+   julga ninguém, porque o produto não julga ninguém.
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -74,12 +74,15 @@
   --destructive: oklch(0.517 0.146 28);
   --border: oklch(0.884 0.011 78);
   --input: oklch(0.884 0.011 78);
-  --ring: oklch(0.646 0.108 64);
+  --ring: oklch(0.628 0.216 20.9);
   --radius: 0.25rem;
 
-  /* o ocre. só o reconhecimento usa. */
-  --ocre: oklch(0.646 0.121 64);
-  --ocre-suave: oklch(0.912 0.044 76);
+  /* Vermelho da Comp — #F4364C. Cor secundária do produto.
+     REGRA: ela marca presença (ação, seleção, reconhecimento). Nunca marca
+     status. Não existe vermelho de "ruim" aqui, porque não existe julgamento
+     de pessoa aqui — decisão #5. */
+  --comp: oklch(0.628 0.216 20.9);
+  --comp-suave: oklch(0.936 0.038 20.9);
 
   --sidebar: oklch(0.951 0.011 82);
   --sidebar-foreground: oklch(0.243 0.014 62);
@@ -88,7 +91,7 @@
   --sidebar-accent: oklch(0.917 0.014 80);
   --sidebar-accent-foreground: oklch(0.243 0.014 62);
   --sidebar-border: oklch(0.877 0.012 78);
-  --sidebar-ring: oklch(0.646 0.108 64);
+  --sidebar-ring: oklch(0.628 0.216 20.9);
 
   --grao: 0.035;
 }
@@ -111,10 +114,10 @@
   --destructive: oklch(0.633 0.152 25);
   --border: oklch(0.982 0.01 84 / 11%);
   --input: oklch(0.982 0.01 84 / 15%);
-  --ring: oklch(0.702 0.106 66);
+  --ring: oklch(0.694 0.201 21.5);
 
-  --ocre: oklch(0.757 0.116 68);
-  --ocre-suave: oklch(0.336 0.049 66);
+  --comp: oklch(0.694 0.201 21.5);
+  --comp-suave: oklch(0.324 0.088 21.5);
 
   --sidebar: oklch(0.204 0.01 62);
   --sidebar-foreground: oklch(0.923 0.008 84);
@@ -123,14 +126,14 @@
   --sidebar-accent: oklch(0.267 0.012 62);
   --sidebar-accent-foreground: oklch(0.938 0.008 84);
   --sidebar-border: oklch(0.982 0.01 84 / 11%);
-  --sidebar-ring: oklch(0.702 0.106 66);
+  --sidebar-ring: oklch(0.694 0.201 21.5);
 
   --grao: 0.055;
 }
 
 @theme inline {
-  --color-ocre: var(--ocre);
-  --color-ocre-suave: var(--ocre-suave);
+  --color-comp: var(--comp);
+  --color-comp-suave: var(--comp-suave);
 }
 
 @layer base {

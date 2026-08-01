@@ -3,15 +3,17 @@
 /**
  * Sidebar do shell — ARQUITETURA.md §8.0.
  *
- * Navegação + histórico de conversas + seletor de persona. O histórico e o
- * botão de chat entram de verdade no passo 5; aqui a estrutura já existe para
- * o layout não mudar depois.
+ * Navegação + conversas + seletor de persona. O painel de chat em si entra no
+ * passo 5; aqui já existe o botão que o abre e a lista que vai guardá-las,
+ * para o layout não mudar depois.
  */
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Building2, Inbox, Plug, Ruler } from 'lucide-react'
+import { Building2, Inbox, MessageSquarePlus, Plug, Ruler } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { SeletorPersona } from './seletor-persona'
 import { podeAdministrar } from '@/lib/agente/permissoes'
 import { useViewer } from '@/lib/viewer'
@@ -38,17 +40,13 @@ export function Sidebar() {
 
   return (
     <aside className="sticky top-0 z-10 flex h-dvh w-[16.5rem] shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
-      <div className="px-5 pb-5 pt-6">
-        <Link href="/org" className="block">
+      <div className="px-5 pb-4 pt-6">
+        <Link href="/org" className="block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
           <h1 className="display text-[1.4rem] leading-none tracking-tight">People Brain</h1>
-          <p className="prosa mt-2 text-[0.78rem] italic leading-snug text-muted-foreground">
-            O Brain lembra.<br />As pessoas decidem.
-          </p>
         </Link>
       </div>
 
-      <nav className="min-h-0 flex-1 overflow-y-auto px-2.5">
-        <p className="etiqueta px-2.5 pb-2">Navegação</p>
+      <nav className="px-2.5">
         <ul className="space-y-0.5">
           {ITENS.filter((i) => !i.soAdmin || admin).map((item) => {
             const ativo = pathname === item.href || pathname.startsWith(`${item.href}/`)
@@ -66,11 +64,13 @@ export function Sidebar() {
                 >
                   <span
                     aria-hidden
-                    className={`absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full transition-all ${
-                      ativo ? 'bg-ocre opacity-100' : 'opacity-0'
+                    className={`absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-comp transition-opacity ${
+                      ativo ? 'opacity-100' : 'opacity-0'
                     }`}
                   />
-                  <Icone className="mt-[3px] size-[0.95rem] shrink-0 opacity-70" />
+                  <Icone
+                    className={`mt-[3px] size-[0.95rem] shrink-0 ${ativo ? 'text-comp' : 'opacity-70'}`}
+                  />
                   <span className="min-w-0">
                     <span className="block text-[0.86rem] leading-tight">{item.rotulo}</span>
                     <span className="mt-0.5 block text-[0.7rem] leading-tight text-muted-foreground">
@@ -82,15 +82,28 @@ export function Sidebar() {
             )
           })}
         </ul>
+      </nav>
 
-        <div className="mt-7 px-2.5">
-          <p className="etiqueta pb-2">Conversas</p>
-          <p className="prosa text-[0.78rem] leading-snug text-muted-foreground/70">
+      <div className="mt-7 flex min-h-0 flex-1 flex-col px-2.5">
+        <div className="flex items-center justify-between gap-2 px-2.5 pb-2">
+          <p className="etiqueta">Conversas</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-mr-1.5 h-6 gap-1.5 px-1.5 text-[0.72rem] text-muted-foreground hover:text-comp"
+          >
+            <MessageSquarePlus className="size-3.5" />
+            Nova
+          </Button>
+        </div>
+
+        <ScrollArea className="min-h-0 flex-1">
+          <p className="prosa px-2.5 text-[0.78rem] leading-snug text-muted-foreground/70">
             Nenhuma conversa ainda. O chat abre por cima de qualquer tela — a
             pergunta nasce olhando outra coisa.
           </p>
-        </div>
-      </nav>
+        </ScrollArea>
+      </div>
 
       <SeletorPersona />
     </aside>
