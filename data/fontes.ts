@@ -158,19 +158,5 @@ export const integracoes: Integracao[] = [
   },
 ]
 
-/**
- * O que o People Brain não coleta de fonte nenhuma. Vive aqui e não dentro de
- * cada integração porque não é configuração — é uma propriedade do produto.
- */
-export const nuncaCapturado = [
-  { item: 'Sentimento e tom', motivo: 'Estado não é trabalho. Inferir humor é o produto de vigilância.' },
-  { item: 'Horas online e horário de atividade', motivo: 'Presença não é contribuição.' },
-  { item: 'Tempo de resposta', motivo: 'Mede ansiedade, não qualidade.' },
-  { item: 'Volume de mensagens', motivo: 'Mede ruído, não impacto.' },
-  { item: 'Mensagens diretas e canais privados', motivo: 'Conversa privada continua privada.' },
-  { item: 'Localização e dispositivo', motivo: 'Não descreve trabalho nenhum.' },
-  { item: 'Risco de saída', motivo: 'Não existe campo de intenção no modelo de dados.' },
-]
-
 export const conectadas = () => integracoes.filter((i) => i.estado === 'conectada')
 export const disponiveis = () => integracoes.filter((i) => i.estado === 'disponivel')

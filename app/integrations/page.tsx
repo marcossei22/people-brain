@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { LOGOS } from '@/components/logos'
-import { conectadas, disponiveis, nuncaCapturado } from '@/data/fontes'
+import { conectadas, disponiveis } from '@/data/fontes'
 import type { Integracao } from '@/data/fontes'
 import { nomeDe } from '@/lib/memoria'
 import { useViewer } from '@/lib/viewer'
@@ -104,32 +104,6 @@ export default function PaginaIntegracoes() {
                 {f.nome}
                 <Plus className="size-3.5 text-muted-foreground/60" />
               </Button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-14">
-        <div className="flex items-baseline justify-between pb-2.5">
-          <p className="etiqueta">Não capturamos</p>
-          <p className="etiqueta">Em nenhuma fonte</p>
-        </div>
-        <Separator />
-
-        <ul className="mt-1">
-          {nuncaCapturado.map((n, i) => (
-            <li
-              key={n.item}
-              className="surgir flex items-baseline gap-4 border-b border-border/50 py-3"
-              style={{ animationDelay: `${120 + i * 30}ms` }}
-            >
-              <Minus className="size-3.5 shrink-0 translate-y-[3px] text-muted-foreground/40" />
-              <span className="w-[15rem] shrink-0 text-[0.88rem] text-muted-foreground line-through decoration-muted-foreground/40">
-                {n.item}
-              </span>
-              <span className="prosa min-w-0 flex-1 text-[0.86rem] leading-snug text-muted-foreground/75">
-                {n.motivo}
-              </span>
             </li>
           ))}
         </ul>

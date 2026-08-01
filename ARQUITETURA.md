@@ -535,13 +535,17 @@ Um comportamento traz o card de **régua viva**:
 
 ### 8.5 `/integrations` — SETUP
 
-Fontes conectadas (Slack, Google Docs, GitHub, HRIS, CRM) — é aqui que o Slack aparece, como o que
-ele é: uma fonte que alimenta o grafo. E abaixo, desligado e cinza, com rótulo **"não capturamos"**:
-DMs · canais privados · sentimento e tom · horas online · tempo de resposta · volume de mensagens.
+Fontes conectadas (Slack, GitHub, Google Workspace, HRIS, CRM) — é aqui que o Slack aparece, como
+o que ele é: uma fonte que alimenta o grafo. Abaixo, as disponíveis para conectar.
 
-Tela mais barata do protótipo em relação ao que entrega: o modelo de confiança deixa de ser
-parágrafo e vira coisa que o avaliador **vê**. E a lista do que *não* é capturado é a mesma recusa
-do §6.7, agora antes de qualquer pergunta ser feita.
+Cada fonte abre um detalhe que separa **o que entra no registro** do **que fica de fora**, com os
+escopos OAuth concedidos. É ali que o modelo de confiança deixa de ser parágrafo e vira coisa que
+o avaliador **vê** — no Slack: entram canais públicos e threads; ficam de fora DMs, canais
+privados, horário online, tempo de resposta e volume de mensagens.
+
+> **Removido em 01/08:** havia uma seção "não capturamos" no rodapé da página, listando o mesmo
+> em nível global. Saiu por não pertencer a uma tela de integrações — a informação já vive no
+> detalhe de cada fonte, que é onde um produto de verdade a colocaria.
 
 ---
 
