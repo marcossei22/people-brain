@@ -46,14 +46,14 @@
 - [x] **Passo 1** — tipos §5.1 + seed mínimo + `validar.ts` no `prebuild`
 
 ### D1 · sex 31/07 — produto funcional — ARQUITETURA.md §13 Fase B
-- [ ] 2 · Shell + seletor de persona + botão reset
-- [ ] 3 · Componentes Slack + `/slack` — **fluxo 1**
+- [ ] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
+- [ ] 3 · `/feedback` — **fluxo 1**
 - [ ] 4 · `lib/agente/` + tools + permissões + `renderizar` + 2 skills mínimas
   - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue
-- [ ] 5 · `/brain/chat` + 8 componentes — **fluxo 2**
-- [ ] 6 · `/brain/pessoa/[id]` nos dois papéis
-- [ ] 7 · `/brain/fechamento` + diagnóstico org — **fluxo 3**
-- [ ] 8 · `/brain/regua` + `/brain/fontes`
+- [ ] 5 · Painel de chat + histórico na sidebar + 8 componentes — **fluxo 2**
+- [ ] 6 · `/org/[id]` nos dois papéis
+- [ ] 7 · Diagnóstico org dentro de `/org` — **fluxo 3**
+- [ ] 8 · `/regua` (admin) + `/integrations`
 
 ### D2 · sáb 01/08 — conteúdo + primeira tomada
 - [ ] 9 · Dataset completo da Aurora — **não cortar**
@@ -82,13 +82,14 @@
 Plano de contingência, caso a Fase B trave em algum problema técnico. Em ordem — cortar de cima
 pra baixo dói menos.
 
-1. **`/brain/regua`** vira screenshot no vídeo
-2. **Metade superior do `/fechamento`** — mantém só o diagnóstico org
+1. **`/regua`** vira screenshot no vídeo
+2. **Itens 2 e 3 do `/feedback`** — mantém a pergunta de elicitação e o orçamento
 3. **Componentes de render: 8 → 5**
 4. **Elenco: 8 → 6 pessoas**
 
-**Nunca cortar:** dataset da Aurora, mock do Slack, o momento de recusa da IA, o diagnóstico de
-organização, e a **tomada de ensaio descartada**. São os cinco que carregam tese ou clareza.
+**Nunca cortar:** dataset da Aurora, o loop de elicitação com orçamento de pergunta declarado, o
+momento de recusa da IA, o diagnóstico de organização, e a **tomada de ensaio descartada**. São os
+cinco que carregam tese ou clareza.
 
 ---
 
@@ -128,6 +129,12 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 23 | Dados em `.ts` tipado + validador no prebuild | Contradição no elenco é o único erro fatal da gravação |
 | 24 | Eve atrás de fachada, timebox 45 min | Framework novo em prazo curto = unknown unknowns |
 | 25 | ↩︎ **UI primeiro, conteúdo depois** | Modo de falha gracioso vs. demo quebrada |
+| 26 | ↩︎ **Sem mock de Slack. Morre o `/slack`** | Slack é *fonte*, não superfície: entra pelo grafo de conhecimento e aparece em `/integrations`. Imitar a casca de outro produto faz o Brain parecer um bot de Slack |
+| 27 | O fluxo 1 muda de casa: vai para **`/feedback`** | O mecanismo é o que importa — elicitação com motivo, orçamento de pergunta, rascunho com evidência. A superfície era acidente |
+| 28 | O diagnóstico de organização vai para **`/org`** | Afirmação sobre a organização mora na tela da organização, não no fim de um ciclo. Reforça a decisão #10 |
+| 29 | **Chat é painel, não rota** | A pergunta nasce olhando outra tela. Histórico na sidebar |
+| 30 | **`/regua` é só admin** | É doutrina da empresa, não conteúdo de gestor individual |
+| 31 | **Dataset do elenco é a última etapa** | Decidido em 01/08. Conteúdo antes das telas é escrever no escuro — mesmo argumento da #25, aplicado ao cronograma |
 
 ---
 

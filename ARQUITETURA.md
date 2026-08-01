@@ -14,9 +14,10 @@ Nenhuma linha de código precisa sobreviver a esta semana. O que precisa sobrevi
 compreensão do avaliador.
 
 **2. Determinismo onde tem câmera; realismo onde tem improviso.**
-Fluxos 1 e 3 são set-pieces: mockados, instantâneos, idênticos em toda tomada. O chat é o único
-lugar com LLM em runtime — porque é o único lugar onde o avaliador vai digitar algo que ninguém
-previu.
+Fluxos 1 e 3 são set-pieces: roteirizados, instantâneos, idênticos em toda tomada. O chat é o
+único lugar com LLM em runtime — porque é o único lugar onde o avaliador vai digitar algo que
+ninguém previu. Roteirizado não quer dizer imitar a superfície de outro produto: o Slack é fonte,
+não tela (§8).
 
 **3. A estrutura de dados é argumento.**
 O arquivo de dados espelha o modelo de memória de 4 níveis do PLANO.md §3.2. Se alguém perguntar
@@ -52,7 +53,7 @@ Se uma tela não prova nada do PLANO.md, ela não entra. Cortar é mais barato q
 | Banco de dados | Não há escrita que precise sobreviver ao reload |
 | Vector store / RAG | ~40k tokens de corpus. Retrieval aqui é teatro. |
 | Sandbox (E2B / Daytona / Vercel) | **Sandbox resolve execução; o problema aqui é recuperação.** Nada é executado, nada é escrito, nada chega em runtime. Resolvido por tools sobre dados tipados (§6). |
-| Composio / MCP real | O dado é falso de qualquer forma. Integração real com um workspace de teste é *menos* convincente que um mock rico. Vira tela fake (§8.6). |
+| Composio / MCP real | O dado é falso de qualquer forma. Integração real com um workspace de teste é *menos* convincente que uma tela de integração bem-feita. Vira `/integrations` (§8.5). |
 | Auth | Troca de persona é um seletor, não um login (§4) |
 
 ### 2.1 Isolamento da camada de agente
@@ -79,16 +80,16 @@ em nenhuma tela. Critério de escolha: o que responder com tool call primeiro, s
 
 ```
 /app
-  layout.tsx                 shell + seletor de persona + botão reset
-  page.tsx                   → redirect /slack
-  /slack/page.tsx            FLUXO 1 — superfície Slack
-  /brain
-    /chat/page.tsx           FLUXO 2 — o chat
-    /pessoa/[id]/page.tsx    FLUXO 2/3 — dossiê (mesma tela pra gestor e pra própria pessoa)
-    /fechamento/page.tsx     FLUXO 3 — comitê + diagnóstico de organização
-    /regua/page.tsx          SETUP — régua viva
-    /fontes/page.tsx         SETUP — integrações + o que NÃO é capturado
+  layout.tsx                 shell + sidebar + painel de chat + seletor de persona + reset
+  page.tsx                   → redirect /org
+  /org/page.tsx              pessoas a que o viewer tem acesso + diagnóstico de organização
+  /org/[id]/page.tsx         dossiê (mesma tela pra gestor e pra própria pessoa)
+  /feedback/page.tsx         FLUXO 1 — pendências de atenção do viewer
+  /regua/page.tsx            SETUP — régua viva · só admin
+  /integrations/page.tsx     SETUP — fontes conectadas + o que NÃO é capturado
   /api/chat/route.ts         única rota com LLM
+
+  (o chat NÃO é rota — é painel global, aberto por botão, histórico na sidebar)
 
 /lib
   /agente
@@ -126,7 +127,8 @@ em nenhuma tela. Critério de escolha: o que responder com tool call primeiro, s
   validar.ts                 script de integridade referencial (§5.2)
 
 /components
-  /slack                     SlackShell, SlackMessage, SlackThread, SlackAppMessage
+  /shell                     Sidebar, SeletorPersona, BotaoReset, BotaoChat
+  /chat                      PainelChat, HistoricoConversas, PassosDaTool
   /brain                     CardDossie, TimelineEpisodios, CardGap, ...
   /ui                        shadcn
 ```
@@ -151,7 +153,7 @@ Três personas pré-configuradas no seletor:
 | **Carla Nunes** — Eng, caso de promoção | `colaborador` | "Sem arquivo secreto" |
 | **Helena Prado** — CHRO | `chro` | Diagnóstico de organização |
 
-> **Decisão de arquitetura que carrega tese:** `/brain/pessoa/[id]` é **um componente só**. A
+> **Decisão de arquitetura que carrega tese:** `/org/[id]` é **um componente só**. A
 > Carla vendo o próprio dossiê e a Marina vendo o dossiê da Carla renderizam a mesma tela, com
 > campos gated por permissão. Isso não é economia de código — é o princípio "sem arquivo secreto"
 > virando fato demonstrável. No vídeo: trocar a persona no seletor **sem sair da página**.
@@ -333,7 +335,7 @@ modelo lê. Zero infra, zero boot, adicionar skill é adicionar arquivo.
 A memória fica estruturada por dois motivos que não são preferência estética:
 - O drill-down de uma afirmação até a mensagem original do Slack é um **join**, não um grep. Em
   markdown você acabaria escrevendo IDs no texto — um banco de dados com ergonomia pior.
-- `/brain/pessoa/[id]` renderiza **sem passar pelo agente**. Os tipos precisam existir de qualquer
+- `/org/[id]` renderiza **sem passar pelo agente**. Os tipos precisam existir de qualquer
   forma.
 
 ### 6.4 As tools de acesso
@@ -457,29 +459,40 @@ Todos com **fonte clicável** — princípio §2.1 do PLANO.md ("nenhuma frase s
 
 ## 8. Telas
 
-### 8.1 `/slack` — FLUXO 1 · Captura
+> **Não imitamos o Slack.** O Slack é *fonte*: entra pelo grafo de conhecimento da empresa e
+> aparece como integração em §8.5. Renderizar uma casca de Slack dentro do produto confundiria
+> fonte com superfície e faria o protótipo parecer um bot de Slack em vez de um sistema de
+> registro. Em produção o nudge chega no Slack (PLANO.md §3.3); no protótipo o mesmo loop
+> acontece em `/feedback`, que é onde ele vive de qualquer forma quando a pessoa abre o produto.
 
-Mock fiel do Slack. **É a tela com maior retorno por hora de capricho do protótipo inteiro** — se
-parecer Slack de verdade, tudo o mais ganha credibilidade.
+### 8.0 Shell — sidebar, chat e persona
 
-Sequência (100% roteirizada, zero LLM):
-1. Mensagem do app **People Brain** para a Marina, com as 3 sugestões da semana
-2. Item 1 é uma **pergunta de elicitação** sobre a Carla, com o *motivo* declarado
-3. Marina responde em uma frase → o app confirma e mostra o que entrou no registro
-4. Item 2: sugestão de reconhecimento → `Rascunhar` → rascunho **com evidência citada** → edita → envia
-5. Rodapé fixo: `Você usou 2 de 2 perguntas desta semana. Próxima, segunda.`
+Sidebar fixa com: navegação (`/org` · `/feedback` · `/regua` · `/integrations`), **histórico de
+conversas**, botão `Nova conversa`, e no rodapé o **seletor de persona** + `Reset`.
 
-Esse rodapé é o **orçamento de pergunta** virando pixel. Vale 30 segundos de vídeo.
+O **chat não é rota**. É um painel que abre por botão e fica por cima de qualquer tela — porque a
+pergunta ("onde a Carla está em relação à régua?") quase sempre nasce olhando outra coisa. Mandar
+a pessoa pra outra página pra perguntar quebra o gesto. Cada conversa entra no histórico.
 
-### 8.2 `/brain/chat` — FLUXO 2 · Avaliação
+É a **única superfície com LLM** — FLUXO 2. Conversa nova abre com chips de pergunta sugerida,
+que são também o fallback se a demo travar ao vivo:
 
-Única tela com LLM. Chips de pergunta sugerida (que são também o fallback de demo):
 - *"Prepara meu 1:1 com a Carla"*
 - *"Onde a Carla está em relação à régua de Senior?"*
 - *"Quem no meu time está sem feedback há mais tempo?"*
 - *"O Rafa está infeliz?"* ← a recusa, como chip. Assumida, não escondida.
 
-### 8.3 `/brain/pessoa/[id]` — dossiê
+### 8.1 `/org` — a organização
+
+Lista das pessoas a que o viewer tem acesso — e a lista **já é** a permissão do §6.6 na tela: a
+Marina vê os reports dela, a Carla vê a si mesma, a Helena vê a organização em escopo agregado.
+Clicar entra em `/org/[id]`.
+
+Abaixo da lista, para `chro` e `admin`, o **diagnóstico de organização** — os `AchadoOrg`, com o
+do Rafael/Dados em destaque. É output de primeira classe (decisão #10) e o lugar dele é aqui:
+"Dados é gargalo de 6 pessoas" é afirmação sobre a organização, não sobre um ciclo.
+
+### 8.2 `/org/[id]` — dossiê
 
 Um componente, dois observadores (§4). Como colaborador, ganha três affordances:
 `Adicionar contexto` · `Contestar item` · `Pedir feedback a um par sobre este episódio`.
@@ -487,28 +500,48 @@ Um componente, dois observadores (§4). Como colaborador, ganha três affordance
 O botão de estrela aparece **no episódio**, só pro gestor. Não existe estrela negativa: onde ela
 estaria, o botão é `Conversar sobre isso` → abre rascunho.
 
-### 8.4 `/brain/fechamento` — FLUXO 3
+Cada afirmação é clicável até a fonte — evento → mensagem original, com canal e dia.
 
-Duas metades. Em cima, a lista de pessoas com dossiê pronto e drill-down até a mensagem original
-no Slack. Embaixo, o **diagnóstico de organização** — os `AchadoOrg`, com o do Rafa/Dados em
-destaque. Cabeçalho declara: `Nenhum campo para preencher. 0 formulários.`
+### 8.3 `/feedback` — FLUXO 1 · Captura
 
-### 8.5 `/brain/regua` — SETUP
+A caixa de pendências de atenção do viewer. **Não é lista de tarefa: é o orçamento de atenção da
+semana** — é aqui que o loop contínuo do PLANO.md §3.3 acontece. Três tipos de item, no máximo
+três por semana, 100% roteirizado e sem LLM:
 
-Régua por trilha e nível. Um comportamento traz o card de **régua viva**:
+1. **Pergunta de elicitação** — sobre a Carla, com o *motivo* declarado ("a régua de senior pede
+   X; o registro tem o resultado, não a articulação"). Marina responde em uma frase → confirma e
+   mostra **o que exatamente entrou no registro**
+2. **Reconhecimento sugerido** — `Rascunhar` → rascunho **com a evidência citada** → edita → envia
+3. **Feedback devido** — quem está há mais tempo sem retorno
+
+Rodapé fixo: `Você usou 2 de 2 perguntas desta semana. Próxima, segunda.` — o **orçamento de
+pergunta** (decisão #11) virando pixel. Vale 30 segundos de vídeo.
+
+Cabeçalho: `Nenhum campo para preencher. 0 formulários.`
+
+E **silêncio é saída válida**: sem item, a tela diz isso em vez de inventar pendência.
+
+### 8.4 `/regua` — SETUP · só admin
+
+Régua por trilha e nível. É onde a empresa escreve o que espera — sem isso o agente não tem contra
+o que comparar, e evidência vira diário. Visível só para `admin`: é doutrina da empresa, não
+conteúdo de gestor individual.
+
+Um comportamento traz o card de **régua viva**:
 
 > *"Sua régua diz 'demonstra liderança técnica'. Nas 14 pessoas em Senior, aqui isso significa:
 > lidera migrações cross-team, é consultada em arquitetura de pagamentos, revisa ~40% dos PRs do
 > domínio."* `[Ver as 14]` `[Atualizar régua]` `[Descartar]`
 
-### 8.6 `/brain/fontes` — SETUP
+### 8.5 `/integrations` — SETUP
 
-Fontes conectadas (Slack, Docs, GitHub, HRIS, CRM) e, abaixo, desligado e cinza, com rótulo
-**"não capturamos"**: DMs · canais privados · sentimento e tom · horas online · tempo de resposta ·
-volume de mensagens.
+Fontes conectadas (Slack, Google Docs, GitHub, HRIS, CRM) — é aqui que o Slack aparece, como o que
+ele é: uma fonte que alimenta o grafo. E abaixo, desligado e cinza, com rótulo **"não capturamos"**:
+DMs · canais privados · sentimento e tom · horas online · tempo de resposta · volume de mensagens.
 
 Tela mais barata do protótipo em relação ao que entrega: o modelo de confiança deixa de ser
-parágrafo e vira coisa que o avaliador **vê**.
+parágrafo e vira coisa que o avaliador **vê**. E a lista do que *não* é capturado é a mesma recusa
+do §6.7, agora antes de qualquer pergunta ser feita.
 
 ---
 
@@ -576,6 +609,10 @@ escrever no escuro: metade não renderiza em lugar nenhum, faltam campos que só
 componente existe, e a UI evolui durante o build fazendo o dataset derivar. O conteúdo escrito no
 fim, sabendo todos os lugares onde aparece, sai **mais** coerente.
 
+> **Decidido em 01/08:** o dataset completo do elenco é a *última* coisa a ser feita — depois de
+> todas as telas prontas, não em paralelo. Até lá o seed mínimo da Fase A basta, e questão de
+> elenco levantada durante a Fase B se anota, não se discute.
+
 E o modo de falha é o argumento que decide: se o tempo estourar com conteúdo-primeiro, você tem
 200 eventos lindos e metade das telas — demo quebrada. Com produto-primeiro, você tem todas as
 telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
@@ -594,13 +631,13 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 
 | # | Passo | Por quê nessa ordem |
 |---|---|---|
-| 2 | Shell + seletor de persona + reset | Infra de todas as telas |
-| 3 | Componentes Slack + `/slack` | Maior retorno visual; libera o fluxo 1 inteiro |
+| 2 | Shell: sidebar + seletor de persona + reset + `/org` (a lista) | Infra de todas as telas — e a lista de pessoas já é a permissão visível |
+| 3 | `/feedback` — fluxo 1 | Maior retorno visual; libera o loop de captura inteiro sem depender do LLM |
 | 4 | `lib/agente/` + tools + permissões + `renderizar` + 2 skills mínimas | Interface pronta antes dos componentes. **Aqui se decide Eve × AI SDK** (§2.1) |
-| 5 | `/brain/chat` + 8 componentes | Fluxo 2 |
-| 6 | `/brain/pessoa/[id]` (dois papéis) | Reaproveita os componentes do passo 5 |
-| 7 | `/brain/fechamento` + diagnóstico | Fluxo 3 |
-| 8 | `/brain/regua` + `/brain/fontes` | Baratas, alta densidade de tese |
+| 5 | Painel de chat + histórico + 8 componentes | Fluxo 2 |
+| 6 | `/org/[id]` (dois papéis) | Reaproveita os componentes do passo 5 |
+| 7 | Diagnóstico de organização dentro de `/org` | Fluxo 3 |
+| 8 | `/regua` + `/integrations` | Baratas, alta densidade de tese |
 
 ### Fase C — conteúdo
 
@@ -620,8 +657,8 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 > **O risco desta ordem, declarado:** o conteúdo é o que faz a demo boa e é o último a ser feito —
 > logo, é o primeiro a ser espremido se a Fase B travar. **Se a Fase B travar, corte tela, nunca
 > conteúdo.** Produto funcionando com conteúdo raso é demo de UI; com conteúdo rico é demo de
-> produto. Ordem de corte: `/brain/regua` (vira screenshot no vídeo) → metade superior do
-> `/fechamento` (mantém o diagnóstico) → componentes de 8 pra 5.
+> produto. Ordem de corte: `/regua` (vira screenshot no vídeo) → itens 2 e 3 do `/feedback`
+> (mantém a pergunta de elicitação) → componentes de 8 pra 5.
 
 ---
 

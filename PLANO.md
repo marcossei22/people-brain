@@ -415,14 +415,16 @@ Regra do case: 2–3 fluxos profundos > 10 rasos. Cada fluxo existe pra **provar
 | Fase | No protótipo | Prova |
 |---|---|---|
 | **1. Setup** | Não é fluxo — é **artefato**. Uma tela do ladder vivo + a sugestão *"sua régua diz X, a realidade diz Y"*. ~60s de vídeo. | A régua existe e aprende |
-| **2. Captura** | **Fluxo 1** — no Slack: a pergunta que fecha lacuna **e** dispara a atenção do gestor → `Ver evidência` → `Rascunhar` → edita → envia. **Cronometrado ao vivo: 4 min** vs. 45 min/pessoa do formulário. Mostrar também `Depois` e o silêncio. | O loop contínuo é barato |
+| **2. Captura** | **Fluxo 1** — em `/feedback`: a pergunta que fecha lacuna **e** dispara a atenção do gestor → `Ver evidência` → `Rascunhar` → edita → envia. **Cronometrado ao vivo: 4 min** vs. 45 min/pessoa do formulário. Mostrar também `Depois` e o silêncio. | O loop contínuo é barato |
 | **3. Avaliação** | **Fluxo 2** — o chat, **dos dois lados**. Gestor pergunta sobre a Carla e dá a estrela num episódio. Depois, a Carla no mesmo produto: vê o próprio registro, adiciona contexto que a IA não podia saber, contesta um item. E o momento em que **a IA recusa** responder sobre estado emocional. | O modelo de confiança funciona |
-| **4. Fechamento** | **Fluxo 3** — dossiê com drill-down até a mensagem original no Slack **+ o diagnóstico de organização** ("Dados é gargalo de 6 pessoas"). | O ciclo não morre, encolhe |
+| **4. Fechamento** | **Fluxo 3** — em `/org`: dossiê com drill-down até a mensagem original no Slack **+ o diagnóstico de organização** ("Dados é gargalo de 6 pessoas"). | O ciclo não morre, encolhe |
 
 O fluxo 2 resolvendo os dois lados na mesma superfície prova de uma vez: propriedade do colaborador, modelo de permissão e a recusa.
 
 **Decisões de produto que ficam visíveis no protótipo:**
-- Superfície primária do dia a dia é **Slack**. O app web é pra **ler e decidir**, não pra produzir.
+- Em produção o nudge chega onde a pessoa já está — **Slack**. Mas o Slack é *canal e fonte*, não
+  o produto: **o protótipo não imita a interface do Slack**, e o mesmo loop roda em `/feedback`. O
+  app web é pra **ler e decidir**, não pra produzir.
 - O colaborador **não tem** trabalho de performance pra fazer. Não existe formulário em lugar nenhum.
 - Em nenhuma tela existe um número de 1 a 5 atribuído a uma pessoa pela IA.
 
@@ -560,7 +562,7 @@ O piloto roda o fechamento lendo o registro; o controle preenche formulário. Co
 | 4. Setup | 1:00 | A régua viva. "Metade da injustiça é bar não-publicado." |
 | 5. Fluxo 1 — Captura | 2:30 | A pergunta que fecha lacuna **e** vira atenção. Cronometrado. |
 | 6. Fluxo 2 — Avaliação | 2:30 | Chat dos dois lados, a estrela, e a IA recusando. |
-| 7. Fluxo 3 — Fechamento | 2:00 | Dossiê + drill-down + diagnóstico de organização. |
+| 7. Fluxo 3 — Fechamento | 2:00 | `/org`: dossiê + drill-down + diagnóstico de organização. |
 | 8. IA estrutural | 1:00 | Teste do "remova a IA". N3→N4→N5 e os 3 pontos onde o loop fecha. |
 | 9. Não-construí + trade-offs | 1:30 | Os 3 "nãos" mais fortes e os 2 trade-offs mais duros. |
 | 10. Métricas + por que importa | 1:00 | Latência como north star, a contra-métrica de vigilância, e o argumento pra Comp. |
@@ -574,7 +576,7 @@ O piloto roda o fechamento lendo o registro; o controle preenche formulário. Co
 
 1. **Conteúdo da Aurora** — 8–10 personas com histórias coerentes que atravessam os 3 fluxos (Carla/promoção, Rafa/travado por Dados, Bruno/esquecido, um gestor com cobertura zero). O mesmo dado tem que sustentar os três fluxos, senão o protótipo se contradiz em cena.
 2. **Régua** — escrever o ladder de 2 trilhas (Eng e Sales) em 3 níveis. É o que dá credibilidade ao Setup e ao dossiê.
-3. **Protótipo** — Next.js estático, dados mockados, sem backend; telas de Slack renderizadas dentro do próprio protótipo (link único, sem dependência de workspace real).
+3. **Protótipo** — Next.js estático, dados mockados, sem backend (link único, sem dependência de workspace real). O Slack aparece como **integração e fonte** em `/integrations`, nunca como interface imitada.
 4. **Gravação.**
 
 **AI Appendix — não deixar pro fim.** O case pede log completo da conversa, onde a IA errou e onde eu sobrescrevi. Anotar em tempo real. Já tem material: a arquitetura inicial de 3 camadas errou ao assumir que a evidência está toda no rastro digital e ao promover "atenção" a camada primitiva — o loop de elicitação e a fase de Setup vieram de correção humana, não da IA.
