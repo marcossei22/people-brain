@@ -9,13 +9,14 @@
  */
 
 import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SemAcesso } from '@/components/brain/sem-acesso'
+import { CabecalhoDiretriz, ComoOBrainUsa } from '@/components/brain/diretriz'
+import { diretrizes } from '@/data/diretrizes'
 import { NOME_NIVEL, NOME_TRILHA, regua } from '@/data/regua'
 import type { NivelRegua, Trilha } from '@/data/tipos'
 import { podeAdministrar } from '@/lib/agente/permissoes'
@@ -34,32 +35,23 @@ export default function PaginaRegua() {
     )
   }
 
+  const meta = diretrizes.find((d) => d.id === 'regua')!
   const niveis = ORDEM.map((n) => regua.find((r) => r.trilha === trilha && r.nivel === n)).filter(
     (r): r is NivelRegua => Boolean(r),
   )
 
   return (
     <div key={geracao} className="mx-auto max-w-5xl px-10 py-12">
-      <Link
-        href="/diretrizes"
-        className="etiqueta surgir inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-3" />
-        Diretrizes
-      </Link>
-
-      <header className="surgir mt-4">
-        <h2 className="display text-[2.1rem] leading-[1.1] tracking-tight">Régua de carreira</h2>
-        <p className="prosa mt-3 max-w-xl text-[0.98rem] leading-relaxed text-muted-foreground">
-          O que a Aurora espera em cada nível, comportamento a comportamento. Cada um traz o que
-          conta como observável.
-        </p>
-      </header>
+      <CabecalhoDiretriz
+        d={meta}
+        descricao="O que a Aurora espera em cada nível, comportamento a comportamento. Cada um traz o que conta como observável."
+      />
+      <ComoOBrainUsa d={meta} />
 
       <Tabs
         value={trilha}
         onValueChange={(v) => setTrilha(v as Trilha)}
-        className="surgir mt-8"
+        className="surgir mt-9"
         style={{ animationDelay: '80ms' }}
       >
         <TabsList>
