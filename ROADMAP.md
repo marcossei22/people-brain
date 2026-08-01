@@ -46,7 +46,7 @@
 - [x] **Passo 1** — tipos §5.1 + seed mínimo + `validar.ts` no `prebuild`
 
 ### D1 · sex 31/07 — produto funcional — ARQUITETURA.md §13 Fase B
-- [ ] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
+- [x] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
 - [ ] 3 · `/feedback` — **fluxo 1**
 - [ ] 4 · `lib/agente/` + tools + permissões + `renderizar` + 2 skills mínimas
   - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue

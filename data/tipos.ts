@@ -33,8 +33,12 @@ export interface Pessoa {
   id: PessoaId
   nome: string
   cargo: string
-  trilha: Trilha
-  nivel: Nivel
+  /** Opcionais porque nem todo mundo é avaliado contra uma régua: quem só
+   *  observa (CHRO, admin) não tem trilha nem nível. Sem isso, a alternativa
+   *  seria inventar uma trilha falsa — e dado falso no elenco é o erro que
+   *  estraga a gravação (§5.2). */
+  trilha?: Trilha
+  nivel?: Nivel
   gestorId?: PessoaId
   time: string
   desde: string

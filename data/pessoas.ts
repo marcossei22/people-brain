@@ -18,7 +18,10 @@ export const pessoas: Pessoa[] = [
     nivel: 'staff',
     time: 'Pagamentos',
     desde: '2023-03-06',
-    densidadeEvidencia: 'media',
+    // Gestora: zero eventos próprios no semestre. Densidade baixa é o dado
+    // honesto — e é exatamente o padrão que o diagnóstico de organização
+    // encontra quando pergunta quem está sem cobertura.
+    densidadeEvidencia: 'baixa',
   },
   {
     id: 'carla',
@@ -66,6 +69,16 @@ export const pessoas: Pessoa[] = [
     time: 'Vendas',
     desde: '2023-06-12',
     densidadeEvidencia: 'media',
+  },
+  {
+    // Observadora do fluxo 3. Sem trilha nem nível: não é avaliada, avalia a
+    // organização. É também quem administra a régua (§8.4).
+    id: 'helena',
+    nome: 'Helena Prado',
+    cargo: 'CHRO',
+    time: 'Pessoas',
+    desde: '2022-02-14',
+    densidadeEvidencia: 'baixa',
   },
   {
     id: 'paulo',

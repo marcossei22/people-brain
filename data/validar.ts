@@ -57,6 +57,9 @@ for (const p of pessoas) {
   exigePessoa(`pessoa ${p.id}`, 'gestorId', p.gestorId)
   if (p.gestorId === p.id) falha(`pessoa ${p.id}`, 'é gestora de si mesma')
   if (!dataValida(p.desde)) falha(`pessoa ${p.id}`, `desde inválido "${p.desde}"`)
+  // Trilha e nível andam juntos: nível sem trilha não tem régua contra o que comparar.
+  if (Boolean(p.trilha) !== Boolean(p.nivel))
+    falha(`pessoa ${p.id}`, 'tem trilha sem nível (ou o contrário) — os dois andam juntos')
 }
 
 // ── eventos ───────────────────────────────────────────────────────────────
