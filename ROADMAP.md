@@ -14,7 +14,7 @@
 |---|---|
 | Tese e narrativa | ✅ fechada — PLANO.md |
 | Arquitetura | ✅ fechada — ARQUITETURA.md |
-| Build | ⬜ não iniciado |
+| Build | 🟡 Fase A ✅ · Fase B em aberto (passos 2–8) |
 | Conteúdo (dataset, skills, régua) | ⬜ não iniciado |
 | Vídeo | ⬜ não iniciado |
 | AI Appendix | 🟡 log correndo — §6 |
@@ -41,8 +41,9 @@
 
 ### D0 · qui 30/07 — esqueleto
 - [x] Alinhamento de data com a Comp
-- [ ] Repo + Next.js + shadcn + deploy vazio na Vercel (garante que o link existe cedo)
-- [ ] **Passo 1** — tipos §5.1 + seed mínimo + `validar.ts`
+- [x] Repo + Next.js 16 + Tailwind 4 + shadcn (base radix, 15 componentes)
+- [ ] Deploy vazio na Vercel (garante que o link existe cedo) — **pendente: precisa da conta do Marcos**
+- [x] **Passo 1** — tipos §5.1 + seed mínimo + `validar.ts` no `prebuild`
 
 ### D1 · sex 31/07 — produto funcional — ARQUITETURA.md §13 Fase B
 - [ ] 2 · Shell + seletor de persona + botão reset
