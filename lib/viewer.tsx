@@ -30,7 +30,10 @@ export const PERSONAS: Persona[] = [
   { pessoaId: 'helena', papel: 'chro' },
 ]
 
-export const PERSONA_PADRAO = PERSONAS[0]
+/** Helena é o padrão: é a única persona com acesso de admin, então o produto
+ *  abre já mostrando a organização inteira e as telas de Setup. */
+export const PERSONA_PADRAO =
+  PERSONAS.find((p) => p.pessoaId === 'helena') ?? PERSONAS[0]
 
 export const NOME_DO_PAPEL: Record<Papel, string> = {
   gestor: 'Gestora',
