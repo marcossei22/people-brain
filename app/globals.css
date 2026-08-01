@@ -146,7 +146,7 @@
     -webkit-font-smoothing: antialiased;
   }
   html {
-    @apply font-sans;
+    @apply bg-background font-sans;
   }
 
   /* Grão de papel. Fica atrás de tudo, não intercepta clique.

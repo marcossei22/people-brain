@@ -629,21 +629,28 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 
 ### Fase B — produto funcional
 
+> **Reordenado em 01/08 — Setup antes do agente.** A ordem anterior deixava `/regua` no fim, o
+> que significava construir o agente contra uma régua stub: ele não teria contra o que comparar
+> justamente na tarefa que mais importa. Setup primeiro corrige isso.
+
 | # | Passo | Por quê nessa ordem |
 |---|---|---|
 | 2 | Shell: sidebar + seletor de persona + reset + `/org` (a lista) | Infra de todas as telas — e a lista de pessoas já é a permissão visível |
-| 3 | `/feedback` — fluxo 1 | Maior retorno visual; libera o loop de captura inteiro sem depender do LLM |
-| 4 | `lib/agente/` + tools + permissões + `renderizar` + 2 skills mínimas | Interface pronta antes dos componentes. **Aqui se decide Eve × AI SDK** (§2.1) |
-| 5 | Painel de chat + histórico + 8 componentes | Fluxo 2 |
-| 6 | `/org/[id]` (dois papéis) | Reaproveita os componentes do passo 5 |
-| 7 | Diagnóstico de organização dentro de `/org` | Fluxo 3 |
-| 8 | `/regua` + `/integrations` | Baratas, alta densidade de tese |
+| 3 | `/integrations` | Barata; é onde o Slack aparece como fonte, e a lista do que **não** é capturado já entrega o modelo de confiança |
+| 4 | `/regua` ponta a ponta, com o loop de aprovação | O agente precisa dela **pronta** para comparar. Sem persistência: a régua vive em `.ts` e o que a tela prova é o loop, não o upload (§5.4) |
+| 5 | `/feedback` — só o layout | Congela o visual do fluxo 1. A interação volta depois que o agente existir |
+| 6 | `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat | **Aqui se decide Eve × AI SDK** (§2.1). Fluxo 2 |
+| 7 | `/org/[id]` — dossiê nos dois papéis, com chat embutido | Consome os componentes do passo 6 e **fixa o modelo de dados** antes do dataset |
+| 8 | Dataset completo da Aurora | Escrito sabendo todos os lugares onde aparece |
+| 9 | Diagnóstico de organização dentro de `/org` | Fluxo 3. Só é crível com o dataset cheio — "gargalo de 6 pessoas" não existe com 4 |
+
+> Os passos 8 e 9 acima eram a antiga Fase C. O dataset deixou de ser uma fase separada porque
+> depende do dossiê estar montado — ver a nota de reordenação.
 
 ### Fase C — conteúdo
 
 | # | Passo |
 |---|---|
-| 9 | Dataset completo da Aurora — elenco de 8 (ROADMAP §8), 6 meses, ~180 eventos, ~40 episódios, temas, lacunas, achados org |
 | 10 | `skills/` e `doutrina/` completos + régua das 2 trilhas × 3 níveis |
 | 11 | Passada de copy nos `roteiros.ts` (§9) |
 

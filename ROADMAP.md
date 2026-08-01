@@ -46,14 +46,17 @@
 - [x] **Passo 1** — tipos §5.1 + seed mínimo + `validar.ts` no `prebuild`
 
 ### D1 · sex 31/07 — produto funcional — ARQUITETURA.md §13 Fase B
+> **Ordem revista em 01/08 — Setup antes do agente.** Ver decisão #32.
+
 - [x] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
-- [ ] 3 · `/feedback` — **fluxo 1**
-- [ ] 4 · `lib/agente/` + tools + permissões + `renderizar` + 2 skills mínimas
+- [x] 3 · `/integrations` — mock completo
+- [ ] 4 · `/regua` (admin) ponta a ponta, com o loop de aprovação
+- [ ] 5 · `/feedback` — só o layout
+- [ ] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
   - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue
-- [ ] 5 · Painel de chat + histórico na sidebar + 8 componentes — **fluxo 2**
-- [ ] 6 · `/org/[id]` nos dois papéis
-- [ ] 7 · Diagnóstico org dentro de `/org` — **fluxo 3**
-- [ ] 8 · `/regua` (admin) + `/integrations`
+- [ ] 7 · `/org/[id]` nos dois papéis, com chat embutido
+- [ ] 8 · Dataset completo da Aurora
+- [ ] 9 · Diagnóstico org dentro de `/org` — **fluxo 3**
 
 ### D2 · sáb 01/08 — conteúdo + primeira tomada
 - [ ] 9 · Dataset completo da Aurora — **não cortar**
@@ -135,6 +138,8 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 29 | **Chat é painel, não rota** | A pergunta nasce olhando outra tela. Histórico na sidebar |
 | 30 | **`/regua` é só admin** | É doutrina da empresa, não conteúdo de gestor individual |
 | 31 | **Dataset do elenco é a última etapa** | Decidido em 01/08. Conteúdo antes das telas é escrever no escuro — mesmo argumento da #25, aplicado ao cronograma |
+| 32 | **Setup antes do agente**: integrações → régua → feedback → agente → dossiê → dataset → diagnóstico | A ordem anterior construía o agente contra uma régua stub, justamente na tarefa que mais importa. E o dossiê vem antes do dataset porque é a tela com mais campos: é ela que revela o que falta no modelo |
+| 33 | **A régua não tem upload de verdade** | Sem persistência (#15), arquivo que some no reload é armadilha na gravação. O que a tela prova é o **loop de aprovação** da régua viva — que é o mecanismo de N5, e vale mais que um seletor de arquivo |
 
 ---
 
