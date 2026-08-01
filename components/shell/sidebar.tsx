@@ -10,7 +10,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Building2, Inbox, MessageSquarePlus, Plug, Ruler } from 'lucide-react'
+import { BookMarked, Building2, Inbox, MessageSquarePlus, Plug } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -29,7 +29,13 @@ interface Item {
 const ITENS: Item[] = [
   { href: '/org', rotulo: 'Organização', icone: Building2, nota: 'Quem você alcança' },
   { href: '/feedback', rotulo: 'Pendências', icone: Inbox, nota: 'Sua atenção da semana' },
-  { href: '/regua', rotulo: 'Régua', icone: Ruler, nota: 'O que a empresa espera', soAdmin: true },
+  {
+    href: '/diretrizes',
+    rotulo: 'Diretrizes',
+    icone: BookMarked,
+    nota: 'O que a empresa espera',
+    soAdmin: true,
+  },
   { href: '/integrations', rotulo: 'Integrações', icone: Plug, nota: 'De onde vem a evidência' },
 ]
 

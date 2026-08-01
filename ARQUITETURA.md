@@ -85,8 +85,9 @@ em nenhuma tela. Critério de escolha: o que responder com tool call primeiro, s
   /org/page.tsx              pessoas a que o viewer tem acesso + diagnóstico de organização
   /org/[id]/page.tsx         dossiê (mesma tela pra gestor e pra própria pessoa)
   /feedback/page.tsx         FLUXO 1 — pendências de atenção do viewer
-  /regua/page.tsx            SETUP — régua viva · só admin
-  /integrations/page.tsx     SETUP — fontes conectadas + o que NÃO é capturado
+  /diretrizes/page.tsx       SETUP — os documentos fixos da empresa · só admin
+  /diretrizes/regua/page.tsx SETUP — a régua, o único documento estruturado
+  /integrations/page.tsx     SETUP — fontes conectadas
   /api/chat/route.ts         única rota com LLM
 
   (o chat NÃO é rota — é painel global, aberto por botão, histórico na sidebar)
@@ -101,8 +102,8 @@ em nenhuma tela. Critério de escolha: o que responder com tool call primeiro, s
   memoria.ts                 funções de consulta sobre os dados
   viewer.ts                  contexto de quem está olhando
 
-/skills                      PROCEDIMENTO — a doutrina de gestão, executável (§6.3)
-  preparar-1a1.md
+/skills                      PROCEDIMENTO — perfil do Brain, NÃO doutrina da empresa (§6.3)
+  preparar-1a1.md            (não aparece em /diretrizes — tela própria, mais adiante)
   montar-caso-de-promocao.md
   comparar-com-regua.md
   rascunhar-feedback.md
@@ -110,9 +111,10 @@ em nenhuma tela. Critério de escolha: o que responder com tool call primeiro, s
   diagnosticar-organizacao.md
   tom-e-linguagem.md         sempre carregada no system prompt
 
-/doutrina                    PROSA — o que a empresa definiu no Setup
+/doutrina                    PROSA — o conteúdo fixo da empresa, lido em /diretrizes
   cultura.md
   contexto-do-semestre.md
+  politica-de-decisao.md
 
 /data
   pessoas.ts
@@ -467,7 +469,7 @@ Todos com **fonte clicável** — princípio §2.1 do PLANO.md ("nenhuma frase s
 
 ### 8.0 Shell — sidebar, chat e persona
 
-Sidebar fixa com: navegação (`/org` · `/feedback` · `/regua` · `/integrations`), **histórico de
+Sidebar fixa com: navegação (`/org` · `/feedback` · `/diretrizes` · `/integrations`), **histórico de
 conversas**, botão `Nova conversa`, e no rodapé o **seletor de persona** + `Reset`.
 
 O **chat não é rota**. É um painel que abre por botão e fica por cima de qualquer tela — porque a
@@ -521,17 +523,36 @@ Cabeçalho: `Nenhum campo para preencher. 0 formulários.`
 
 E **silêncio é saída válida**: sem item, a tela diz isso em vez de inventar pendência.
 
-### 8.4 `/regua` — SETUP · só admin
+### 8.4 `/diretrizes` — SETUP · só admin
 
-Régua por trilha e nível. É onde a empresa escreve o que espera — sem isso o agente não tem contra
-o que comparar, e evidência vira diário. Visível só para `admin`: é doutrina da empresa, não
-conteúdo de gestor individual.
+O conteúdo **fixo** que a empresa define. Sem isso o agente não tem contra o que comparar, e
+evidência vira diário. Só `admin`: é doutrina da empresa, não conteúdo de gestor individual.
 
-Um comportamento traz o card de **régua viva**:
+> Os **procedimentos** do agente (as skills) não vivem aqui — são perfil do Brain, não doutrina
+> da empresa. Tela separada, mais adiante.
 
-> *"Sua régua diz 'demonstra liderança técnica'. Nas 14 pessoas em Senior, aqui isso significa:
-> lidera migrações cross-team, é consultada em arquitetura de pagamentos, revisa ~40% dos PRs do
-> domínio."* `[Ver as 14]` `[Atualizar régua]` `[Descartar]`
+Quatro documentos, agrupados pela pergunta que respondem:
+
+| Documento | Responde | Formato | O Brain usa para |
+|---|---|---|---|
+| **Régua de carreira** | O que esperamos em cada nível | Estruturado, `regua.ts` | Comparar evidência contra expectativa. **O único que produz veredito** |
+| **Cultura e tom** | Como a gente fala | `doutrina/cultura.md` | Governar o tom. Nunca avaliação (decisão #9) |
+| **Contexto do ciclo** | O que importa agora | `.md`, **com validade** | Ponderar o que conta como impacto neste semestre |
+| **Política de decisão** | Quem decide, quando | `.md` | Saber que dinheiro é anual e promoção é quando estiver pronta |
+
+Cada documento declara, na ficha, **o que o Brain faz com ele e o que não faz**. É o campo que
+separa isto de um wiki: o de cultura dizer *"não é critério de avaliação"* responde antes da
+pergunta, e responde no documento, não numa fala de vídeo.
+
+**Três modos de entrada**, e o terceiro é o que interessa: escrever no produto · subir arquivo ·
+**derivar da evidência**. O terceiro não é exclusivo da régua — qualquer documento pode ter
+sugestão pendente. Aceitar muda o documento na sessão; é o loop de aprovação de N5 fechando.
+
+`/diretrizes/regua` é a única com visão rica: trilha × nível, comportamento a comportamento com
+o observável de cada um, e o card de **régua viva** ancorado no nível onde a evidência apareceu.
+
+**Subir arquivo é encenação, e declarada:** o fluxo mostra arquivo → o Brain propõe a estrutura →
+o humano revisa, e o rodapé diz que nada é enviado nem persistido (#33).
 
 ### 8.5 `/integrations` — SETUP
 
@@ -633,7 +654,7 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 
 ### Fase B — produto funcional
 
-> **Reordenado em 01/08 — Setup antes do agente.** A ordem anterior deixava `/regua` no fim, o
+> **Reordenado em 01/08 — Setup antes do agente.** A ordem anterior deixava a régua no fim, o
 > que significava construir o agente contra uma régua stub: ele não teria contra o que comparar
 > justamente na tarefa que mais importa. Setup primeiro corrige isso.
 
@@ -641,7 +662,7 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 |---|---|---|
 | 2 | Shell: sidebar + seletor de persona + reset + `/org` (a lista) | Infra de todas as telas — e a lista de pessoas já é a permissão visível |
 | 3 | `/integrations` | Barata; é onde o Slack aparece como fonte, e a lista do que **não** é capturado já entrega o modelo de confiança |
-| 4 | `/regua` ponta a ponta, com o loop de aprovação | O agente precisa dela **pronta** para comparar. Sem persistência: a régua vive em `.ts` e o que a tela prova é o loop, não o upload (§5.4) |
+| 4 | `/diretrizes` + `/diretrizes/regua`, com o loop de aprovação | O agente precisa dela **pronta** para comparar. Sem persistência: a régua vive em `.ts` e o que a tela prova é o loop, não o upload (§5.4) |
 | 5 | `/feedback` — só o layout | Congela o visual do fluxo 1. A interação volta depois que o agente existir |
 | 6 | `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat | **Aqui se decide Eve × AI SDK** (§2.1). Fluxo 2 |
 | 7 | `/org/[id]` — dossiê nos dois papéis, com chat embutido | Consome os componentes do passo 6 e **fixa o modelo de dados** antes do dataset |
@@ -668,7 +689,7 @@ telas com 4 pessoas em vez de 8 — demo enxuta, mas inteira.
 > **O risco desta ordem, declarado:** o conteúdo é o que faz a demo boa e é o último a ser feito —
 > logo, é o primeiro a ser espremido se a Fase B travar. **Se a Fase B travar, corte tela, nunca
 > conteúdo.** Produto funcionando com conteúdo raso é demo de UI; com conteúdo rico é demo de
-> produto. Ordem de corte: `/regua` (vira screenshot no vídeo) → itens 2 e 3 do `/feedback`
+> produto. Ordem de corte: `/diretrizes` (vira screenshot no vídeo) → itens 2 e 3 do `/feedback`
 > (mantém a pergunta de elicitação) → componentes de 8 pra 5.
 
 ---

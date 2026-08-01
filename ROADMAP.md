@@ -50,7 +50,7 @@
 
 - [x] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
 - [x] 3 · `/integrations` — mock completo
-- [ ] 4 · `/regua` (admin) ponta a ponta, com o loop de aprovação
+- [x] 4 · `/diretrizes` (admin) ponta a ponta, com o loop de aprovação
 - [ ] 5 · `/feedback` — só o layout
 - [ ] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
   - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue
@@ -85,7 +85,7 @@
 Plano de contingência, caso a Fase B trave em algum problema técnico. Em ordem — cortar de cima
 pra baixo dói menos.
 
-1. **`/regua`** vira screenshot no vídeo
+1. **`/diretrizes`** vira screenshot no vídeo
 2. **Itens 2 e 3 do `/feedback`** — mantém a pergunta de elicitação e o orçamento
 3. **Componentes de render: 8 → 5**
 4. **Elenco: 8 → 6 pessoas**
@@ -136,7 +136,7 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 27 | O fluxo 1 muda de casa: vai para **`/feedback`** | O mecanismo é o que importa — elicitação com motivo, orçamento de pergunta, rascunho com evidência. A superfície era acidente |
 | 28 | O diagnóstico de organização vai para **`/org`** | Afirmação sobre a organização mora na tela da organização, não no fim de um ciclo. Reforça a decisão #10 |
 | 29 | **Chat é painel, não rota** | A pergunta nasce olhando outra tela. Histórico na sidebar |
-| 30 | **`/regua` é só admin** | É doutrina da empresa, não conteúdo de gestor individual |
+| 30 | **`/diretrizes` é só admin** | É doutrina da empresa, não conteúdo de gestor individual |
 | 31 | **Dataset do elenco é a última etapa** | Decidido em 01/08. Conteúdo antes das telas é escrever no escuro — mesmo argumento da #25, aplicado ao cronograma |
 | 32 | **Setup antes do agente**: integrações → régua → feedback → agente → dossiê → dataset → diagnóstico | A ordem anterior construía o agente contra uma régua stub, justamente na tarefa que mais importa. E o dossiê vem antes do dataset porque é a tela com mais campos: é ela que revela o que falta no modelo |
 | 33 | **A régua não tem upload de verdade** | Sem persistência (#15), arquivo que some no reload é armadilha na gravação. O que a tela prova é o **loop de aprovação** da régua viva — que é o mecanismo de N5, e vale mais que um seletor de arquivo |
