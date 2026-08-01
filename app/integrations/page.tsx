@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { LOGOS } from '@/components/logos'
 import { conectadas, disponiveis, nuncaCapturado } from '@/data/fontes'
 import type { Integracao } from '@/data/fontes'
 import { nomeDe } from '@/lib/memoria'
@@ -60,8 +61,8 @@ export default function PaginaIntegracoes() {
                 onClick={() => setAberta(f)}
                 className="flex w-full items-center gap-5 border-b border-border/70 py-4 text-left transition-colors hover:bg-foreground/[0.025]"
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-sm border border-border bg-card">
-                  <Check className="size-4 text-comp" />
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-[7px]">
+                  <Logo id={f.id} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="display block text-[1.05rem] leading-none tracking-tight">
@@ -95,10 +96,13 @@ export default function PaginaIntegracoes() {
                 variant="outline"
                 size="sm"
                 onClick={() => setAberta(f)}
-                className="h-8 gap-1.5 text-[0.8rem] font-normal"
+                className="group h-9 gap-2 pl-2.5 text-[0.82rem] font-normal"
               >
-                <Plus className="size-3.5 text-muted-foreground" />
+                <span className="flex size-4 shrink-0 items-center justify-center opacity-55 grayscale transition group-hover:opacity-100 group-hover:grayscale-0">
+                  <Logo id={f.id} />
+                </span>
                 {f.nome}
+                <Plus className="size-3.5 text-muted-foreground/60" />
               </Button>
             </li>
           ))}
@@ -137,6 +141,9 @@ export default function PaginaIntegracoes() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2.5">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-card p-1.5">
+                    <Logo id={aberta.id} />
+                  </span>
                   <DialogTitle className="display text-[1.3rem] tracking-tight">
                     {aberta.nome}
                   </DialogTitle>
@@ -206,6 +213,12 @@ export default function PaginaIntegracoes() {
       </Dialog>
     </div>
   )
+}
+
+function Logo({ id, className }: { id: string; className?: string }) {
+  const Marca = LOGOS[id]
+  if (!Marca) return <span className="block size-full rounded-[2px] bg-foreground/10" />
+  return <Marca className={className} />
 }
 
 function formatarData(iso?: string) {

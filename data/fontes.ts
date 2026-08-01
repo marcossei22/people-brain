@@ -99,7 +99,7 @@ export const integracoes: Integracao[] = [
   },
   {
     id: 'hris',
-    nome: 'Gupy',
+    nome: 'Personio',
     categoria: 'HRIS',
     estado: 'conectada',
     tipoFonte: undefined,
