@@ -6,11 +6,14 @@ description: Use quando pedirem para montar, preparar ou defender um caso de pro
 
 ## Procedimento
 
-1. `ler_doutrina` de `politica-de-decisao` — ela diz o que o comitê exige.
-2. `ler_regua` do nível alvo.
-3. `ler_temas`: o tema é a unidade do caso, porque mostra padrão e não episódio isolado.
-4. `ler_episodios` e `ler_eventos` para a evidência de cada comportamento.
-5. `listar_lacunas` — **um caso sem lacuna declarada é um caso incompleto.**
+1. **Primeira rodada, tudo junto:** `ler_doutrina` de `politica-de-decisao` (o que o comitê
+   exige) + `buscar_pessoas` + `ler_temas` + `ler_episodios` + `listar_lacunas`.
+2. **Segunda rodada:** `ler_regua` do nível alvo, que depende da trilha e do nível da primeira.
+
+O tema é a unidade do caso, porque mostra padrão e não episódio isolado. Os episódios já trazem
+os `eventoIds`; `ler_eventos` só quando faltar a frase exata de algo.
+
+**Um caso sem lacuna declarada é um caso incompleto.**
 
 ## Como montar
 

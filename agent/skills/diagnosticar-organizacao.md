@@ -8,9 +8,15 @@ A pergunta certa aqui nunca é "quem está devendo". É "o que o sistema está p
 
 ## Procedimento
 
-1. `diagnosticar_organizacao` para os achados já consolidados.
-2. `ler_episodios` das pessoas citadas, para ter o caso concreto de cada uma.
-3. `listar_lacunas` — achado com lacuna aberta é hipótese, não conclusão, e precisa ser dito assim.
+1. **Primeira rodada:** `diagnosticar_organizacao` **sem filtro de tipo** e `listar_lacunas`,
+   juntos. "Onde a organização está travando" não é só gargalo: cobertura de gestão, legibilidade
+   de trilha e bloqueio de promoção são formas de travar, e responder com um achado quando
+   existem quatro é responder pela metade. O achado já traz as pessoas afetadas e os episódios
+   que o sustentam; a lacuna aberta é o que separa hipótese de conclusão, e precisa ser dita
+   assim.
+2. `ler_episodios` **só** de quem você for detalhar. Não puxe o registro de todo mundo que
+   aparece num achado: o achado é sobre o sistema, e cinco leituras individuais para escrever
+   um parágrafo sobre a fila de Dados é trabalho jogado fora.
 
 ## Como apresentar
 
@@ -29,4 +35,6 @@ ausência de conversa. Declare a hipótese alternativa e a pergunta que a resolv
 
 ## Renderize
 
-Um `diagnostico` por achado, preenchendo `titulo`, `achado`, `pessoasAfetadas[]` e `recomendacao`.
+**Um `diagnostico` por achado, todos** — uma chamada de `renderizar` para cada, na mesma rodada.
+Preencha `titulo`, `achado`, `pessoasAfetadas[]` e `recomendacao`. Não escolha o mais grave e
+deixe os outros de fora: o valor do diagnóstico é ver os quatro juntos.

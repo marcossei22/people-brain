@@ -8,10 +8,16 @@ Uma boa pauta de 1:1 é curta, específica e traz o que a pessoa não sabe que v
 
 ## Procedimento
 
-1. `ler_episodios` da pessoa. Olhe os mais recentes primeiro.
-2. `listar_lacunas` com `status: "aberta"` para ela.
-3. Se ela estiver perto de um nível acima, `ler_regua` do nível alvo e veja o que ainda não tem evidência.
-4. `ler_doutrina` de `cultura` antes de escrever qualquer frase.
+Uma rodada só, com tudo em paralelo: `ler_episodios` (os mais recentes primeiro),
+`listar_lacunas` com `status: "aberta"`, `ler_feedbacks` da pessoa e `buscar_pessoas`.
+
+Se ela estiver perto de um nível acima, uma segunda rodada com `ler_regua` do nível alvo — só
+depois, porque depende da trilha e do nível.
+
+O tom vem de `cultura.md`, e ele já está resumido nas suas instruções: específico antes de
+adjetivo, sobre o trabalho e não sobre a pessoa. `ler_doutrina` de `cultura` só quando for
+**escrever um texto para a pessoa** (um rascunho de reconhecimento, uma mensagem), não para
+montar pauta.
 
 ## Como montar
 

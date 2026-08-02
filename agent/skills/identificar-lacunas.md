@@ -6,11 +6,11 @@ description: Use quando perguntarem o que falta saber sobre alguém, o que pergu
 
 ## Procedimento
 
-1. `listar_lacunas` da pessoa.
-2. `ler_regua` do nível alvo e compare com `ler_temas` — comportamento sem evidência é lacuna,
-   mesmo que ninguém a tenha registrado ainda.
-3. `buscar_pessoas` para ver a densidade de evidência: densidade baixa significa mais lacunas
-   reais e menos conclusões possíveis.
+1. **Primeira rodada, tudo junto:** `listar_lacunas` da pessoa, `ler_temas` e `buscar_pessoas`.
+   Esta última dá a densidade de evidência: densidade baixa significa mais lacunas reais e menos
+   conclusões possíveis.
+2. **Segunda rodada:** `ler_regua` do nível alvo, e compare com os temas — comportamento sem
+   evidência é lacuna, mesmo que ninguém a tenha registrado ainda.
 
 ## Como priorizar
 
