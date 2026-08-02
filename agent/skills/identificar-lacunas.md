@@ -25,4 +25,9 @@ Se a pergunta for sobre estado, humor, satisfação ou intenção de sair, **ela
 
 ## Renderize
 
-Com `lacunas`, preenchendo `itens[]` — cada um com `pergunta`, `motivo`, `perguntarA` e `valor`.
+Com `Lacunas`, preenchendo `itens[]` — cada um com `pergunta`, `motivo`, `perguntarA` e `valor`.
+
+```
+root = Resposta([buracos])
+buracos = Lacunas(itens, "Carla Nunes")
+```

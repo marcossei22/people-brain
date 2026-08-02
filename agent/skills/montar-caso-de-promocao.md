@@ -27,9 +27,16 @@ baixa é um caso mais fraco, e esconder isso é o que produz decisão injusta.
 Liste o que **não** tem evidência. A ausência não é argumento contra a pessoa, mas escondê-la é
 argumento contra o caso.
 
-Não conclua. Não recomende. Não diga "está pronta". Você monta; o comitê decide.
+**Conclua sobre a régua.** Diga quanto do nível o registro sustenta e o que falta — o caso não é
+um dossiê sem leitura. O que você não faz é a recomendação de negócio: se promove agora, se espera
+o próximo ciclo, se o orçamento comporta. Isso depende de coisa que não está no registro, e é onde
+o comitê entra.
 
 ## Renderize
 
-Com `gap` para a comparação contra a régua. Se pedirem o panorama da pessoa antes disso,
-use `dossie`.
+Com `Cobertura` e `Gap`, nessa ordem — a leitura de conjunto e depois a comparação contra a
+régua, comportamento a comportamento. Se pedirem o panorama da pessoa antes disso, use `Dossie`.
+
+A densidade de evidência que a skill manda declarar logo no começo cabe no primeiro bloco: um
+`Indicadores` com `eventos`, `episódios` e `sem evidência` diz em três números o que o caso tem
+de lastro, e diz antes de qualquer argumento.

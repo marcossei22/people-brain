@@ -35,6 +35,16 @@ ausência de conversa. Declare a hipótese alternativa e a pergunta que a resolv
 
 ## Renderize
 
-**Um `diagnostico` por achado, todos** — uma chamada de `renderizar` para cada, na mesma rodada.
-Preencha `titulo`, `achado`, `pessoasAfetadas[]` e `recomendacao`. Não escolha o mais grave e
-deixe os outros de fora: o valor do diagnóstico é ver os quatro juntos.
+**Um `Diagnostico` por achado, todos no mesmo programa** — uma chamada de `renderizar` só, com
+todos pendurados na raiz. Preencha `titulo`, `achado`, `pessoasAfetadas[]` e `recomendacao`. Não
+escolha o mais grave e deixe os outros de fora: o valor do diagnóstico é ver os quatro juntos.
+
+```
+root = Resposta([d1, d2, d3])
+d1 = Diagnostico("Dados é gargalo de seis pessoas", "...", pessoas1, "...")
+d2 = Diagnostico(...)
+```
+
+Quando os achados forem sobre a mesma coisa contada em pessoas — quantas cada gargalo trava, por
+exemplo —, abra com `Barras` antes deles. O número que transforma impressão em fato fica mais
+difícil de ignorar quando tem tamanho.

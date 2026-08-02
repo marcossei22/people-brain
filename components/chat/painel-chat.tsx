@@ -13,10 +13,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useEveAgent } from 'eve/react'
+import { Renderer } from '@openuidev/react-lang'
 import { ArrowUp, Loader2, Square, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Componente } from '@/components/brain/componentes'
+import { biblioteca } from '@/components/brain/biblioteca'
 import { PassosDaTool } from './passos-da-tool'
 import type { PassoTool } from './passos-da-tool'
 import { useChat } from '@/lib/chat'
@@ -94,7 +95,6 @@ function Painel({ viewer }: { viewer: Viewer }) {
 
   const ocupado = agent.status === 'submitted' || agent.status === 'streaming'
   const mensagens = agent.data.messages
-  const demorando = useDemorando(ocupado)
 
   if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
     ;(window as unknown as Record<string, unknown>).__pb = agent
@@ -132,7 +132,9 @@ function Painel({ viewer }: { viewer: Viewer }) {
   }
 
   return (
-    <aside className="fixed right-0 top-0 z-50 flex h-dvh w-full flex-col border-l border-border bg-background shadow-2xl sm:w-[34rem]">
+    /* A partir de `lg` o painel está docado — o `<Palco>` abriu espaço para
+       ele, e sombra pesada faria um painel docado parecer sobreposto. */
+    <aside className="fixed right-0 top-0 z-50 flex h-dvh w-full flex-col border-l border-border bg-background shadow-2xl sm:w-[26rem] lg:w-[30rem] lg:shadow-none xl:w-[34rem]">
       <header className="flex items-center justify-between border-b border-border px-5 py-3.5">
         <div>
           <p className="etiqueta">Conversa</p>
@@ -181,18 +183,6 @@ function Painel({ viewer }: { viewer: Viewer }) {
           <p className="flex items-center gap-2 font-mono text-[0.7rem] text-muted-foreground">
             <Loader2 className="size-2.5 animate-spin" />
             consultando a memória
-          </p>
-        )}
-
-        {/* Um turno em ~45s já é longo; passar muito disso é o modelo travado
-            do outro lado. Melhor dizer isso do que deixar a tela parada. */}
-        {demorando && (
-          <p className="mt-3 rounded-sm border border-border bg-card px-3.5 py-2.5 text-[0.85rem] leading-snug text-muted-foreground">
-            Está demorando mais que o normal.{' '}
-            <button onClick={() => agent.stop()} className="underline underline-offset-4 hover:text-foreground">
-              Interromper
-            </button>{' '}
-            e perguntar de novo costuma ser mais rápido que esperar.
           </p>
         )}
 
@@ -355,7 +345,7 @@ function Mensagem({
     const nome = p.toolName ?? (p.type.startsWith('tool-') ? p.type.slice(5) : undefined)
     if (!nome) return
 
-    const saida = p.output as { renderizado?: boolean; tipo?: string; payload?: unknown } | undefined
+    const saida = p.output as { renderizado?: boolean } | undefined
     const concluido = p.state === 'output-available' || saida !== undefined
 
     passos.push({
@@ -366,8 +356,32 @@ function Mensagem({
       concluido,
     })
 
-    if (nome === 'renderizar' && saida?.renderizado && saida.tipo) {
-      blocos.push(<Componente key={`c${i}`} tipo={saida.tipo} payload={saida.payload} />)
+    /**
+     * A resposta visual desenha a partir do ARGUMENTO da tool, não do retorno.
+     *
+     * O `programa` chega em pedaços enquanto o modelo o escreve, e o parser do
+     * OpenUI é incremental: `root = Resposta([...])` sai na primeira linha, e a
+     * estrutura já aparece na tela antes de o primeiro dado ter chegado. Esperar
+     * o retorno da tool jogaria isso fora — a tela ficaria parada os mesmos 20s
+     * de antes e a resposta apareceria de uma vez, pronta.
+     *
+     * Enquanto não há retorno, `isStreaming` mantém o parser tolerante a
+     * referência ainda não definida. Se o retorno vier dizendo que não
+     * renderizou, nada disso vai pra tela: o modelo já está respondendo em
+     * prosa e desenhar um programa recusado mostraria a resposta duas vezes.
+     */
+    if (nome === 'renderizar' && saida?.renderizado !== false) {
+      const programa = (p.input as { programa?: string } | undefined)?.programa
+      if (programa) {
+        blocos.push(
+          <Renderer
+            key={`c${i}`}
+            response={programa}
+            library={biblioteca}
+            isStreaming={!concluido}
+          />,
+        )
+      }
     }
   })
 
@@ -379,19 +393,17 @@ function Mensagem({
   )
 }
 
-/** Verdadeiro quando o turno passa de 45s sem terminar. */
-function useDemorando(ocupado: boolean): boolean {
-  const [demorando, setDemorando] = useState(false)
-  useEffect(() => {
-    if (!ocupado) {
-      setDemorando(false)
-      return
-    }
-    const t = setTimeout(() => setDemorando(true), 45_000)
-    return () => clearTimeout(t)
-  }, [ocupado])
-  return demorando
-}
+/**
+ * Havia aqui um aviso de "está demorando mais que o normal" depois de 45s.
+ *
+ * Saiu: numa demo ele é a única coisa na tela que fala mal do produto, e fala
+ * exatamente no momento em que o avaliador está esperando. O turno longo já
+ * tem o que mostrar — os passos de tool aparecem um a um, e a resposta se
+ * monta de cima para baixo enquanto o modelo escreve. Isso é espera com
+ * sinal; o aviso era espera com desculpa.
+ *
+ * O botão de parar continua no campo de texto, para quem quiser interromper.
+ */
 
 /** Ainda não há passo de tool nem texto: o turno começou e a tela está vazia. */
 function semSinal(mensagens: readonly { role: string; parts?: readonly unknown[] }[]): boolean {

@@ -29,9 +29,20 @@ Coloque primeiro o que a pessoa provavelmente não sabe que foi notado. Reconhec
 
 Se houver lacuna aberta de valor alto, ela vira item de pauta — a conversa é a forma mais barata de fechá-la.
 
-**Nunca** transforme a pauta em avaliação. Você lista o que aconteceu; a leitura é da gestora.
+Pauta não é avaliação — não porque você não avalia (avalia, contra a régua, quando perguntam
+isso), mas porque um 1:1 não é o momento. Aqui você lista o que aconteceu e o que vale conversar.
+Se a gestora quiser a leitura contra o nível, ela pergunta, e aí a skill é outra.
 
 ## Renderize
 
-Com `briefing`, preenchendo `pessoa`, `contexto`, `pauta[]` (cada item com `item` e `porque`),
+Com `Briefing`, preenchendo `pessoa`, `contexto`, `pauta[]` (cada item com `item` e `porque`),
 `evidencias[]` (cada afirmação com pelo menos uma fonte e o `eventoId`) e `lacunas[]`.
+
+```
+root = Resposta([pauta])
+pauta = Briefing("Carla Nunes", "...", itens, evidencias, lacunas)
+```
+
+Quando o registro da pessoa estiver ralo — densidade baixa, ou meses sem feedback —, abra com
+`Indicadores` antes do briefing: `eventos`, `episódios`, `sem feedback`. A pauta muda quando a
+gestora vê, antes de ler, que a conversa está sendo montada sobre pouca coisa.

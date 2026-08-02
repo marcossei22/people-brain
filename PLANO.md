@@ -117,9 +117,13 @@ Loop contínuo = desenvolvimento (privado, do colaborador, sem consequência de 
 Tudo que a IA captura sobre a pessoa é visível pra ela, no mesmo instante, com a fonte. Ela anota, contextualiza, contesta.
 → É a espinha moral **e** o maior driver de qualidade de dado: ela corrige o que a IA errou. Nenhum sistema de vigilância consegue isso.
 
-**5. A IA comprime evidência. O humano decide.**
-A IA nunca pontua uma pessoa, nunca gera rating, nunca recomenda demissão. Ela lembra, organiza, cita, pergunta e rascunha.
-→ Linha vermelha de arquitetura, não disclaimer de compliance.
+**5. A IA lê skill contra a régua. O humano decide o que fazer com a leitura.**
+Avaliar trabalho observável contra um nível escrito é o trabalho da IA, e ela faz isso melhor que um gestor com doze reports reconstruindo seis meses de cabeça: comportamento a comportamento, com a fonte de cada afirmação. Recusar essa leitura seria devolver o problema para quem o produto veio resolver.
+
+As linhas vermelhas são outras três, e essas são de arquitetura, não disclaimer de compliance:
+- **Não ordena pessoas.** Cada uma é lida contra o nível, nunca contra as colegas. Sem rating relativo, sem curva, sem leaderboard.
+- **Não mede cultura.** Valores governam como se diz, nunca se a pessoa é boa (§ abaixo).
+- **Não decide.** Promover, ajustar comp, desligar: dependem de orçamento, timing e calibração entre times — coisas que não estão no registro.
 
 **6. Performance é propriedade do sistema, não só da pessoa.**
 Contexto importa: projeto ruim, expectativa mal definida, dependência travada, troca de gestor.

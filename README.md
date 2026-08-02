@@ -7,8 +7,10 @@ A tese é que avaliação de pessoas é um problema de *memória*, não de proce
 o ritual, é o gestor tentando reconstruir seis meses de trabalho na véspera do fechamento.
 
 O sistema observa o trabalho onde ele acontece, pergunta quando não sabe, e chega no fechamento
-com o dossiê montado e a evidência linkada até a fonte. **A IA nunca pontua ninguém.** Ela lembra,
-organiza e declara o que não sabe — o julgamento continua sendo humano.
+com o dossiê montado e a evidência linkada até a fonte. **A IA lê skill contra a régua** — diz o
+que o registro sustenta de cada comportamento do nível, com a fonte de cada afirmação. O que ela
+não faz é ordenar pessoas umas contra as outras, medir cultura ou decidir promoção: a leitura é
+dela, a decisão é humana.
 
 ## Documentos
 

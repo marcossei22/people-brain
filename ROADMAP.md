@@ -108,7 +108,7 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 2 | Separar coaching / alinhamento / julgamento | Cadências ótimas opostas fundidas num ritual só |
 | 3 | Dinheiro é anual; promoção é quando estiver pronta | Orçamento é restrição real; prontidão não |
 | 4 | Sem arquivo secreto | Espinha moral **e** maior driver de qualidade de dado |
-| 5 | IA nunca pontua pessoa | Confiança + LGPD + é a única coisa que só o humano faz |
+| 5 | IA avalia **skill contra a régua**; não ordena pessoas, não mede cultura, não decide | Ler trabalho observável contra um nível escrito é o que ela faz melhor que o gestor. Rating relativo e leitura de valores é que fabricam avaliação infalsificável |
 | 6 | Estrela marca o **episódio**, não a pessoa | Preserva #5 e vira rótulo de treino |
 | 7 | **Não existe estrela negativa** | Reconhecimento pode ser clique; preocupação tem que ser conversa. Dossiê de demérito é passivo trabalhista |
 | 8 | Setup é loop, com régua derivada de evidência | Régua congelada morre; é o mecanismo de N5 |

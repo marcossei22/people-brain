@@ -18,10 +18,15 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
+  ArrowUpRight,
+  Check,
+  Clock3,
   Flag,
+  Inbox,
   MessageCircle,
   MessageSquarePlus,
   Plus,
+  Send,
   Star,
   Users,
 } from 'lucide-react'
@@ -30,13 +35,18 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Densidade } from '@/components/shell/densidade'
 import { Fonte } from '@/components/brain/fonte'
+import { Cobertura, Distribuicao, Serie } from '@/components/brain/graficos'
 import { SemAcesso } from '@/components/brain/sem-acesso'
 import { regua } from '@/data/regua'
 import { eventoPorId } from '@/data/eventos'
 import { lacunas as todasLacunas } from '@/data/lacunas'
+import { pendencias } from '@/data/pendencias'
+import type { Lacuna } from '@/data/tipos'
 import { podeConsultar } from '@/lib/agente/permissoes'
 import { useChat } from '@/lib/chat'
+import { NIVEL_SEGUINTE, coberturaDaRegua, evidenciaPorMes, origemDaEvidencia } from '@/lib/metricas'
 import {
+  dataCurta,
   diasDesde,
   episodiosDe,
   eventosDe,
@@ -46,12 +56,6 @@ import {
   ultimoRegistro,
 } from '@/lib/memoria'
 import { useViewer } from '@/lib/viewer'
-
-const NIVEL_SEGUINTE: Record<string, string | undefined> = {
-  pleno: 'senior',
-  senior: 'staff',
-  staff: undefined,
-}
 
 export function Dossie({ pessoaId }: { pessoaId: string }) {
   const { viewer, geracao } = useViewer()
@@ -79,6 +83,13 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
   const lacunas = todasLacunas.filter((l) => l.pessoaId === pessoaId && l.status !== 'descartada')
   const dias = diasDesde(ultimoRegistro(pessoaId))
   const alvo = p.nivel ? NIVEL_SEGUINTE[p.nivel] : undefined
+
+  // Calculado de `data/`, nunca por modelo: esta tela precisa sair igual em
+  // toda tomada (ARQUITETURA §1, princípio 2). Os componentes são os mesmos
+  // que o agente usa no chat — muda quem preenche, não o que se vê.
+  const porMes = evidenciaPorMes(pessoaId)
+  const origem = origemDaEvidencia(pessoaId)
+  const cobertura = coberturaDaRegua(pessoaId)
 
   return (
     <div key={geracao} className="mx-auto max-w-4xl px-10 py-12">
@@ -155,6 +166,37 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
         )}
       </div>
 
+      {/* A leitura de conjunto antes do detalhe — a mesma ordem que o agente
+          usa no chat. O dossiê era texto do primeiro parágrafo ao último, e
+          "quanto do semestre está coberto" só existia depois de ler tudo. */}
+      {eventos.length > 0 && (
+        <section className="surgir mt-12" style={{ animationDelay: '90ms' }}>
+          <div className="flex items-baseline justify-between pb-2.5">
+            <p className="etiqueta">Leitura do registro</p>
+            <p className="etiqueta">fev — jul 2026</p>
+          </div>
+          <Separator />
+          <p className="mt-2.5 max-w-2xl text-[0.82rem] leading-snug text-muted-foreground/80">
+            Contagem do que está registrado. Nada aqui mede desempenho — mede o quanto o registro
+            alcançou.
+          </p>
+
+          {/* `items-start` porque as duas caixas não têm a mesma altura por
+              natureza: esticar a de composição para empatar com a de meses
+              deixa um vazio embaixo que lê como card quebrado. */}
+          <div className="mt-3 grid items-start gap-x-5 sm:grid-cols-2">
+            <Serie
+              titulo="Evidência por mês"
+              pontos={porMes}
+              nota={notaDosVazios(porMes)}
+            />
+            <Distribuicao titulo="De onde veio a evidência" partes={origem} />
+          </div>
+
+          {cobertura && <Cobertura titulo={cobertura.titulo} itens={cobertura.itens} />}
+        </section>
+      )}
+
       {temas.length > 0 && (
         <section className="mt-12">
           <div className="flex items-baseline justify-between pb-2.5">
@@ -196,11 +238,15 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
           <p className="etiqueta">{episodios.length} no semestre</p>
         </div>
         <Separator />
+        <p className="mt-2.5 max-w-2xl text-[0.82rem] leading-snug text-muted-foreground/80">
+          Eventos do mesmo trabalho, agrupados em um arco com começo e fim. É a unidade que se
+          reconhece, se contesta e vira conversa.
+        </p>
 
         {episodios.length === 0 ? (
           <p className="prosa mt-4 max-w-xl text-[0.92rem] leading-relaxed text-muted-foreground">
-            Nenhum episódio registrado neste semestre. Os {eventos.length} eventos abaixo ainda não
-            foram agrupados.
+            Nenhum episódio neste semestre. Os {eventos.length} eventos abaixo são registros soltos —
+            não há material suficiente para formar um arco.
           </p>
         ) : (
           <ul>
@@ -239,7 +285,7 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
                             <li key={id} className="flex items-start gap-2 text-[0.85rem] leading-snug">
                               <span className="mt-[7px] size-1 shrink-0 rounded-full bg-foreground/25" />
                               <span className="text-muted-foreground">
-                                {ev.texto} <Fonte fonte={ev.fonte} data={ev.data} />
+                                {ev.texto} <Fonte evento={ev} />
                               </span>
                             </li>
                           )
@@ -325,12 +371,16 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
             <p className="etiqueta">{soltos.length}</p>
           </div>
           <Separator />
-          <ul className="mt-3 space-y-2">
+          <p className="mt-2.5 max-w-2xl text-[0.82rem] leading-snug text-muted-foreground/80">
+            Um evento é um fato observado numa fonte, em uma frase. Estes ainda não se ligaram a
+            nenhum trabalho maior — ficam no registro, mas não sustentam conclusão sozinhos.
+          </p>
+          <ul className="mt-4 space-y-2">
             {soltos.map((ev) => (
               <li key={ev.id} className="flex items-start gap-2 text-[0.88rem] leading-snug">
                 <span className="mt-[8px] size-1 shrink-0 rounded-full bg-foreground/25" />
                 <span>
-                  {ev.texto} <Fonte fonte={ev.fonte} data={ev.data} />
+                  {ev.texto} <Fonte evento={ev} />
                 </span>
               </li>
             ))}
@@ -345,22 +395,29 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
             <p className="etiqueta">{lacunas.length}</p>
           </div>
           <Separator />
+          <p className="mt-2.5 max-w-2xl text-[0.82rem] leading-snug text-muted-foreground/80">
+            O Brain declara o que não alcançou em vez de inferir. Cada pergunta vai para quem pode
+            respondê-la e custa uma das perguntas da semana.
+          </p>
           <ul>
             {lacunas.map((l) => (
-              <li key={l.id} className="border-b border-border/60 py-4">
-                <p className="prosa text-[0.98rem] leading-snug">{l.pergunta}</p>
-                <p className="mt-1.5 max-w-2xl text-[0.85rem] leading-snug text-muted-foreground">
+              <li key={l.id} className="border-b border-border/60 py-5">
+                <div className="flex items-start justify-between gap-6">
+                  <p className="prosa max-w-2xl text-[0.98rem] leading-snug">{l.pergunta}</p>
+                  <Badge variant="outline" className="etiqueta shrink-0 px-1.5 py-[3px]">
+                    valor {VALOR[l.valor]}
+                  </Badge>
+                </div>
+                <p className="mt-2 max-w-2xl border-l-2 border-border pl-3 text-[0.85rem] leading-relaxed text-muted-foreground">
+                  <span className="etiqueta mr-1.5">por quê</span>
                   {l.motivo}
                 </p>
-                <p className="mt-1.5 font-mono text-[0.7rem] text-muted-foreground/60">
-                  perguntar a {nomeDe(l.perguntarA)} · valor {l.valor} · {l.status}
-                </p>
+
+                <EstadoDaLacuna lacuna={l} minha={viewer.pessoaId === l.perguntarA} />
+
                 {l.resposta && (
-                  <p className="prosa mt-2 border-l-2 border-comp/40 pl-3 text-[0.88rem] leading-snug">
+                  <p className="prosa mt-2.5 border-l-2 border-comp/40 pl-3 text-[0.88rem] leading-snug">
                     {l.resposta.texto}
-                    <span className="block font-mono text-[0.7rem] text-muted-foreground/70">
-                      {nomeDe(l.resposta.por)} · {l.resposta.em}
-                    </span>
                   </p>
                 )}
               </li>
@@ -370,6 +427,94 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
       )}
     </div>
   )
+}
+
+const VALOR: Record<Lacuna['valor'], string> = { alta: 'alto', media: 'médio', baixa: 'baixo' }
+
+/**
+ * O mês sem nenhum registro dito em palavra, não só desenhado.
+ *
+ * A coluna vazia é visível para quem procura; a frase é para quem não estava
+ * procurando. Silêncio no registro é a informação mais acionável do dossiê —
+ * é o que vira pergunta na semana seguinte.
+ */
+function notaDosVazios(pontos: { valor: number }[]): string | undefined {
+  const vazios = pontos.filter((p) => p.valor === 0).length
+  if (vazios === 0) return undefined
+  return vazios === 1 ? 'Um mês sem nenhum registro.' : `${vazios} meses sem nenhum registro.`
+}
+
+/**
+ * O estado de uma lacuna, dito em português — e o caminho até a caixa de
+ * quem responde.
+ *
+ * `aberta` e `perguntada` eram valores de enum vazando pra tela, e a
+ * diferença entre as duas é justamente a que o produto precisa mostrar:
+ * identificada não é perguntada. Perguntada significa que o Brain gastou uma
+ * das perguntas da semana e a mensagem já saiu no Slack.
+ */
+function EstadoDaLacuna({ lacuna, minha }: { lacuna: Lacuna; minha: boolean }) {
+  const quem = nomeDe(lacuna.perguntarA)
+  const naCaixa = pendencias.some((p) => p.lacunaId === lacuna.id && p.de === lacuna.perguntarA)
+  const estado = descreverEstado(lacuna, quem, minha, naCaixa)
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-[0.78rem] leading-none ${
+          estado.fechada ? 'bg-comp-suave/45 text-comp' : 'bg-foreground/[0.045] text-muted-foreground'
+        }`}
+      >
+        <estado.Icone className="size-3.5 shrink-0" />
+        {estado.texto}
+        {estado.quando && (
+          <span className="font-mono text-[0.68rem] opacity-70">· {estado.quando}</span>
+        )}
+      </span>
+
+      {/* O atalho só existe quando a pendência é de fato sua: mandar a Helena
+          para /feedback abriria a caixa dela, não a da Marina. */}
+      {minha && naCaixa && lacuna.status !== 'respondida' && (
+        <Link
+          href="/feedback"
+          className="inline-flex items-center gap-1 text-[0.78rem] text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+        >
+          Responder nas Pendências
+          <ArrowUpRight className="size-3" />
+        </Link>
+      )}
+    </div>
+  )
+}
+
+function descreverEstado(l: Lacuna, quem: string, minha: boolean, naCaixa: boolean) {
+  if (l.status === 'respondida' && l.resposta)
+    return {
+      Icone: Check,
+      texto: `Respondida por ${quem}`,
+      quando: dataCurta(l.resposta.em),
+      fechada: true,
+    }
+  if (l.enviada)
+    return {
+      Icone: Send,
+      texto: `Enviada no Slack ${minha ? 'para você' : `para ${quem}`} · aguardando`,
+      quando: dataCurta(l.enviada.em),
+      fechada: false,
+    }
+  if (naCaixa)
+    return {
+      Icone: Inbox,
+      texto: minha ? 'Na sua caixa desta semana' : `Na caixa de ${quem} esta semana`,
+      quando: undefined,
+      fechada: false,
+    }
+  return {
+    Icone: Clock3,
+    texto: `Na fila para ${quem} · ainda não perguntada`,
+    quando: undefined,
+    fechada: false,
+  }
 }
 
 function textoDoComportamento(id: string) {

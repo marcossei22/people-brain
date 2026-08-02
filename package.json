@@ -11,6 +11,8 @@
     "validar": "tsx data/validar.ts"
   },
   "dependencies": {
+    "@openuidev/lang-core": "^0.2.10",
+    "@openuidev/react-lang": "^0.2.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eve": "^0.29.4",

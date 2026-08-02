@@ -411,22 +411,60 @@ consequência do modelo de dados.**
 Resolve a tensão "generativo mas determinístico" — e coloca o controle no lugar certo:
 
 ```
-skill diz QUAL componente usar e qual payload preencher   ← doutrina do cliente
-modelo chama renderizar(tipo, payload)                     ← preenche
-zod valida contra o schema do componente                   ← falhou? cai pra prosa
+skill diz QUAIS componentes usar e em que ordem            ← doutrina do cliente
+modelo chama renderizar(programa)                          ← escreve OpenUI Lang
+o parser valida contra as props de cada componente         ← sem raiz ou nome inventado? cai pra prosa
 biblioteca de componentes é FIXA                           ← nunca há layout gerado
 ```
 
-Exemplo, no fim de `preparar-1a1.md`:
+Exemplo, no fim de `comparar-com-regua.md`:
 
-> *"Renderize com `briefing`, preenchendo `pauta[]`, `evidencias[]` (cada uma com `eventoId`) e
-> `lacunas[]`."*
+> ```
+> root = Resposta([tira, detalhe])
+> tira = Cobertura("Régua de Sênior · Engenharia", itens)
+> detalhe = Gap("Carla Nunes", "pleno", "senior", comportamentos)
+> ```
 
-O modelo nunca escreve layout — ele escolhe entre componentes prontos e preenche um schema
-validado. **E quem decide a forma da resposta é o arquivo de skill da empresa**, ou seja, a fase
-de Setup passa a controlar até a UI. É generativo o bastante pra ser product-true (um sistema de
-performance cuja única saída é prosa é um produto pior) e fixo o bastante pra não quebrar na
-quinta tomada.
+O modelo nunca escreve layout — só existem os componentes de `lib/agente/biblioteca.ts`, e o
+parser recusa o que não está lá. O que ele ganhou foi **composição**: a resposta é dois a quatro
+blocos em ordem de leitura, não um card só. **E quem decide a forma da resposta continua sendo o
+arquivo de skill da empresa**, ou seja, a fase de Setup controla até a UI. É generativo o
+bastante pra ser product-true (um sistema de performance cuja única saída é prosa é um produto
+pior) e fixo o bastante pra não quebrar na quinta tomada.
+
+**A linguagem é o [OpenUI Lang](https://github.com/thesysdev/openui)** (`@openuidev/react-lang`),
+por três motivos concretos: o prompt com a assinatura de cada componente é **gerado** da
+biblioteca, então acrescentar um componente não exige lembrar de editar a descrição da tool; o
+parser é **incremental**, então `root` chega na primeira linha e a estrutura aparece na tela
+enquanto os dados ainda estão streamando — os 45s de espera do §7.2 passam a mostrar a resposta
+se montando; e a sintaxe custa bem menos token que o JSON equivalente.
+
+Entrou só o `react-lang` (parser, prompt, `Renderer`). O `@openuidev/react-ui`, a biblioteca
+visual pronta, ficou de fora: ela traz recharts e dezessete pacotes de Radix para desenhar um
+dashboard, e este produto é um registro editorial. Os componentes são nossos (§7.4).
+
+### 7.4 Gráficos, e a régua que não pode divergir
+
+Cinco formas — `Indicadores`, `Barras`, `Serie`, `Distribuicao`, `Cobertura` — escritas em CSS,
+sem biblioteca de gráfico. **Não existe semáforo**: o que separa uma medida da outra é densidade
+de tinta — mais vermelho, mais cobertura da régua. O par verde-bom/vermelho-ruim fica de fora
+porque ele converte leitura de trabalho observável em julgamento de pessoa, e o eixo aqui é
+sempre a régua (regra de cor do `globals.css`).
+
+Duas decisões de fidelidade que o dado real obrigou:
+
+- **O mês vazio é desenhado.** Um gráfico que pula os meses sem evidência conta uma história
+  contínua que não aconteceu. O buraco de março do Bruno é a informação.
+- **A escala tem piso.** Normalizada só pelo próprio máximo, uma pessoa com um evento por mês
+  desenhava seis colunas cheias, iguais às de quem tem catorze. Cada gráfico certo sozinho, os
+  dois juntos mentindo.
+
+E a lição que só apareceu com a mesma régua em duas superfícies: **a contagem virou código**.
+A regra "dois episódios é sustentado" estava escrita em prosa na skill e o modelo a aplicava de
+cabeça — na primeira vez que o dossiê e o chat mostraram a Carla lado a lado, um dizia 4 de 5 e o
+outro 1 de 5. Agora `ler_regua` aceita `pessoaId` e devolve a `situacao` já calculada por
+`lib/metricas.ts`, que é o mesmo módulo que alimenta o dossiê. Mesma regra do §6.6: o que não
+pode divergir não vive no prompt.
 
 ### 7.2 Tool call visível
 
@@ -445,17 +483,28 @@ dizer *"ele leu a doutrina da empresa antes de consultar a memória"*.
 
 Todos com **fonte clicável** — princípio §2.1 do PLANO.md ("nenhuma frase sem link pra fonte").
 
-| `tipo` | Componente | Conteúdo |
-|---|---|---|
-| `dossie` | `<CardDossie>` | Trajetória, temas, episódios por impacto, densidade de evidência declarada |
-| `timeline` | `<TimelineEpisodios>` | Linha do tempo; cada episódio expande até os eventos e suas fontes |
-| `gap` | `<CardGap>` | Régua do nível alvo × evidência, comportamento a comportamento |
-| `lacunas` | `<CardLacunas>` | O que o sistema sabe que não sabe, com motivo e a quem perguntar |
-| `briefing` | `<CardBriefing>` | Pauta de 1:1 com evidência recente |
-| `diagnostico` | `<CardDiagnostico>` | Achado de organização + as pessoas afetadas |
-| `pessoas` | `<ListaPessoas>` | Lista simples |
-| `recusa` | `<CardRecusa>` | Recusa com o motivo. Componente próprio — a recusa merece design. |
-| *(nenhum)* | prosa | Fallback quando o zod falha ou a pergunta não pede estrutura |
+| Componente | Conteúdo |
+|---|---|
+| `Resposta` | A raiz. Empilha os blocos na ordem de leitura — é o que torna a resposta componível |
+| `Texto` | Parágrafo de prosa entre blocos |
+| `Indicadores` | Até quatro números grandes: eventos, episódios, meses sem feedback |
+| `Barras` | Comparação entre pessoas ou categorias, sobre o que dá para contar no registro |
+| `Serie` | Evidência ao longo do tempo. O mês de valor zero é desenhado |
+| `Distribuicao` | A composição de um todo — de onde veio a evidência, com `Pergunta` em fatia própria |
+| `Cobertura` | A régua de um nível em uma tira, comportamento a comportamento |
+| `Dossie` | Trajetória, temas, episódios por impacto, densidade de evidência declarada |
+| `Timeline` | Linha do tempo; cada episódio expande até os eventos e suas fontes |
+| `Gap` | Régua do nível alvo × evidência, comportamento a comportamento, com a tira no topo |
+| `Lacunas` | O que o sistema sabe que não sabe, com motivo e a quem perguntar |
+| `Briefing` | Pauta de 1:1 com evidência recente |
+| `Diagnostico` | Achado de organização + as pessoas afetadas |
+| `Pessoas` | Lista simples |
+| `Recusa` | Recusa com o motivo. Componente próprio — a recusa merece design. |
+| *(nenhum)* | prosa | Fallback quando o programa não tem raiz ou cita componente que não existe |
+
+Os oito primeiros cards nasceram no chat e os cinco visuais nasceram para os dois lados: o dossiê
+(§8.2) usa **os mesmos componentes**, alimentados por `lib/metricas.ts` a partir de `data/`.
+Mesma forma, dois autores — e o dossiê continua idêntico em toda tomada, que é o princípio 2.
 
 ---
 
@@ -495,6 +544,11 @@ do Rafael/Dados em destaque. É output de primeira classe (decisão #10) e o lug
 "Dados é gargalo de 6 pessoas" é afirmação sobre a organização, não sobre um ciclo.
 
 ### 8.2 `/org/[id]` — dossiê
+
+Abre com **Leitura do registro**: evidência por mês, de onde ela veio, e a régua do nível alvo em
+uma tira. A leitura de conjunto antes do detalhe — a mesma ordem que o agente usa no chat, com os
+mesmos componentes (§7.4). O que muda é o autor: aqui é `lib/metricas.ts` sobre `data/`, sem
+modelo no caminho, porque esta tela precisa sair igual em toda tomada.
 
 Um componente, dois observadores (§4). Como colaborador, ganha três affordances:
 `Adicionar contexto` · `Contestar item` · `Pedir feedback a um par sobre este episódio`.
