@@ -10,18 +10,36 @@
 
 import { AlertCircle, Lock, Minus, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Fonte } from '@/components/brain/fonte'
+import { eventoPorId } from '@/data/eventos'
 import type { PayloadDe, TipoComponente } from '@/lib/agente/renderizar'
 
-function Fontes({ fontes }: { fontes: { eventoId: string; texto: string }[] }) {
+/**
+ * A evidência de um card sai do registro, não do payload.
+ *
+ * O modelo manda só o `eventoId`; a frase, o canal e o dia vêm de
+ * `data/eventos.ts`. É o mesmo componente de fonte do dossiê, então o drill
+ * down até a mensagem original é o mesmo nos dois lugares — e o modelo não
+ * tem como citar uma frase que o registro não tem.
+ */
+function Fontes({ fontes }: { fontes: { eventoId: string }[] }) {
   if (!fontes?.length) return null
   return (
     <ul className="mt-1.5 space-y-1 border-l-2 border-border pl-3">
-      {fontes.map((f) => (
-        <li key={f.eventoId} className="text-[0.78rem] leading-snug text-muted-foreground">
-          {f.texto}
-          <span className="ml-1.5 font-mono text-[0.68rem] text-foreground/35">{f.eventoId}</span>
-        </li>
-      ))}
+      {fontes.map((f) => {
+        const ev = eventoPorId(f.eventoId)
+        return (
+          <li key={f.eventoId} className="text-[0.78rem] leading-snug text-muted-foreground">
+            {ev ? (
+              <>
+                {ev.texto} <Fonte fonte={ev.fonte} data={ev.data} />
+              </>
+            ) : (
+              <span className="font-mono text-[0.68rem] text-foreground/35">{f.eventoId}</span>
+            )}
+          </li>
+        )
+      })}
     </ul>
   )
 }

@@ -13,14 +13,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useEveAgent } from 'eve/react'
-import { ArrowUp, Square, X } from 'lucide-react'
+import { ArrowUp, Loader2, Square, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Componente } from '@/components/brain/componentes'
 import { PassosDaTool } from './passos-da-tool'
 import type { PassoTool } from './passos-da-tool'
 import { useChat } from '@/lib/chat'
+import { nomeDe } from '@/lib/memoria'
 import { useViewer } from '@/lib/viewer'
+import type { Viewer } from '@/lib/viewer'
 
 /**
  * Chips por papel. Perguntar "quem no meu time..." para uma CHRO que não tem
@@ -66,9 +68,23 @@ interface Parte {
   toolMetadata?: { eve?: { inputRequest?: PedidoDeInput } }
 }
 
+/**
+ * Trocar de persona REMONTA o painel.
+ *
+ * `useEveAgent` lê `headers` uma vez, quando cria o store — a função fica
+ * presa no `viewer` do primeiro render. Sem a `key`, o seletor de persona
+ * mudava a tela e não mudava o header, e o chat inteiro respondia como a
+ * persona padrão. Remontar também descarta a sessão do servidor, que é o
+ * certo: o registro que o Brain alcança mudou, continuar a mesma thread
+ * seria misturar dois escopos.
+ */
 export function PainelChat() {
-  const { aberto, fechar, perguntaInicial, consumirPergunta } = useChat()
   const { viewer } = useViewer()
+  return <Painel key={viewer.pessoaId} viewer={viewer} />
+}
+
+function Painel({ viewer }: { viewer: Viewer }) {
+  const { aberto, fechar, perguntaInicial, consumirPergunta, registrarConversa } = useChat()
   const fim = useRef<HTMLDivElement>(null)
   const [rascunho, setRascunho] = useState('')
 
@@ -78,6 +94,7 @@ export function PainelChat() {
 
   const ocupado = agent.status === 'submitted' || agent.status === 'streaming'
   const mensagens = agent.data.messages
+  const demorando = useDemorando(ocupado)
 
   if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
     ;(window as unknown as Record<string, unknown>).__pb = agent
@@ -87,6 +104,11 @@ export function PainelChat() {
     fim.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens.length, agent.status])
 
+  // Persona nova, painel remontado: a conversa da persona anterior não é desta.
+  useEffect(() => {
+    registrarConversa(null)
+  }, [registrarConversa])
+
   // Pergunta vinda de outra tela — o dossiê passa a conversa adiante.
   useEffect(() => {
     if (!perguntaInicial || !aberto) return
@@ -94,20 +116,19 @@ export function PainelChat() {
     consumirPergunta()
   }, [perguntaInicial, aberto, consumirPergunta])
 
-  // Trocar de persona começa uma conversa nova: o registro que o Brain alcança
-  // mudou, então continuar a mesma thread seria misturar dois escopos.
-  useEffect(() => {
-    agent.reset()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewer.pessoaId])
-
   if (!aberto) return null
 
   function enviar(texto: string) {
     const t = texto.trim()
     if (!t || ocupado) return
     setRascunho('')
+    if (mensagens.length === 0) registrarConversa(t)
     void agent.send({ message: t })
+  }
+
+  function limpar() {
+    agent.reset()
+    registrarConversa(null)
   }
 
   return (
@@ -116,11 +137,11 @@ export function PainelChat() {
         <div>
           <p className="etiqueta">Conversa</p>
           <p className="mt-0.5 text-[0.78rem] text-muted-foreground">
-            perguntando como {viewer.pessoaId}
+            perguntando como {nomeDe(viewer.pessoaId)}
           </p>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" className="h-7 text-[0.78rem]" onClick={() => agent.reset()}>
+          <Button variant="ghost" size="sm" className="h-7 text-[0.78rem]" onClick={limpar}>
             Limpar
           </Button>
           <Button variant="ghost" size="icon" className="size-7" onClick={fechar} aria-label="Fechar">
@@ -153,6 +174,27 @@ export function PainelChat() {
             responder={(r) => void agent.send({ inputResponses: [r] })}
           />
         ))}
+
+        {/* Os primeiros segundos de um turno não têm parte nenhuma para
+            desenhar: o painel ficava em branco e lia como travado. */}
+        {ocupado && semSinal(mensagens) && (
+          <p className="flex items-center gap-2 font-mono text-[0.7rem] text-muted-foreground">
+            <Loader2 className="size-2.5 animate-spin" />
+            consultando a memória
+          </p>
+        )}
+
+        {/* Um turno em ~45s já é longo; passar muito disso é o modelo travado
+            do outro lado. Melhor dizer isso do que deixar a tela parada. */}
+        {demorando && (
+          <p className="mt-3 rounded-sm border border-border bg-card px-3.5 py-2.5 text-[0.85rem] leading-snug text-muted-foreground">
+            Está demorando mais que o normal.{' '}
+            <button onClick={() => agent.stop()} className="underline underline-offset-4 hover:text-foreground">
+              Interromper
+            </button>{' '}
+            e perguntar de novo costuma ser mais rápido que esperar.
+          </p>
+        )}
 
         {agent.status === 'error' && (
           <p className="mt-3 rounded-sm border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-[0.85rem] text-destructive">
@@ -335,6 +377,27 @@ function Mensagem({
       {blocos}
     </div>
   )
+}
+
+/** Verdadeiro quando o turno passa de 45s sem terminar. */
+function useDemorando(ocupado: boolean): boolean {
+  const [demorando, setDemorando] = useState(false)
+  useEffect(() => {
+    if (!ocupado) {
+      setDemorando(false)
+      return
+    }
+    const t = setTimeout(() => setDemorando(true), 45_000)
+    return () => clearTimeout(t)
+  }, [ocupado])
+  return demorando
+}
+
+/** Ainda não há passo de tool nem texto: o turno começou e a tela está vazia. */
+function semSinal(mensagens: readonly { role: string; parts?: readonly unknown[] }[]): boolean {
+  const ultima = mensagens[mensagens.length - 1]
+  if (!ultima || ultima.role === 'user') return true
+  return (ultima.parts ?? []).length === 0
 }
 
 function resumirEntrada(input: unknown): string | undefined {

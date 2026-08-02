@@ -16,9 +16,13 @@ const ROTULO: Record<string, string> = {
   ler_episodios: 'consultando memória · episódios',
   ler_temas: 'consultando memória · temas',
   listar_lacunas: 'consultando memória · lacunas',
+  ler_feedbacks: 'consultando memória · feedbacks',
+  diagnosticar_organizacao: 'consultando os achados de organização',
   ler_regua: 'lendo a régua',
   ler_doutrina: 'lendo a doutrina da empresa',
   load_skill: 'carregando skill',
+  list_skills: 'listando as skills',
+  ask_question: 'perguntando',
   renderizar: 'montando a resposta',
 }
 

@@ -11,9 +11,17 @@ import { z } from 'zod'
  * Zod falhou? Cai pra prosa. É o modo de falha gracioso do §7.1.
  */
 
+/**
+ * A fonte é só o **id**. O texto e o canal saem do registro na hora de
+ * desenhar (`components/brain/componentes.tsx`).
+ *
+ * Antes o modelo copiava a frase do evento para dentro do payload. Custava
+ * uns 2.000 tokens de saída por card — ~25s de espera na câmera — e criava
+ * uma segunda cópia da evidência, que podia divergir do original. Agora a
+ * frase exibida é sempre a do `data/eventos.ts`, e o card fica curto.
+ */
 const fonte = z.object({
-  eventoId: z.string().describe('Id do evento que sustenta esta afirmação.'),
-  texto: z.string().describe('A frase do evento, como registrada.'),
+  eventoId: z.string().describe('Id do evento que sustenta esta afirmação. Só o id.'),
 })
 
 const evidencia = z.object({
@@ -98,11 +106,46 @@ export const SCHEMAS = {
 export type TipoComponente = keyof typeof SCHEMAS
 export const TIPOS = Object.keys(SCHEMAS) as TipoComponente[]
 
+/**
+ * O formato de cada componente, em uma linha, para entrar na descrição da
+ * tool. Sem isso o modelo só sabe o NOME do tipo e adivinha os campos — foi
+ * de onde vinha metade das falhas de validação.
+ */
+export const FORMATOS: Record<TipoComponente, string> = {
+  briefing:
+    '{ pessoa, contexto, pauta: [{ item, porque }], evidencias: [{ afirmacao, fontes: [{ eventoId }] }], lacunas: [{ pergunta, motivo }] }',
+  gap: '{ pessoa, nivelAtual, nivelAlvo, comportamentos: [{ texto, situacao: "sustentado"|"parcial"|"sem-evidencia", evidencias: [{ eventoId }], observacao? }] }',
+  dossie:
+    '{ pessoa, cargo, densidadeEvidencia: "alta"|"media"|"baixa", temas: [{ padrao, confianca }], episodios: [{ titulo, resumo, periodo, comEstrela }] }',
+  timeline: '{ pessoa, episodios: [{ titulo, inicio, fim, eventos: [{ eventoId }] }] }',
+  lacunas:
+    '{ pessoa?, itens: [{ pergunta, motivo, perguntarA, valor: "alta"|"media"|"baixa" }] }',
+  pessoas: '{ titulo, itens: [{ nome, cargo, nota? }] }',
+  diagnostico: '{ titulo, achado, pessoasAfetadas: [nome], recomendacao }',
+  recusa:
+    '{ camada: "acesso"|"escopo", pedido, motivo, ofereco }',
+}
+
 export type PayloadDe<T extends TipoComponente> = z.infer<(typeof SCHEMAS)[T]>
 
 export interface Renderizacao {
   tipo: TipoComponente
   payload: unknown
+}
+
+/**
+ * O modelo manda o payload ora como objeto, ora como string JSON — e o
+ * provedor não normaliza. Antes desta função, TODA chamada de `renderizar`
+ * morria com `expected object, received string` e a camada generativa inteira
+ * caía para prosa sem ninguém perceber.
+ */
+function comoObjeto(payload: unknown): unknown {
+  if (typeof payload !== 'string') return payload
+  try {
+    return JSON.parse(payload)
+  } catch {
+    return payload
+  }
 }
 
 /** Valida o payload contra o schema do componente. Falha vira prosa. */
@@ -113,7 +156,7 @@ export function validar(tipo: string, payload: unknown):
     return { ok: false, erro: `Componente "${tipo}" não existe. Disponíveis: ${TIPOS.join(', ')}.` }
   }
   const schema = SCHEMAS[tipo as TipoComponente]
-  const r = schema.safeParse(payload)
+  const r = schema.safeParse(comoObjeto(payload))
   if (!r.success) {
     return { ok: false, erro: r.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join(' · ') }
   }

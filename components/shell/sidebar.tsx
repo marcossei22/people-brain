@@ -43,7 +43,7 @@ const ITENS: Item[] = [
 export function Sidebar() {
   const pathname = usePathname()
   const { viewer } = useViewer()
-  const { abrir: abrirChat } = useChat()
+  const { abrir: abrirChat, conversa } = useChat()
   const admin = podeAdministrar(viewer)
 
   return (
@@ -107,12 +107,25 @@ export function Sidebar() {
         </div>
 
         <ScrollArea className="min-h-0 flex-1">
-          <button
-            onClick={abrirChat}
-            className="w-full rounded-sm px-2.5 py-1.5 text-left text-[0.78rem] leading-snug text-muted-foreground/70 transition-colors hover:bg-sidebar-accent/60 hover:text-foreground"
-          >
-            Nenhuma conversa ainda.
-          </button>
+          {conversa ? (
+            <button
+              onClick={abrirChat}
+              className="flex w-full items-start gap-2 rounded-sm px-2.5 py-1.5 text-left transition-colors hover:bg-sidebar-accent/60"
+            >
+              <span
+                aria-hidden
+                className="mt-[7px] size-1 shrink-0 rounded-full bg-comp"
+              />
+              <span className="line-clamp-2 text-[0.78rem] leading-snug">{conversa}</span>
+            </button>
+          ) : (
+            <button
+              onClick={abrirChat}
+              className="w-full rounded-sm px-2.5 py-1.5 text-left text-[0.78rem] leading-snug text-muted-foreground/70 transition-colors hover:bg-sidebar-accent/60 hover:text-foreground"
+            >
+              Nenhuma conversa ainda.
+            </button>
+          )}
         </ScrollArea>
       </div>
 
