@@ -8,7 +8,8 @@
  * essa mudança que prova que a permissão vive em código (§6.6) e não numa
  * instrução educada no prompt.
  *
- * O diagnóstico de organização entra aqui embaixo no passo 7.
+ * Embaixo, para quem tem escopo agregado, o diagnóstico de organização — que
+ * é output de primeira classe e não nota de rodapé do fechamento (decisão #10).
  */
 
 import Link from 'next/link'
@@ -16,13 +17,15 @@ import { ArrowUpRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Densidade } from '@/components/shell/densidade'
-import { pessoasVisiveis } from '@/lib/agente/permissoes'
+import { pessoasVisiveis, podeVerDiagnosticoOrg } from '@/lib/agente/permissoes'
+import { DiagnosticoOrg } from '@/components/brain/diagnostico-org'
 import { diasDesde, resumoDe } from '@/lib/memoria'
 import { useViewer } from '@/lib/viewer'
 
 export default function PaginaOrg() {
   const { viewer, geracao } = useViewer()
   const visiveis = pessoasVisiveis(viewer)
+  const veDiagnostico = podeVerDiagnosticoOrg(viewer)
 
   return (
     <div key={geracao} className="mx-auto max-w-5xl px-10 py-12">
@@ -96,6 +99,7 @@ export default function PaginaOrg() {
         })}
       </ul>
 
+      {veDiagnostico && <DiagnosticoOrg />}
     </div>
   )
 }

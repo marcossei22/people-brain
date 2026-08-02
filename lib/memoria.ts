@@ -10,6 +10,7 @@ import { eventos } from '@/data/eventos'
 import { episodios } from '@/data/episodios'
 import { temas } from '@/data/temas'
 import { lacunas } from '@/data/lacunas'
+import { feedbacks } from '@/data/feedbacks'
 import type { Pessoa, PessoaId } from '@/data/tipos'
 
 export const pessoa = (id: PessoaId): Pessoa | undefined => pessoas.find((p) => p.id === id)
@@ -41,6 +42,12 @@ export function diasDesde(iso: string | undefined, hoje = '2026-08-01'): number 
   return Math.max(0, Math.round(ms / 86_400_000))
 }
 
+export const feedbacksDe = (pessoaId: PessoaId) =>
+  feedbacks.filter((f) => f.paraPessoaId === pessoaId).sort((a, b) => b.data.localeCompare(a.data))
+
+/** Último feedback recebido. Alimenta "quem está sem retorno há mais tempo". */
+export const ultimoFeedback = (pessoaId: PessoaId) => feedbacksDe(pessoaId)[0]?.data
+
 /** Contagem por pessoa — usada nos indicadores do `/org`. */
 export function resumoDe(pessoaId: PessoaId) {
   const eps = episodiosDe(pessoaId)
@@ -50,5 +57,7 @@ export function resumoDe(pessoaId: PessoaId) {
     estrelas: eps.filter((e) => e.estrela).length,
     lacunasAbertas: lacunasAbertasDe(pessoaId).length,
     ultimo: ultimoRegistro(pessoaId),
+    feedbacks: feedbacksDe(pessoaId).length,
+    ultimoFeedback: ultimoFeedback(pessoaId),
   }
 }

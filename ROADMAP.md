@@ -14,8 +14,8 @@
 |---|---|
 | Tese e narrativa | ✅ fechada — PLANO.md |
 | Arquitetura | ✅ fechada — ARQUITETURA.md |
-| Build | 🟡 Fase A ✅ · Fase B em aberto (passos 2–8) |
-| Conteúdo (dataset, skills, régua) | ⬜ não iniciado |
+| Build | ✅ Fase B completa — passos 2 a 9 |
+| Conteúdo (dataset, skills, régua) | ✅ 12 pessoas · 76 eventos · 20 episódios · 7 skills |
 | Vídeo | ⬜ não iniciado |
 | AI Appendix | 🟡 log correndo — §6 |
 | Alinhamento de data com a Comp | ✅ feito — entrega segunda 03/08 |
@@ -55,8 +55,8 @@
 - [x] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
   - [x] **Eve escolhido** — decisão #34
 - [x] 7 · `/org/[id]` nos dois papéis, com chat embutido
-- [ ] 8 · Dataset completo da Aurora
-- [ ] 9 · Diagnóstico org dentro de `/org` — **fluxo 3**
+- [x] 8 · Dataset completo da Aurora
+- [x] 9 · Diagnóstico org dentro de `/org` — **fluxo 3**
 
 ### D2 · sáb 01/08 — conteúdo + primeira tomada
 - [ ] 9 · Dataset completo da Aurora — **não cortar**

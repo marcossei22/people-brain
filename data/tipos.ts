@@ -13,7 +13,7 @@ export type EpisodioId = string
 export type LacunaId = string
 export type TemaId = string
 
-export type Trilha = 'eng' | 'sales'
+export type Trilha = 'eng' | 'sales' | 'design'
 export type Nivel = 'pleno' | 'senior' | 'staff'
 
 /** Janela do semestre em avaliação. `validar.ts` recusa evento fora dela. */
@@ -89,6 +89,28 @@ export interface Lacuna {
   valor: 'alta' | 'media' | 'baixa' // valor da informação — governa a fila
   status: 'aberta' | 'perguntada' | 'respondida' | 'descartada'
   resposta?: { texto: string; por: PessoaId; em: string }
+}
+
+/**
+ * Feedback dado — o quarto tipo de registro.
+ *
+ * Não existia até o agente ser perguntado "quem está sem feedback há mais
+ * tempo?" e responder, com razão, que o dado não existe. "Feedback devido" era
+ * um tipo de pendência no produto sem lastro no modelo.
+ *
+ * Guarda que houve conversa e sobre qual episódio — nunca o teor da correção.
+ * Registro de demérito é passivo trabalhista (decisão #7): o que fica é que a
+ * conversa aconteceu, não o que foi dito nela.
+ */
+export interface Feedback {
+  id: string
+  paraPessoaId: PessoaId
+  porPessoaId: PessoaId
+  data: string
+  tipo: 'reconhecimento' | 'conversa'
+  episodioId?: EpisodioId
+  /** Só para reconhecimento. Conversa não guarda texto, por desenho. */
+  texto?: string
 }
 
 export interface ComportamentoRegua {

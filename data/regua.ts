@@ -170,6 +170,58 @@ export const regua: NivelRegua[] = [
       },
     ],
   },
+  // ── Design ────────────────────────────────────────────────────────────
+  // A trilha existe porque o Diego existe. E ela é mais curta de propósito:
+  // a Aurora escreveu a régua de Eng e Sales primeiro, e Design ficou para
+  // depois — o que é exatamente o que acontece nas empresas de verdade.
+  {
+    trilha: 'design',
+    nivel: 'senior',
+    comportamentos: [
+      {
+        id: 'design-senior-pesquisa',
+        texto: 'Desenha depois de entender, não antes.',
+        observavel: 'Existe registro de conversa com usuário anterior à primeira tela.',
+      },
+      {
+        id: 'design-senior-recorte',
+        texto: 'Reduz o problema antes de resolver.',
+        observavel: 'A proposta corta escopo com justificativa, em vez de acomodar tudo.',
+      },
+      {
+        id: 'design-senior-entrega',
+        texto: 'Acompanha até virar produto.',
+        observavel: 'Está na conversa quando a implementação diverge do desenho.',
+      },
+    ],
+  },
+  {
+    trilha: 'design',
+    nivel: 'staff',
+    comportamentos: [
+      {
+        id: 'design-staff-sistema',
+        texto: 'Constrói o que o resto do time reusa.',
+        observavel: 'Componentes e padrões que outras pessoas aplicam sem pedir ajuda.',
+      },
+      {
+        id: 'design-staff-direcao',
+        texto: 'Escolhe a direção do produto junto com quem decide.',
+        observavel: 'Participa da decisão de escopo, não só da execução dela.',
+      },
+      {
+        id: 'design-staff-medicao',
+        texto: 'Fecha o ciclo com número.',
+        observavel: 'O efeito do desenho aparece medido, não afirmado.',
+      },
+    ],
+    derivado: {
+      sugestao:
+        'Design é a trilha com menor densidade de evidência da Aurora: 5 eventos no semestre contra uma média de 9. Não é falta de trabalho — é que pesquisa, facilitação e sustentação de design system não deixam rastro em PR nem em thread. Vale escrever na régua o que conta como observável aqui, ou o registro vai continuar punindo a função.',
+      baseadoEm: ['diego'],
+      status: 'proposto',
+    },
+  },
 ]
 
 export const lerRegua = (trilha: string, nivel: string) =>
@@ -182,6 +234,7 @@ export const comportamentoIds = new Set(
 export const NOME_TRILHA: Record<string, string> = {
   eng: 'Engenharia',
   sales: 'Vendas',
+  design: 'Design',
 }
 
 export const NOME_NIVEL: Record<string, string> = {

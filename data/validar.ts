@@ -14,6 +14,8 @@ import { episodios } from './episodios'
 import { temas } from './temas'
 import { lacunas } from './lacunas'
 import { regua, comportamentoIds } from './regua'
+import { feedbacks } from './feedbacks'
+import { achadosOrg } from './achados-org'
 
 const erros: string[] = []
 const avisos: string[] = []
@@ -192,6 +194,36 @@ for (const l of lacunas) {
   }
 }
 
+// ── feedbacks ─────────────────────────────────────────────────────────────
+duplicados('feedbacks', feedbacks.map((f) => f.id))
+for (const f of feedbacks) {
+  const onde = `feedback ${f.id}`
+  exigePessoa(onde, 'paraPessoaId', f.paraPessoaId)
+  exigePessoa(onde, 'porPessoaId', f.porPessoaId)
+  if (f.paraPessoaId === f.porPessoaId) falha(onde, 'pessoa deu feedback para si mesma')
+  if (!dataValida(f.data)) falha(onde, `data inválida "${f.data}"`)
+  else if (!naJanela(f.data)) falha(onde, `data ${f.data} fora da janela do semestre`)
+  if (f.episodioId && !episodioIds.has(f.episodioId))
+    falha(onde, `episodioId inexistente "${f.episodioId}"`)
+  // Conversa não guarda texto, por desenho (#7).
+  if (f.tipo === 'conversa' && f.texto)
+    falha(onde, 'feedback do tipo "conversa" não pode guardar texto — registro de demérito não existe')
+  if (f.tipo === 'reconhecimento' && !f.texto?.trim())
+    falha(onde, 'reconhecimento sem texto')
+}
+
+// ── achados de organização ────────────────────────────────────────────────
+duplicados('achados-org', achadosOrg.map((a) => a.id))
+for (const a of achadosOrg) {
+  const onde = `achado ${a.id}`
+  if (a.evidencia.pessoaIds.length === 0) falha(onde, 'achado sem pessoa afetada')
+  a.evidencia.pessoaIds.forEach((id, i) => exigePessoa(onde, `evidencia.pessoaIds[${i}]`, id))
+  for (const epId of a.evidencia.episodioIds) {
+    if (!episodioIds.has(epId)) falha(onde, `referencia episódio inexistente "${epId}"`)
+  }
+  if (!a.recomendacao.trim()) falha(onde, 'achado sem recomendação')
+}
+
 // ── régua ─────────────────────────────────────────────────────────────────
 for (const r of regua) {
   const onde = `regua ${r.trilha}/${r.nivel}`
@@ -200,7 +232,7 @@ for (const r of regua) {
 }
 
 // ── saída ─────────────────────────────────────────────────────────────────
-const resumo = `${pessoas.length} pessoas · ${eventos.length} eventos · ${episodios.length} episódios · ${temas.length} temas · ${lacunas.length} lacunas`
+const resumo = `${pessoas.length} pessoas · ${eventos.length} eventos · ${episodios.length} episódios · ${temas.length} temas · ${lacunas.length} lacunas · ${feedbacks.length} feedbacks · ${achadosOrg.length} achados`
 
 if (avisos.length) {
   console.warn(`\n⚠  ${avisos.length} aviso(s):`)
