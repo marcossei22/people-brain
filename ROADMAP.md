@@ -63,7 +63,8 @@
 - [ ] 10 · `skills/` + `doutrina/` + régua das 2 trilhas
 - [ ] 11 · Passada de copy nos roteiros
 - [ ] 12 · Deploy final
-- [ ] 13 · **Teste adversarial do chat** → [TESTES-CHAT.md](TESTES-CHAT.md) (26 casos)
+- [x] 13 · **Teste adversarial do chat** → [TESTES-CHAT.md](TESTES-CHAT.md) (26 casos) — rodado
+      em 02/08. Primeira passada: 13 ✅ · 10 ⚠️ · 3 ❌. Depois dos consertos: 25 ✅ · 1 ⚠️ · 0 ❌
 - [ ] 14 · Roteirizar o vídeo a partir de PLANO.md §11
 - [ ] 15 · **Tomada de ensaio, para descartar**
 
@@ -162,6 +163,9 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 | 5 | Argumentou contra Gen UI usando *"eles não avaliam polimento visual"* | Isso é piso, não teto — e o critério 3 avalia se dá pra entender pelo protótipo | Reverteu; entrou Gen UI com componentes registrados |
 | 6 | Propôs **conteúdo antes de UI** | Escrever 200 eventos sem tela = escrever no escuro, e o dataset deriva | Reverteu para UI-first |
 | 7 | Invocou uma skill chamada `estrategista-de-caso` que era de análise **jurídica** | Óbvio no output | Descartada sem uso |
+| 8 | **A camada generativa inteira estava morta e ninguém tinha notado.** `renderizar` recebia `payload` como string JSON, o zod recusava, e o fallback para prosa era tão gracioso que a tela parecia funcionar | Só apareceu rodando os 26 casos de [TESTES-CHAT.md](TESTES-CHAT.md) e lendo os eventos de tool: **14 chamadas, 14 falhas**. Em quatro respostas o Brain chegou a escrever "a renderização falhou" para o usuário | `validar` aceita string; a tool descreve o formato de cada componente; e o fallback manda responder sem mencionar o erro. **Lição: modo de falha gracioso demais esconde a falha** |
+| 9 | **O agente não sabia quem estava perguntando.** A permissão em código funcionava perfeitamente, e o modelo nunca foi informado da identidade que as tools já usavam | Como Carla, "o que a Marina escreveu sobre mim?" devolvia *"qual é o seu nome?"* — a pergunta que o produto inteiro existe para não precisar fazer | `agent/instructions/observador.ts`, instrução dinâmica resolvida no `session.started`. A decisão #35 tinha barrado o `clientContext` e ninguém perguntou por onde a identidade *deveria* chegar |
+| 10 | **O seletor de persona não chegava ao chat.** `useEveAgent({headers: () => …})` lê `headers` uma vez, na criação do store, e a closure congelava o viewer do primeiro render | Interceptando o `fetch` no navegador: com o seletor em Carla, o request saía com `helena`. O chat inteiro respondia como CHRO, com acesso às 12 pessoas | Painel remonta com `key={viewer.pessoaId}`. É o que a doc do eve manda fazer, e estava na doc |
 
 ### O que eu verifiquei / sobrescrevi
 | # | O quê |
@@ -170,6 +174,7 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 | 2 | Sobrescrevi a arquitetura de camadas duas vezes (elicitação; depois 4 fases) |
 | 3 | Sobrescrevi a decisão de Gen UI e a ordem de build |
 | 4 | Mantive a recusa dele quanto a sandbox e Composio depois de ouvir o argumento — concordei, não cedi |
+| 5 | Mandei **rodar** os 26 casos adversariais em vez de aceitar "o chat está funcionando". Três bugs que a leitura de código não pegou (#8, #9, #10 acima) só apareceram na execução — dois deles quebravam a tese exatamente na parte que está na câmera |
 
 ### Como usei IA
 - [ ] Escrever no fim: Claude Code como par de discussão estratégica → spec → build. Destacar que a **direção** (elicitação, Setup, skills, UI-first) veio de mim e a **elaboração** veio do modelo.
@@ -206,6 +211,7 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 | Risco | Mitigação |
 |---|---|
 | Chat diz algo estranho na gravação | [TESTES-CHAT.md](TESTES-CHAT.md) antes de gravar · `temperature` 0,2 · chips ensaiados · botão reset |
+| **Turno do chat trava sem erro** — 2 ocorrências em ~40 execuções, sempre no passo de payload grande, sem log no servidor | É do gateway, não do app. Aos 45s o painel avisa e oferece interromper. Na gravação: interromper e repetir sai mais rápido que esperar |
 | Elenco se contradiz entre fluxos | `validar.ts` no prebuild + conteúdo escrito numa passada só |
 | Vídeo passa de 15 min | Roteiro cronometrado por bloco (PLANO.md §11); cortar filosofia primeiro |
 | Perguntarem algo que o protótipo não cobre | §12 da ARQUITETURA (protótipo × produção) é a resposta pronta |
