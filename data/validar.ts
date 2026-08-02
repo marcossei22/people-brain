@@ -62,6 +62,20 @@ for (const p of pessoas) {
     falha(`pessoa ${p.id}`, 'tem trilha sem nível (ou o contrário) — os dois andam juntos')
 }
 
+// Densidade declarada tem que bater com a evidência que existe. O agente
+// consulta o registro e lê a densidade no mesmo fôlego: se as duas se
+// contradizem, ele aponta a contradição na frente de quem estiver assistindo.
+for (const p of pessoas) {
+  const n = eventos.filter((e) => e.pessoaId === p.id).length
+  const onde = `pessoa ${p.id}`
+  if (n === 0 && p.densidadeEvidencia !== 'baixa')
+    falha(onde, `declara densidade "${p.densidadeEvidencia}" com 0 eventos registrados`)
+  if (p.densidadeEvidencia === 'alta' && n < 6)
+    falha(onde, `declara densidade "alta" com apenas ${n} eventos`)
+  if (p.densidadeEvidencia === 'media' && (n < 3 || n > 12))
+    falha(onde, `declara densidade "media" com ${n} eventos — fora da faixa 3–12`)
+}
+
 // ── eventos ───────────────────────────────────────────────────────────────
 for (const e of eventos) {
   const onde = `evento ${e.id}`

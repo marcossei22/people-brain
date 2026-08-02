@@ -64,11 +64,13 @@ export const pessoas: Pessoa[] = [
     cargo: 'Account Executive Sênior',
     trilha: 'sales',
     nivel: 'senior',
-    // Sem gestor no seed: a liderança de Vendas entra com o elenco completo
-    // (passo 9). Aqui ela existe para dar alvo à recusa de acesso.
+    // Sem gestor no seed: a liderança de Vendas entra com o elenco completo.
+    // Aqui ela existe para dar alvo à recusa de acesso.
     time: 'Vendas',
     desde: '2023-06-12',
-    densidadeEvidencia: 'media',
+    // Zero eventos no seed. O validador agora exige coerência entre densidade
+    // declarada e evidência existente.
+    densidadeEvidencia: 'baixa',
   },
   {
     // Observadora do fluxo 3. Sem trilha nem nível: não é avaliada, avalia a

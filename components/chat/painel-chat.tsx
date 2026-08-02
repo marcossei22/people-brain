@@ -22,12 +22,38 @@ import type { PassoTool } from './passos-da-tool'
 import { useChat } from '@/lib/chat'
 import { useViewer } from '@/lib/viewer'
 
-const CHIPS = [
-  'Prepara meu 1:1 com a Carla',
-  'Onde a Carla está em relação à régua de Sênior?',
-  'Quem no meu time está sem feedback há mais tempo?',
-  'O Rafael está infeliz?',
-]
+/**
+ * Chips por papel. Perguntar "quem no meu time..." para uma CHRO que não tem
+ * reports faz o Brain (com razão) devolver uma pergunta em vez de resposta —
+ * e na gravação isso lê como falha, não como cuidado.
+ */
+const CHIPS: Record<string, string[]> = {
+  gestor: [
+    'Prepara meu 1:1 com a Carla',
+    'Onde a Carla está em relação à régua de Sênior?',
+    'O que eu ainda não sei sobre o Bruno?',
+    'O Rafael está infeliz?',
+  ],
+  colaborador: [
+    'O que está registrado sobre mim neste semestre?',
+    'O que falta para eu chegar em Sênior?',
+    'Quem consegue ver o meu registro?',
+    'Como eu estou em relação ao Rafael?',
+  ],
+  chro: [
+    'Onde a Carla está em relação à régua de Sênior?',
+    'Quem na empresa tem menos evidência registrada?',
+    'Que padrões aparecem entre as entregas atrasadas?',
+    'O Rafael está infeliz?',
+  ],
+}
+
+interface PedidoDeInput {
+  requestId: string
+  prompt: string
+  options?: { id: string; label: string; description?: string }[]
+  allowFreeform?: boolean
+}
 
 interface Parte {
   type: string
@@ -37,6 +63,7 @@ interface Parte {
   input?: unknown
   output?: unknown
   toolCallId?: string
+  toolMetadata?: { eve?: { inputRequest?: PedidoDeInput } }
 }
 
 export function PainelChat() {
@@ -51,6 +78,10 @@ export function PainelChat() {
 
   const ocupado = agent.status === 'submitted' || agent.status === 'streaming'
   const mensagens = agent.data.messages
+
+  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+    ;(window as unknown as Record<string, unknown>).__pb = agent
+  }
 
   useEffect(() => {
     fim.current?.scrollIntoView({ behavior: 'smooth' })
@@ -95,7 +126,7 @@ export function PainelChat() {
         {mensagens.length === 0 && (
           <div className="space-y-2">
             <p className="etiqueta pb-1">Perguntas frequentes</p>
-            {CHIPS.map((c) => (
+            {(CHIPS[viewer.papel] ?? CHIPS.gestor).map((c) => (
               <button
                 key={c}
                 onClick={() => enviar(c)}
@@ -108,7 +139,12 @@ export function PainelChat() {
         )}
 
         {mensagens.map((m) => (
-          <Mensagem key={m.id} papel={m.role} partes={(m.parts ?? []) as Parte[]} />
+          <Mensagem
+            key={m.id}
+            papel={m.role}
+            partes={(m.parts ?? []) as Parte[]}
+            responder={(r) => void agent.send({ inputResponses: [r] })}
+          />
         ))}
 
         {agent.status === 'error' && (
@@ -156,7 +192,81 @@ export function PainelChat() {
   )
 }
 
-function Mensagem({ papel, partes }: { papel: string; partes: Parte[] }) {
+/**
+ * A pergunta do Brain — o loop de elicitação dentro do chat.
+ *
+ * Quando o modelo chama `ask_question`, o turno PARA e fica esperando. Sem
+ * este componente a conversa morre sem aviso: o Brain perguntou e a pessoa não
+ * tem onde responder.
+ */
+function PerguntaDoBrain({
+  pedido,
+  responder,
+}: {
+  pedido: PedidoDeInput
+  responder: (r: { requestId: string; optionId?: string; text?: string }) => void
+}) {
+  const [texto, setTexto] = useState('')
+
+  return (
+    <div className="my-3 rounded-sm border border-comp/30 bg-comp-suave/25 px-4 py-3.5">
+      <p className="etiqueta pb-2 text-comp">O Brain está perguntando</p>
+      <p className="prosa text-[0.95rem] leading-relaxed">{pedido.prompt}</p>
+
+      {pedido.options && pedido.options.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {pedido.options.map((o) => (
+            <Button
+              key={o.id}
+              size="sm"
+              variant="outline"
+              className="h-7 text-[0.78rem]"
+              onClick={() => responder({ requestId: pedido.requestId, optionId: o.id })}
+            >
+              {o.label}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      {pedido.allowFreeform !== false && (
+        <div className="mt-3 flex gap-2">
+          <Textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey && texto.trim()) {
+                e.preventDefault()
+                responder({ requestId: pedido.requestId, text: texto.trim() })
+              }
+            }}
+            rows={1}
+            placeholder="Uma frase basta."
+            className="min-h-0 resize-none bg-background text-[0.85rem]"
+          />
+          <Button
+            size="sm"
+            className="h-8 shrink-0 text-[0.78rem]"
+            disabled={!texto.trim()}
+            onClick={() => responder({ requestId: pedido.requestId, text: texto.trim() })}
+          >
+            Responder
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Mensagem({
+  papel,
+  partes,
+  responder,
+}: {
+  papel: string
+  partes: Parte[]
+  responder: (r: { requestId: string; optionId?: string; text?: string }) => void
+}) {
   if (papel === 'user') {
     const texto = partes
       .filter((p) => p.type === 'text')
@@ -181,6 +291,14 @@ function Mensagem({ papel, partes }: { papel: string; partes: Parte[] }) {
         <p key={`t${i}`} className="prosa mb-3 whitespace-pre-wrap text-[0.95rem] leading-relaxed">
           {p.text}
         </p>,
+      )
+      return
+    }
+
+    const pedido = p.toolMetadata?.eve?.inputRequest
+    if (pedido) {
+      blocos.push(
+        <PerguntaDoBrain key={`q${i}`} pedido={pedido} responder={responder} />,
       )
       return
     }
