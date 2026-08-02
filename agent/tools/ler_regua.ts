@@ -6,7 +6,7 @@ export default defineTool({
   description:
     'Lê a régua de carreira da empresa para uma trilha e nível: os comportamentos esperados e o que conta como observável em cada um. Sem isso não há contra o que comparar evidência.',
   inputSchema: z.object({
-    trilha: z.enum(['eng', 'sales']),
+    trilha: z.enum(['eng', 'sales', 'design']),
     nivel: z.enum(['pleno', 'senior', 'staff']),
   }),
   async execute({ trilha, nivel }) {

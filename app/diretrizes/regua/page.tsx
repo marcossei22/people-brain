@@ -25,9 +25,14 @@ import { useViewer } from '@/lib/viewer'
 
 const ORDEM = ['pleno', 'senior', 'staff'] as const
 
+/** Derivada dos dados, não escrita à mão: a trilha de Design existe em
+ *  `regua.ts` desde o dataset completo e ficou meio dia fora da tela porque
+ *  esta lista era `['eng', 'sales']`. */
+const TRILHAS = [...new Set(regua.map((r) => r.trilha))]
+
 export default function PaginaRegua() {
   const { viewer, geracao } = useViewer()
-  const [trilha, setTrilha] = useState<Trilha>('eng')
+  const [trilha, setTrilha] = useState<Trilha>(TRILHAS[0])
 
   if (!podeAdministrar(viewer)) {
     return (
@@ -55,7 +60,7 @@ export default function PaginaRegua() {
         style={{ animationDelay: '80ms' }}
       >
         <TabsList>
-          {(['eng', 'sales'] as const).map((t) => (
+          {TRILHAS.map((t) => (
             <TabsTrigger key={t} value={t} className="text-[0.85rem]">
               {NOME_TRILHA[t]}
             </TabsTrigger>
@@ -127,7 +132,7 @@ function ReguaViva({ nivel }: { nivel: NivelRegua }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="text-[0.98rem] leading-snug">
-                Transforma dependência entre times em acordo com dono e prazo.
+                {d.virariaComportamento?.texto ?? d.sugestao}
               </p>
               <Badge
                 variant="outline"
@@ -136,14 +141,21 @@ function ReguaViva({ nivel }: { nivel: NivelRegua }) {
                 novo
               </Badge>
             </div>
-            <p className="prosa mt-1.5 text-[0.88rem] leading-snug text-muted-foreground">
-              <span className="etiqueta mr-1.5">observável</span>O bloqueio vira acordo com
-              responsável e data, registrado onde os dois times veem.
-            </p>
+            {d.virariaComportamento && (
+              <p className="prosa mt-1.5 text-[0.88rem] leading-snug text-muted-foreground">
+                <span className="etiqueta mr-1.5">observável</span>
+                {d.virariaComportamento.observavel}
+              </p>
+            )}
             <p className="mt-2 font-mono text-[0.7rem] text-muted-foreground/70">
               derivado da evidência de {d.baseadoEm.map(nomeDe).join(' e ')}
             </p>
           </div>
+          {d.virariaComportamento && (
+            <code className="hidden shrink-0 font-mono text-[0.68rem] text-muted-foreground/50 sm:block">
+              {d.virariaComportamento.id}
+            </code>
+          )}
         </div>
       </div>
     )
@@ -160,7 +172,7 @@ function ReguaViva({ nivel }: { nivel: NivelRegua }) {
       </p>
       <div className="mt-4 flex gap-2">
         <Button size="sm" className="h-7 text-[0.78rem]" onClick={() => setDecisao('aceita')}>
-          Adicionar à régua
+          {d.virariaComportamento ? 'Adicionar à régua' : 'Aceitar'}
         </Button>
         <Button size="sm" variant="outline" className="h-7 text-[0.78rem]">
           Ver as evidências

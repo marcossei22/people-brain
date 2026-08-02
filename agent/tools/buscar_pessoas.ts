@@ -10,7 +10,7 @@ export default defineTool({
     'Lista as pessoas que o observador atual pode consultar. Use no começo para saber quem existe e quem está no time de quem. Filtros opcionais por time, trilha, nível e gestor.',
   inputSchema: z.object({
     time: z.string().optional(),
-    trilha: z.enum(['eng', 'sales']).optional(),
+    trilha: z.enum(['eng', 'sales', 'design']).optional(),
     nivel: z.enum(['pleno', 'senior', 'staff']).optional(),
     gestorId: z.string().optional(),
   }),

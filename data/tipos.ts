@@ -128,6 +128,10 @@ export interface NivelRegua {
     sugestao: string
     baseadoEm: PessoaId[]
     status: 'proposto' | 'aceito'
+    /** O comportamento que entra na régua quando a sugestão é aceita. Só
+     *  existe quando a sugestão já chegou nessa forma; sugestão que ainda é
+     *  só um apontamento ("falta definir o observável de Design") não tem. */
+    virariaComportamento?: ComportamentoRegua
   }
 }
 

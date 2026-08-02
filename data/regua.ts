@@ -1,7 +1,8 @@
 import type { NivelRegua } from './tipos'
 
 /**
- * A régua de carreira da Aurora — duas trilhas × três níveis.
+ * A régua de carreira da Aurora — Engenharia e Vendas em três níveis, Design
+ * em dois. A assimetria é de propósito: ver §"Design" mais abaixo.
  *
  * É o único documento de Setup que produz veredito: os outros governam tom,
  * contexto e processo. Por isso é o único estruturado — `Tema.comportamentosRegua`
@@ -74,6 +75,12 @@ export const regua: NivelRegua[] = [
         'Adicionar comportamento: "transforma dependência entre times em acordo com dono e prazo". Apareceu em dois casos independentes neste semestre e hoje não tem onde ser creditado na régua.',
       baseadoEm: ['carla', 'rafael'],
       status: 'proposto',
+      virariaComportamento: {
+        id: 'eng-senior-acordo',
+        texto: 'Transforma dependência entre times em acordo com dono e prazo.',
+        observavel:
+          'O bloqueio vira acordo com responsável e data, registrado onde os dois times veem.',
+      },
     },
   },
   {
