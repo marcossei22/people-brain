@@ -108,7 +108,10 @@ export const integracoes: Integracao[] = [
     captura: ['Cadastro, cargo e nível', 'Organograma e linha de reporte', 'Data de admissão'],
     ignora: ['Salário', 'Histórico de avaliações anteriores', 'Registro de ponto', 'Férias e faltas'],
     volume: [
-      { rotulo: 'Colaboradores sincronizados', valor: '712' },
+      // O número tem que bater com o elenco: a tela ao lado lista 12 pessoas,
+      // e "712 colaboradores" era a única frase do protótipo que contava outra
+      // história sobre o tamanho da Aurora.
+      { rotulo: 'Colaboradores sincronizados', valor: '12' },
       { rotulo: 'Última sincronização', valor: 'ontem' },
     ],
   },

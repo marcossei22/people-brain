@@ -12,7 +12,7 @@ import type { Pessoa, PessoaId } from '@/data/tipos'
 import type { Viewer } from '@/lib/viewer'
 
 export type Autorizacao =
-  | { ok: true; escopo?: 'agregado' }
+  | { ok: true; escopo: 'proprio' | 'time' | 'organizacao' }
   | { ok: false; motivo: string }
 
 export function ehReportDireto(gestorId: PessoaId, alvo: PessoaId): boolean {
@@ -20,9 +20,30 @@ export function ehReportDireto(gestorId: PessoaId, alvo: PessoaId): boolean {
 }
 
 export function podeConsultar(viewer: Viewer, alvo: PessoaId): Autorizacao {
-  if (viewer.pessoaId === alvo) return { ok: true }
-  if (viewer.papel === 'gestor' && ehReportDireto(viewer.pessoaId, alvo)) return { ok: true }
-  if (viewer.papel === 'chro') return { ok: true, escopo: 'agregado' }
+  /* Ninguém com esse id. Não é recusa de acesso, e responder "essa pessoa não
+   * está no seu time" seria pior do que inútil: afirmaria que ela existe. Quem
+   * está no organograma não é segredo — o que é segredo é o registro. */
+  if (!pessoas.some((p) => p.id === alvo))
+    return { ok: false, motivo: `Não existe ninguém com o identificador "${alvo}" no registro.` }
+
+  if (viewer.pessoaId === alvo) return { ok: true, escopo: 'proprio' }
+  if (viewer.papel === 'gestor' && ehReportDireto(viewer.pessoaId, alvo))
+    return { ok: true, escopo: 'time' }
+
+  /* A CHRO alcança o registro individual de toda a organização, e o campo diz
+   * isso. Antes dizia `agregado`, que era o que a gente queria que fosse e não
+   * o que o código fazia — num protótipo cuja tese é "permissão é código",
+   * comentário que não bate com a função é pior do que comentário nenhum. Na
+   * produção esse escopo é onde entraria a trilha de auditoria. */
+  if (viewer.papel === 'chro') return { ok: true, escopo: 'organizacao' }
+
+  if (viewer.papel === 'gestor')
+    return {
+      ok: false,
+      motivo:
+        'Um gestor vê o próprio registro e o de quem reporta a ele. Esta pessoa não está no seu time.',
+    }
+
   return {
     ok: false,
     motivo: 'Pares não consultam o registro de pares. Só você e seu gestor veem o seu.',

@@ -2,6 +2,7 @@ import { defineTool } from 'eve/tools'
 import { z } from 'zod'
 import { podeConsultar } from '../../lib/agente/permissoes'
 import { feedbacks } from '../../data/feedbacks'
+import { mesesSemFeedback } from '../../lib/memoria'
 import { nomeDe, viewerDaSessao } from '../lib/viewer-da-sessao'
 
 export default defineTool({
@@ -23,6 +24,9 @@ export default defineTool({
     return {
       total: lista.length,
       nota: 'Feedback do tipo "conversa" não guarda texto, por desenho: o registro guarda que a conversa aconteceu, nunca o que foi dito.',
+      /* O intervalo já calculado, para o chat e a tela de pendências não
+       * darem números diferentes para a mesma pessoa. */
+      mesesSemFeedback: pessoaId ? mesesSemFeedback(pessoaId) : undefined,
       feedbacks: lista.map((f) => ({
         id: f.id,
         para: nomeDe(f.paraPessoaId),

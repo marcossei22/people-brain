@@ -138,7 +138,7 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
           onClick={() => abrirCom(perguntaPadrao(p.nome, alvo, souEu))}
         >
           <MessageSquarePlus className="size-3.5" />
-          Perguntar sobre {primeiroNome(p.nome)}
+          {souEu ? 'Perguntar sobre meu registro' : `Perguntar sobre ${primeiroNome(p.nome)}`}
         </Button>
 
         {souEu && (

@@ -48,6 +48,18 @@ export const feedbacksDe = (pessoaId: PessoaId) =>
 /** Último feedback recebido. Alimenta "quem está sem retorno há mais tempo". */
 export const ultimoFeedback = (pessoaId: PessoaId) => feedbacksDe(pessoaId)[0]?.data
 
+/**
+ * Meses desde o último feedback, arredondados como uma pessoa arredondaria.
+ *
+ * Existe num lugar só porque o chat e o `/feedback` estavam dando números
+ * diferentes para o mesmo Bruno — a tela dizia "4 meses" e o Brain dizia
+ * "mais de 3". Duas falas sobre a mesma pessoa, na mesma gravação.
+ */
+export function mesesSemFeedback(pessoaId: PessoaId): number | undefined {
+  const dias = diasDesde(ultimoFeedback(pessoaId))
+  return dias === undefined ? undefined : Math.round(dias / 30.44)
+}
+
 /** Contagem por pessoa — usada nos indicadores do `/org`. */
 export function resumoDe(pessoaId: PessoaId) {
   const eps = episodiosDe(pessoaId)
@@ -59,5 +71,6 @@ export function resumoDe(pessoaId: PessoaId) {
     ultimo: ultimoRegistro(pessoaId),
     feedbacks: feedbacksDe(pessoaId).length,
     ultimoFeedback: ultimoFeedback(pessoaId),
+    mesesSemFeedback: mesesSemFeedback(pessoaId),
   }
 }
