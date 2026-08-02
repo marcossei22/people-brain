@@ -52,9 +52,9 @@
 - [x] 3 · `/integrations` — mock completo
 - [x] 4 · `/diretrizes` (admin) ponta a ponta, com o loop de aprovação
 - [x] 5 · `/feedback` — só o layout
-- [ ] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
-  - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue
-- [ ] 7 · `/org/[id]` nos dois papéis, com chat embutido
+- [x] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
+  - [x] **Eve escolhido** — decisão #34
+- [x] 7 · `/org/[id]` nos dois papéis, com chat embutido
 - [ ] 8 · Dataset completo da Aurora
 - [ ] 9 · Diagnóstico org dentro de `/org` — **fluxo 3**
 
@@ -139,6 +139,9 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 30 | **`/diretrizes` é só admin** | É doutrina da empresa, não conteúdo de gestor individual |
 | 31 | **Dataset do elenco é a última etapa** | Decidido em 01/08. Conteúdo antes das telas é escrever no escuro — mesmo argumento da #25, aplicado ao cronograma |
 | 32 | **Setup antes do agente**: integrações → régua → feedback → agente → dossiê → dataset → diagnóstico | A ordem anterior construía o agente contra uma régua stub, justamente na tarefa que mais importa. E o dossiê vem antes do dataset porque é a tela com mais campos: é ela que revela o que falta no modelo |
+| 34 | **Eve, não AI SDK** | Skill como markdown carregado sob demanda e tool como função tipada são o modelo nativo do framework — as decisões #19 e #20 viraram estrutura de pastas. E o `AuthFn` do canal resolve o viewer antes do modelo entrar no turno, o que mantém a #21 sem gambiarra |
+| 35 | **`clientContext` do Eve é proibido para identidade** | Ele injeta mensagem de usuário no prompt. Viewer vai por header → `AuthFn` → `ctx.session.auth` |
+| 36 | **O dossiê não é pré-renderizado** | Com SSG, o HTML inicial entregava o registro de todo mundo antes da permissão rodar. Num protótipo cuja tese é "permissão é código", view-source derrubaria a demonstração |
 | 33 | **A régua não tem upload de verdade** | Sem persistência (#15), arquivo que some no reload é armadilha na gravação. O que a tela prova é o **loop de aprovação** da régua viva — que é o mecanismo de N5, e vale mais que um seletor de arquivo |
 
 ---

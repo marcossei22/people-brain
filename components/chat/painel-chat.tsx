@@ -67,7 +67,7 @@ interface Parte {
 }
 
 export function PainelChat() {
-  const { aberto, fechar } = useChat()
+  const { aberto, fechar, perguntaInicial, consumirPergunta } = useChat()
   const { viewer } = useViewer()
   const fim = useRef<HTMLDivElement>(null)
   const [rascunho, setRascunho] = useState('')
@@ -86,6 +86,13 @@ export function PainelChat() {
   useEffect(() => {
     fim.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens.length, agent.status])
+
+  // Pergunta vinda de outra tela — o dossiê passa a conversa adiante.
+  useEffect(() => {
+    if (!perguntaInicial || !aberto) return
+    setRascunho(perguntaInicial)
+    consumirPergunta()
+  }, [perguntaInicial, aberto, consumirPergunta])
 
   // Trocar de persona começa uma conversa nova: o registro que o Brain alcança
   // mudou, então continuar a mesma thread seria misturar dois escopos.
