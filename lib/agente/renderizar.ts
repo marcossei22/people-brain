@@ -75,7 +75,7 @@ export const MANUAL = biblioteca.prompt({
       '# Onde a Carla está em relação à régua de Sênior?',
       'root = Resposta([tira, detalhe])',
       'tira = Cobertura("Régua de Sênior · Engenharia", itens)',
-      'itens = [{texto: "Influencia trabalho fora do próprio time", situacao: "sustentado"}, {texto: "Antecipa risco antes de virar incidente", situacao: "parcial"}]',
+      'itens = [{rotulo: "Influência", texto: "Move trabalho em times sobre os quais não tem autoridade.", esperado: 4, situacao: "sustentado", nivel: 4}, {rotulo: "Ambiguidade", texto: "Recebe problema, não tarefa.", esperado: 4, situacao: "sem-evidencia"}]',
       'detalhe = Gap("Carla Nunes", "pleno", "senior", comportamentos)',
       'comportamentos = [{texto: "Influencia trabalho fora do próprio time", situacao: "sustentado", evidencias: [{eventoId: "ev-c05"}, {eventoId: "ev-c07"}]}]',
     ].join('\n'),

@@ -299,6 +299,178 @@ export function Distribuicao({
    Cobertura — a régua contra o registro.
    ───────────────────────────────────────────────────────────────────────── */
 
+/**
+ * A teia — a régua de um nível como forma.
+ *
+ * Cada ponta é um comportamento. O anel externo tracejado é **o que o nível
+ * pede**; o polígono preenchido é **onde o registro está**. É a mesma
+ * informação da tira, na forma em que a distância entre as duas coisas vira
+ * área — e área é o que se lê sem contar.
+ *
+ * Os três raios são os três estados da régua, não uma escala contínua. Não
+ * existe 7,5 de influência aqui: existe "dois episódios sustentam", "um só" e
+ * "nenhum". Inventar granularidade que o registro não tem seria fabricar
+ * precisão, que é o defeito clássico do radar de competências.
+ */
+const ESCALA = 5
+
+/** Sem evidência não colapsa no centro: um ponto único lê como gráfico
+ *  quebrado, e o que se quer dizer é "aqui não chegou nada". */
+const RAIO_VAZIO = 0.08
+
+interface EixoTeia {
+  rotulo: string
+  /** Onde a pessoa está, 1–5. Ausente = sem evidência, que não é zero. */
+  nivel?: number
+  /** Onde o nível pede que ela esteja, 1–5. */
+  esperado: number
+}
+
+export function Teia({ eixos }: { eixos: EixoTeia[] }) {
+  if (eixos.length < 3) return null
+
+  /* A figura é pequena e a margem é grande, de propósito: o que estoura o
+     viewBox não é a teia, é o rótulo. "MULTIPLICADOR", da trilha de vendas,
+     ocupa mais largura que o raio inteiro — dimensionado pela teia, ele sairia
+     cortado pela borda. Então o desenho fica no meio e as sobras existem para
+     as palavras. */
+  const R = 56
+  const CX = 170
+  const CY = 100
+
+  const ponto = (i: number, escala: number) => {
+    const ang = -Math.PI / 2 + (i * 2 * Math.PI) / eixos.length
+    return [CX + Math.cos(ang) * R * escala, CY + Math.sin(ang) * R * escala] as const
+  }
+
+  const poligono = (escalas: number[]) =>
+    escalas.map((e, i) => ponto(i, e).join(',')).join(' ')
+
+  const anel = (escala: number) => poligono(eixos.map(() => escala))
+  const raioDe = (e: EixoTeia) => (e.nivel === undefined ? RAIO_VAZIO : e.nivel / ESCALA)
+
+  // O tracejado NÃO é um anel: cada skill pede um número diferente, e é a
+  // diferença entre as duas formas que responde "o que falta". Um contorno
+  // circular esconderia justamente que a régua não é uniforme.
+  const pedido = poligono(eixos.map((e) => e.esperado / ESCALA))
+  const forma = poligono(eixos.map(raioDe))
+
+  return (
+    <figure className="my-1">
+      {/* Teto de largura, e não `w-full`.
+          Dentro de um viewBox, tudo escala junto com o elemento — inclusive o
+          tamanho da fonte. Solta na largura do dossiê, a teia virava um
+          pôster com rótulos de 35px. Travada em 20rem ela tem o mesmo tamanho
+          no dossiê largo e no painel de conversa estreito, que é o que faz as
+          duas telas parecerem o mesmo produto. */}
+      <svg
+        viewBox="0 0 340 200"
+        className="mx-auto block w-full max-w-[22rem]"
+        role="img"
+        aria-label="Régua contra o registro"
+      >
+        {/* Malha: os raios e o anel de "parcial", bem apagados. Estão ali para
+            a leitura ser posicional, não para serem vistos. */}
+        {eixos.map((_, i) => {
+          const [x, y] = ponto(i, 1)
+          return (
+            <line
+              key={`r${i}`}
+              x1={CX}
+              y1={CY}
+              x2={x}
+              y2={y}
+              className="stroke-comp/15"
+              strokeWidth={1}
+            />
+          )
+        })}
+        {[0.4, 0.8].map((e) => (
+          <polygon key={e} points={anel(e)} className="fill-none stroke-comp/12" strokeWidth={1} />
+        ))}
+        <polygon points={anel(1)} className="fill-none stroke-comp/15" strokeWidth={1} />
+
+        {/* O que o nível pede. Tracejado porque é expectativa, não fato. */}
+        <polygon
+          points={pedido}
+          className="fill-none stroke-comp/55"
+          strokeWidth={1.25}
+          strokeDasharray="3 3"
+        />
+
+        {/* Onde o registro está. */}
+        <polygon
+          points={forma}
+          className="fill-comp/25 stroke-comp"
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+        />
+
+        {/* Ponta cheia = tem nota. Ponta vazada = o registro não alcançou.
+            Sem essa diferença, o vértice colado no centro seria lido como
+            "nota zero", que é a afirmação que este produto não faz. */}
+        {eixos.map((e, i) => {
+          const [x, y] = ponto(i, raioDe(e))
+          return e.nivel === undefined ? (
+            <circle
+              key={`p${i}`}
+              cx={x}
+              cy={y}
+              r={2.6}
+              className="fill-card stroke-comp/70"
+              strokeWidth={1.2}
+            />
+          ) : (
+            <circle key={`p${i}`} cx={x} cy={y} r={2.4} className="fill-comp" />
+          )
+        })}
+
+        {/* Rótulos. `text-anchor` sai do lado do eixo: à direita do centro o
+            texto começa na ponta, à esquerda ele termina nela. Sem isso os
+            rótulos de leste e oeste entram por cima da figura. */}
+        {eixos.map((e, i) => {
+          const ang = -Math.PI / 2 + (i * 2 * Math.PI) / eixos.length
+          const cos = Math.cos(ang)
+          const [x, y] = ponto(i, 1)
+          return (
+            <text
+              key={`t${i}`}
+              x={x + cos * 9}
+              y={y + Math.sin(ang) * 9 + 3}
+              textAnchor={cos > 0.25 ? 'start' : cos < -0.25 ? 'end' : 'middle'}
+              className="etiqueta"
+              fill="currentColor"
+              /* O tracking largo da `etiqueta` é desenhado para rótulo solto
+                 numa linha; em oito rótulos ao redor de uma figura pequena ele
+                 vira largura que não existe. Apertado só aqui. */
+              style={{ fontSize: '0.6rem', letterSpacing: '0.05em' }}
+            >
+              {e.rotulo}
+            </text>
+          )
+        })}
+      </svg>
+
+      <figcaption className="mt-1 flex flex-wrap justify-center gap-x-4 gap-y-1">
+        <span className="flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
+          <span className="h-0 w-4 border-t border-dashed border-comp/60" />
+          o que o nível pede
+        </span>
+        <span className="flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
+          <span className="h-2 w-4 border border-comp bg-comp/25" />
+          onde o registro está
+        </span>
+        {eixos.some((e) => e.nivel === undefined) && (
+          <span className="flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
+            <span className="size-2 rounded-full border border-comp/70 bg-card" />
+            sem evidência
+          </span>
+        )}
+      </figcaption>
+    </figure>
+  )
+}
+
 /** A tira do topo: a régua inteira em uma linha, antes do detalhe. */
 export function TiraDeCobertura({ itens }: { itens: { situacao: Situacao }[] }) {
   if (!itens?.length) return null
@@ -317,12 +489,28 @@ export function Cobertura({
   nota,
 }: {
   titulo: string
-  itens: { texto: string; situacao: Situacao }[]
+  itens: { rotulo?: string; texto: string; situacao: Situacao; nivel?: number; esperado?: number }[]
   nota?: string
 }) {
   if (!itens?.length) return null
 
   const contagem = (s: Situacao) => itens.filter((i) => i.situacao === s).length
+
+  /**
+   * Teia quando dá, tira quando não dá.
+   *
+   * A teia precisa de pelo menos três pontas e de um nome curto em cada uma.
+   * Sem `rotulo` — uma régua de cliente que não preencheu o campo, ou uma
+   * resposta sobre um comportamento só — a tira continua contando a mesma
+   * história em uma linha. O card nunca fica sem a leitura de conjunto.
+   */
+  const eixos = itens.every((i) => i.rotulo && i.esperado)
+    ? itens.map((i) => ({
+        rotulo: i.rotulo as string,
+        nivel: i.nivel,
+        esperado: i.esperado as number,
+      }))
+    : undefined
 
   return (
     <Caixa>
@@ -333,21 +521,39 @@ export function Cobertura({
         </p>
       </div>
 
-      <TiraDeCobertura itens={itens} />
+      {eixos && eixos.length >= 3 ? (
+        <Teia eixos={eixos} />
+      ) : (
+        <TiraDeCobertura itens={itens} />
+      )}
 
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-4 space-y-2.5">
         {itens.map((i, k) => (
-          <li key={k} className="flex items-start gap-2.5">
-            <span
-              className={`mt-[6px] h-[0.5rem] w-4 shrink-0 ${
-                TINTA[i.situacao]?.classe ?? TINTA.parcial.classe
-              }`}
-            />
-            <span className="text-[0.85rem] leading-snug">
+          <li key={k} className="flex items-start justify-between gap-4">
+            <span className="min-w-0 text-[0.85rem] leading-snug">
+              {i.rotulo && (
+                <span className="mr-1.5 font-mono text-[0.68rem] uppercase tracking-wider text-comp">
+                  {i.rotulo}
+                </span>
+              )}
               {i.texto}
-              <span className="ml-1.5 font-mono text-[0.66rem] text-foreground/40">
-                {TINTA[i.situacao]?.rotulo ?? i.situacao}
-              </span>
+            </span>
+
+            {/* A nota ao lado do que o nível pede, sempre as duas. Um "4"
+                sozinho não quer dizer nada; "4 · pede 3" é a frase inteira. */}
+            <span className="shrink-0 whitespace-nowrap font-mono text-[0.72rem] tabular-nums">
+              {i.nivel === undefined ? (
+                <span className="text-foreground/40">sem evidência</span>
+              ) : (
+                <>
+                  <span className={i.situacao === 'sustentado' ? 'text-comp' : 'text-foreground'}>
+                    {i.nivel}
+                  </span>
+                  {i.esperado !== undefined && (
+                    <span className="text-muted-foreground/70"> · pede {i.esperado}</span>
+                  )}
+                </>
+              )}
             </span>
           </li>
         ))}

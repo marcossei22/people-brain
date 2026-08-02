@@ -14,6 +14,7 @@
  * problema que `mesesSemFeedback` já teve que resolver uma vez.
  */
 
+import { episodios } from '@/data/episodios'
 import { eventos } from '@/data/eventos'
 import { lerRegua, NOME_NIVEL, NOME_TRILHA } from '@/data/regua'
 import { temas } from '@/data/temas'
@@ -106,32 +107,95 @@ export function origemDaEvidencia(pessoaId: PessoaId): Ponto[] {
 
 export type Situacao = 'sustentado' | 'parcial' | 'sem-evidencia'
 
+const ORDEM: Record<Nivel, number> = { pleno: 1, senior: 2, staff: 3 }
+
 /**
- * Quantos EPISÓDIOS distintos sustentam um comportamento da régua.
+ * A nota de uma pessoa numa skill, de 1 a 5 — calculada, nunca escrita.
  *
- * A ligação vem de `Tema.comportamentosRegua` — é o campo que liga padrão
- * observado a decisão, e por isso é ele que conta aqui. Dois temas que apontam
- * para o mesmo comportamento pelo mesmo episódio contam uma vez só: o Set
- * existe para o mesmo trabalho não valer duas evidências.
+ * Toda parcela sai do registro, e é por isso que a nota é clicável até a
+ * fonte: ela não é uma opinião com número na frente, é uma contagem com
+ * regra publicada. Um gestor pode discordar da regra; ele não pode dizer que
+ * não sabe de onde o 4 veio.
+ *
+ *     episódios distintos (teto 3)       quanto do trabalho apareceu
+ *     + 1 confiança do tema é alta       quão firme é o padrão
+ *     + 1 houve reconhecimento           alguém apontou o trabalho
+ *     + 1 nível observado acima do dela  o trabalho foi além do cargo
+ *     teto 5
+ *
+ * As três parcelas de cima são separadas de propósito. Somadas numa só — "teve
+ * estrela OU foi acima do nível" —, a Carla saía 5 nas quatro skills que o
+ * mesmo tema sustenta, e uma teia com todas as pontas no máximo não é leitura,
+ * é decoração. Separar é o que faz `risco` (que tem estrela) sair diferente de
+ * `influência` (que não tem), com a mesma evidência de base.
+ *
+ * **Zero episódio não é nota 1.** Devolve `undefined`, e a tela mostra isso
+ * como "sem evidência". A distinção é o produto inteiro: nota 1 afirma que a
+ * pessoa é fraca naquilo; sem evidência afirma que o registro não alcançou, e
+ * as duas levam a ações opostas — uma vira conversa de desempenho, a outra
+ * vira pergunta na semana seguinte.
+ *
+ * A ligação entre skill e trabalho vem de `Tema.comportamentosRegua`. Dois
+ * temas que apontam para o mesmo comportamento pelo mesmo episódio contam uma
+ * vez só: o Set existe para o mesmo trabalho não valer duas evidências.
  */
-export function ocorrencias(pessoaId: PessoaId, comportamentoId: string): number {
+export function pontuar(
+  pessoaId: PessoaId,
+  comportamentoId: string,
+): { nivel?: number; episodios: number } {
   const eps = new Set<string>()
+  let alta = false
+
   for (const t of temas) {
     if (t.pessoaId !== pessoaId) continue
     if (!t.comportamentosRegua.includes(comportamentoId)) continue
+    if (t.confianca === 'alta') alta = true
     for (const id of t.episodioIds) eps.add(id)
   }
-  return eps.size
+
+  if (eps.size === 0) return { episodios: 0 }
+
+  const nivelDela = pessoa(pessoaId)?.nivel
+  const sustentam = [...eps].map((id) => episodios.find((e) => e.id === id)).filter(Boolean)
+
+  const reconhecido = sustentam.some((ep) => ep!.estrela)
+  const acimaDoNivel = sustentam.some(
+    (ep) => ep!.nivelObservado && nivelDela && ORDEM[ep!.nivelObservado] > ORDEM[nivelDela],
+  )
+
+  const nivel = Math.min(
+    5,
+    Math.min(eps.size, 3) + (alta ? 1 : 0) + (reconhecido ? 1 : 0) + (acimaDoNivel ? 1 : 0),
+  )
+  return { nivel, episodios: eps.size }
 }
 
-/** Dois ou mais episódios é `sustentado`; um só é `parcial`; nenhum é `sem-evidencia`. */
-export const situacaoDe = (n: number): Situacao =>
-  n >= 2 ? 'sustentado' : n === 1 ? 'parcial' : 'sem-evidencia'
+/** Episódios distintos que sustentam um comportamento. */
+export const ocorrencias = (pessoaId: PessoaId, comportamentoId: string): number =>
+  pontuar(pessoaId, comportamentoId).episodios
+
+/**
+ * A leitura em uma palavra, derivada da mesma nota.
+ *
+ * Existe porque o `Gap` do chat fala em sustentado/parcial e a teia fala em
+ * número: são a mesma coisa dita de dois jeitos, e derivar uma da outra é o
+ * que impede os dois blocos da mesma resposta de discordarem.
+ */
+export function situacaoDe(nivel: number | undefined, esperado: number): Situacao {
+  if (nivel === undefined) return 'sem-evidencia'
+  return nivel >= esperado ? 'sustentado' : 'parcial'
+}
 
 export interface ComportamentoCoberto {
   id: string
+  /** Nome curto da skill — vira ponta da teia. */
+  rotulo: string
   texto: string
   observavel: string
+  /** Quanto o nível pede, de 1 a 5. */
+  esperado: number
+  /** Onde a pessoa está, de 1 a 5. Ausente quando não há evidência nenhuma. */
+  nivel?: number
   /** Episódios distintos que sustentam este comportamento. */
   episodios: number
   situacao: Situacao
@@ -157,13 +221,16 @@ export function comportamentosCobertos(
   if (!nivelRegua?.comportamentos.length) return undefined
 
   return nivelRegua.comportamentos.map((c) => {
-    const episodios = ocorrencias(pessoaId, c.id)
+    const { nivel, episodios } = pontuar(pessoaId, c.id)
     return {
       id: c.id,
+      rotulo: c.rotulo,
       texto: c.texto,
       observavel: c.observavel,
+      esperado: c.esperado,
+      nivel,
       episodios,
-      situacao: situacaoDe(episodios),
+      situacao: situacaoDe(nivel, c.esperado),
     }
   })
 }
@@ -171,7 +238,13 @@ export function comportamentosCobertos(
 export interface Cobertura {
   titulo: string
   nivel: Nivel
-  itens: { texto: string; situacao: Situacao }[]
+  itens: {
+    rotulo: string
+    texto: string
+    esperado: number
+    nivel?: number
+    situacao: Situacao
+  }[]
 }
 
 /**
@@ -193,6 +266,12 @@ export function coberturaDaRegua(pessoaId: PessoaId): Cobertura | undefined {
   return {
     titulo: `Régua de ${NOME_NIVEL[nivel] ?? nivel} · ${NOME_TRILHA[p.trilha]}`,
     nivel,
-    itens: cobertos.map((c) => ({ texto: c.texto, situacao: c.situacao })),
+    itens: cobertos.map((c) => ({
+      rotulo: c.rotulo,
+      texto: c.texto,
+      esperado: c.esperado,
+      nivel: c.nivel,
+      situacao: c.situacao,
+    })),
   }
 }

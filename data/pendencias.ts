@@ -46,7 +46,7 @@ export const pendencias: Pendencia[] = [
     motivo:
       'A régua de sênior pede "move trabalho em times sobre os quais não tem autoridade". O que está registrado prova o resultado; falta a evidência de que a articulação foi dela.',
     lacunaId: 'lac-carla-articulacao',
-    acao: 'Responder em uma frase',
+    acao: 'Enviar',
   },
   {
     id: 'pd-2',
@@ -79,7 +79,7 @@ export const pendencias: Pendencia[] = [
     titulo: 'O que exatamente travava o pipeline de conciliação antes de você entrar?',
     motivo:
       'O registro mostra que destravou, mas não o que estava travado. Sem isso o episódio fica sem tamanho — e é ele que sustenta o seu caso de sênior.',
-    acao: 'Responder em uma frase',
+    acao: 'Enviar',
   },
 ]
 

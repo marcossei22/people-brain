@@ -19,11 +19,16 @@ apareceu — normalmente não precisa.
 
 ## Como julgar cada comportamento
 
-**A contagem já vem pronta.** Chamada com `pessoaId`, `ler_regua` devolve, para cada
-comportamento, quantos `episodios` distintos o sustentam e a `situacao` que isso produz — dois ou
-mais é `sustentado`, um só é `parcial`, nenhum é `sem-evidencia`. **Copie a `situacao` que veio.**
-Não reconte: a mesma contagem alimenta a régua no dossiê da pessoa, e recontar de cabeça é como a
-mesma Carla aparece com 4 de 5 sustentados numa tela e 1 de 5 na outra.
+**A nota já vem pronta.** Chamada com `pessoaId`, `ler_regua` devolve, para cada comportamento:
+`esperado` (quanto o nível pede, 1 a 5), `nivel` (onde a pessoa está, 1 a 5), quantos `episodios`
+sustentam e a `situacao`. **Copie os números que vieram.** Não recalcule e não arredonde: a mesma
+conta alimenta a teia no dossiê da pessoa, e refazer de cabeça é como a mesma Carla aparece com 4
+em influência numa tela e 3 na outra.
+
+**Sem `nivel`, é sem evidência — nunca nota 1.** Quando a tool não devolveu nota para um
+comportamento, o registro não alcançou aquela skill. Omita o campo `nivel` no componente e diga
+isso em palavras. Escrever 1 ali afirmaria que a pessoa é fraca naquilo, que é uma frase que o
+registro não sustenta e que leva a uma conversa completamente diferente.
 
 Percorra **comportamento a comportamento**, na ordem da régua, e para cada um escreva as
 evidências (só o `eventoId`) e a observação.
@@ -54,16 +59,21 @@ registro. Nunca ordene a pessoa contra as colegas: cada uma é lida contra o ní
 Dois blocos, nesta ordem: `Cobertura` e depois `Gap`.
 
 ```
-root = Resposta([tira, detalhe])
-tira = Cobertura("Régua de Sênior · Engenharia", itens)
-itens = [{texto: "...", situacao: "sustentado"}, ...]
+root = Resposta([teia, detalhe])
+teia = Cobertura("Régua de Sênior · Engenharia", itens)
+itens = [{rotulo: "Influência", texto: "...", esperado: 4, situacao: "sustentado", nivel: 4}, {rotulo: "Ambiguidade", texto: "...", esperado: 4, situacao: "sem-evidencia"}]
 detalhe = Gap("Carla Nunes", "pleno", "senior", comportamentos)
 comportamentos = [{texto: "...", situacao: "...", evidencias: [{eventoId: "..."}], observacao: "..."}]
 ```
 
-`Cobertura` é a mesma lista de comportamentos sem a evidência: existe para a pergunta "onde ela
-está?" ter resposta antes do primeiro parágrafo. Os mesmos comportamentos, na mesma ordem, com a
-mesma `situacao` nos dois blocos — se divergirem, a tira desmente o detalhe logo abaixo dela.
+`Cobertura` desenha a régua como teia: cada ponta é uma skill, o contorno tracejado é o que o
+nível pede em cada uma, a área preenchida é onde o registro está. Existe para a pergunta "onde ela
+está?" ter resposta antes do primeiro parágrafo.
+
+**Todos os campos vêm do `ler_regua`, copiados** — `rotulo`, `esperado`, `nivel` e `situacao`.
+Abreviar o texto por conta própria produz ponta de teia diferente da que o dossiê da pessoa
+mostra. Os mesmos comportamentos, na mesma ordem, com os mesmos números nos dois blocos: se
+divergirem, a teia desmente o detalhe logo abaixo dela.
 
 Em `Gap`, cada comportamento leva `texto`, `situacao`, `evidencias[]` (só o `eventoId`) e
 `observacao` quando faltar evidência.

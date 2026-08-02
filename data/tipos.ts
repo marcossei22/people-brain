@@ -120,6 +120,22 @@ export interface Feedback {
 
 export interface ComportamentoRegua {
   id: string
+  /** O nome curto da skill — uma palavra. É o que cabe na ponta da teia e o
+   *  que uma pessoa usa para falar do comportamento em voz alta ("ela está
+   *  bem em risco, falta ambiguidade"). O `texto` é a definição; este é o
+   *  nome. Sem ele, o gráfico de skills teria que truncar a frase. */
+  rotulo: string
+  /**
+   * Quanto o nível pede nesta skill, de 1 a 5. É a régua propriamente dita —
+   * a linha tracejada da teia.
+   *
+   * A escala não é opinião: 1 é "está aprendendo", 3 é "faz de forma
+   * consistente", 4 é "é referência disso no time", 5 é "define o padrão da
+   * empresa". Varia entre skills do mesmo nível de propósito: um sênior tem
+   * que ser referência em risco e influência, e basta ser consistente em
+   * mentoria. Régua com o mesmo número em tudo é régua que ninguém escreveu.
+   */
+  esperado: number
   texto: string
   observavel: string
 }

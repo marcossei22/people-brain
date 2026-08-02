@@ -130,10 +130,27 @@ export const ESPECIFICACOES = {
 
   Cobertura: {
     descricao:
-      'A régua de um nível, comportamento a comportamento, com quanto de cada um o registro sustenta. É o resumo visual: use junto do `Gap` quando quiser que a leitura de conjunto venha antes do detalhe.',
+      'A régua de um nível desenhada como teia: cada ponta é uma skill, o contorno tracejado é o que o nível pede e a área preenchida é onde o registro está. Abaixo dela, comportamento a comportamento. É o resumo visual da leitura de skill — use junto do `Gap` quando quiser que a forma venha antes do detalhe.',
     props: z.object({
       titulo: z.string().describe('Ex: "Régua de Sênior · Engenharia".'),
-      itens: z.array(z.object({ texto: z.string(), situacao })),
+      itens: z.array(
+        z.object({
+          rotulo: z
+            .string()
+            .describe(
+              'O nome curto da skill, uma palavra — vira a ponta da teia. Copie o `rotulo` que `ler_regua` devolveu; não invente nem abrevie o texto.',
+            ),
+          texto: z.string(),
+          esperado: z.number().describe('Quanto o nível pede nesta skill, 1 a 5. Vem de `ler_regua`.'),
+          situacao,
+          nivel: z
+            .number()
+            .optional()
+            .describe(
+              'Onde a pessoa está, 1 a 5, calculado da evidência e devolvido por `ler_regua`. OMITA quando a tool não devolveu nota: sem evidência não é nota 1, e a teia desenha as duas coisas de forma diferente.',
+            ),
+        }),
+      ),
       nota: z.string().optional(),
     }),
   },

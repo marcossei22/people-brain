@@ -120,11 +120,7 @@ function ItemPendencia({ p }: { p: Pendencia }) {
 
       {p.tipo === 'pergunta' && (
         <div className="mt-4 max-w-[38rem]">
-          <Textarea
-            rows={2}
-            placeholder="Uma frase basta."
-            className="resize-none bg-card text-[0.9rem]"
-          />
+          <Textarea rows={2} className="resize-none bg-card text-[0.9rem]" />
           <div className="mt-2.5 flex items-center gap-2">
             <Button size="sm" className="h-7 text-[0.78rem]">
               {p.acao}
