@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Fraunces, IBM_Plex_Mono, Instrument_Sans, Newsreader } from 'next/font/google'
 import './globals.css'
 import { Sidebar } from '@/components/shell/sidebar'
+import { PainelChat } from '@/components/chat/painel-chat'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ProvedorChat } from '@/lib/chat'
 import { ProvedorViewer } from '@/lib/viewer'
 
 /* Quatro famílias, cada uma com um trabalho:
@@ -36,12 +38,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     >
       <body className="min-h-full">
         <ProvedorViewer>
-          <TooltipProvider delayDuration={200}>
-            <div className="relative z-10 flex min-h-dvh">
-              <Sidebar />
-              <main className="min-w-0 flex-1">{children}</main>
-            </div>
-          </TooltipProvider>
+          <ProvedorChat>
+            <TooltipProvider delayDuration={200}>
+              <div className="relative z-10 flex min-h-dvh">
+                <Sidebar />
+                <main className="min-w-0 flex-1">{children}</main>
+              </div>
+              <PainelChat />
+            </TooltipProvider>
+          </ProvedorChat>
         </ProvedorViewer>
       </body>
     </html>

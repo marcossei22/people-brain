@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { SeletorPersona } from './seletor-persona'
 import { podeAdministrar } from '@/lib/agente/permissoes'
+import { useChat } from '@/lib/chat'
 import { useViewer } from '@/lib/viewer'
 
 interface Item {
@@ -42,6 +43,7 @@ const ITENS: Item[] = [
 export function Sidebar() {
   const pathname = usePathname()
   const { viewer } = useViewer()
+  const { abrir: abrirChat } = useChat()
   const admin = podeAdministrar(viewer)
 
   return (
@@ -96,6 +98,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
+            onClick={abrirChat}
             className="-mr-1.5 h-6 gap-1.5 px-1.5 text-[0.72rem] text-muted-foreground hover:text-comp"
           >
             <MessageSquarePlus className="size-3.5" />
@@ -104,9 +107,12 @@ export function Sidebar() {
         </div>
 
         <ScrollArea className="min-h-0 flex-1">
-          <p className="px-2.5 text-[0.78rem] leading-snug text-muted-foreground/70">
+          <button
+            onClick={abrirChat}
+            className="w-full rounded-sm px-2.5 py-1.5 text-left text-[0.78rem] leading-snug text-muted-foreground/70 transition-colors hover:bg-sidebar-accent/60 hover:text-foreground"
+          >
             Nenhuma conversa ainda.
-          </p>
+          </button>
         </ScrollArea>
       </div>
 

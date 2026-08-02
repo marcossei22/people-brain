@@ -8,38 +8,17 @@
  * secreto" virar fato demonstrável: a Carla vendo o próprio dossiê e a Marina
  * vendo o dossiê da Carla renderizam a MESMA tela.
  *
- * Não há login. Há um seletor exposto de propósito, que também orienta o
- * avaliador sobre de que ângulo ele está olhando.
+ * As personas em si vivem em `lib/personas.ts`, sem React — o canal do agente
+ * importa de lá.
  */
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { PessoaId } from '@/data/tipos'
+import { PERSONA_PADRAO, PERSONAS } from '@/lib/personas'
+import type { Viewer } from '@/lib/personas'
 
-export type Papel = 'gestor' | 'colaborador' | 'chro'
-
-export interface Viewer {
-  pessoaId: PessoaId
-  papel: Papel
-}
-
-export type Persona = Viewer
-
-export const PERSONAS: Persona[] = [
-  { pessoaId: 'marina', papel: 'gestor' },
-  { pessoaId: 'carla', papel: 'colaborador' },
-  { pessoaId: 'helena', papel: 'chro' },
-]
-
-/** Helena é o padrão: é a única persona com acesso de admin, então o produto
- *  abre já mostrando a organização inteira e as telas de Setup. */
-export const PERSONA_PADRAO =
-  PERSONAS.find((p) => p.pessoaId === 'helena') ?? PERSONAS[0]
-
-export const NOME_DO_PAPEL: Record<Papel, string> = {
-  gestor: 'Gestora',
-  colaborador: 'Colaboradora',
-  chro: 'CHRO',
-}
+export { NOME_DO_PAPEL, PERSONAS, PERSONA_PADRAO } from '@/lib/personas'
+export type { Papel, Persona, Viewer } from '@/lib/personas'
 
 interface ContextoViewer {
   viewer: Viewer
