@@ -88,6 +88,11 @@ export interface Lacuna {
   motivo: string // o "declara o porquê" do orçamento de pergunta
   valor: 'alta' | 'media' | 'baixa' // valor da informação — governa a fila
   status: 'aberta' | 'perguntada' | 'respondida' | 'descartada'
+  /** Quando a pergunta de fato saiu, e por onde. Existe a partir de
+   *  `perguntada` — antes disso a lacuna está identificada, não perguntada,
+   *  e a distinção importa: é a diferença entre o Brain saber que não sabe e
+   *  o Brain ter gasto uma das perguntas da semana. */
+  enviada?: { canal: 'slack'; em: string }
   resposta?: { texto: string; por: PessoaId; em: string }
 }
 

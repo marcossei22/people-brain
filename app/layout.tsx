@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Fraunces, IBM_Plex_Mono, Instrument_Sans, Newsreader } from 'next/font/google'
 import './globals.css'
+import { Palco } from '@/components/shell/palco'
 import { Sidebar } from '@/components/shell/sidebar'
 import { PainelChat } from '@/components/chat/painel-chat'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -40,10 +41,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ProvedorViewer>
           <ProvedorChat>
             <TooltipProvider delayDuration={200}>
-              <div className="relative z-10 flex min-h-dvh">
+              <Palco>
                 <Sidebar />
                 <main className="min-w-0 flex-1">{children}</main>
-              </div>
+              </Palco>
               <PainelChat />
             </TooltipProvider>
           </ProvedorChat>

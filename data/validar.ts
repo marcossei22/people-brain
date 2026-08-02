@@ -185,6 +185,16 @@ for (const l of lacunas) {
 
   if (l.status === 'respondida' && !l.resposta)
     falha(onde, 'está "respondida" mas não tem resposta')
+
+  // Perguntar é o recurso escasso: se o status diz que a pergunta saiu, tem
+  // que haver registro de quando ela saiu — e o contrário também.
+  const saiu = l.status === 'perguntada' || l.status === 'respondida'
+  if (saiu && !l.enviada) falha(onde, `está "${l.status}" mas não registra quando a pergunta saiu`)
+  if (!saiu && l.enviada) falha(onde, `registra envio mas o status é "${l.status}"`)
+  if (l.enviada && !dataValida(l.enviada.em)) falha(onde, `enviada.em inválido "${l.enviada.em}"`)
+  if (l.enviada && l.resposta && l.resposta.em < l.enviada.em)
+    falha(onde, 'foi respondida antes de ter sido enviada')
+
   if (l.status !== 'respondida' && l.resposta)
     falha(onde, `tem resposta mas o status é "${l.status}"`)
   if (l.resposta) {

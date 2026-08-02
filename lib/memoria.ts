@@ -36,6 +36,15 @@ export function ultimoRegistro(pessoaId: PessoaId): string | undefined {
   return eventosDe(pessoaId)[0]?.data
 }
 
+const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+
+/** "2026-06-27" → "27 jun". Data em texto de leitura, não em ISO: ISO é para
+ *  quando a tela está mostrando o mecanismo, não a informação. */
+export function dataCurta(iso: string): string {
+  const [, mes, dia] = iso.split('-')
+  return `${Number(dia)} ${MESES[Number(mes) - 1]}`
+}
+
 export function diasDesde(iso: string | undefined, hoje = '2026-08-01'): number | undefined {
   if (!iso) return undefined
   const ms = Date.parse(hoje) - Date.parse(iso)

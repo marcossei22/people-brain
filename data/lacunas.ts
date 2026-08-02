@@ -36,6 +36,7 @@ export const lacunas: Lacuna[] = [
       'Um buraco de seis semanas no registro quase sempre é falha de captura, não ausência de trabalho. Registrar como "sem evidência" seria produzir um dado falso.',
     valor: 'alta',
     status: 'respondida',
+    enviada: { canal: 'slack', em: '2026-06-27' },
     resposta: {
       texto:
         'Ele ficou seis semanas no plantão do incidente de faturamento. Foi trabalho pesado e quase todo em call — não gerou PR nem thread.',
@@ -55,6 +56,7 @@ export const lacunas: Lacuna[] = [
       'A régua de design sênior pede "desenha depois de entender, não antes", e o observável é registro de conversa com usuário. Sem isso, o melhor resultado do semestre fica sem lastro.',
     valor: 'alta',
     status: 'respondida',
+    enviada: { canal: 'slack', em: '2026-04-06' },
     resposta: {
       texto:
         'Ele rodou nove entrevistas com clientes antes de abrir o Figma. O recorte saiu delas — a decisão de cortar o cadastro em duas etapas veio de sete das nove conversas.',
@@ -71,6 +73,7 @@ export const lacunas: Lacuna[] = [
       'A régua de design staff pede "constrói o que o resto do time reusa". O design system existe e é usado — mas manter design system não gera PR nem thread, então ele é invisível para o registro.',
     valor: 'alta',
     status: 'respondida',
+    enviada: { canal: 'slack', em: '2026-06-12' },
     resposta: {
       texto:
         'É o Diego, sozinho, o semestre inteiro. Ninguém pediu e ninguém agradeceu — e nada disso aparece em lugar nenhum.',
@@ -110,6 +113,7 @@ export const lacunas: Lacuna[] = [
       'Zero feedbacks registrados em seis meses. Ou as conversas aconteceram e não foram registradas, ou não aconteceram — e as duas respostas levam a ações diferentes.',
     valor: 'alta',
     status: 'perguntada',
+    enviada: { canal: 'slack', em: '2026-07-28' },
   },
   {
     id: 'lac-juliana-nivel',
@@ -146,6 +150,7 @@ export const lacunas: Lacuna[] = [
       'Seis pessoas de quatro times ficaram bloqueadas na mesma fila. Antes de tratar isso como problema de indivíduo, é preciso saber a razão entre demanda e capacidade.',
     valor: 'alta',
     status: 'perguntada',
+    enviada: { canal: 'slack', em: '2026-07-29' },
   },
 
   // ── Letícia ─────────────────────────────────────────────────────────────
