@@ -51,7 +51,7 @@
 - [x] 2 · Shell (sidebar + seletor de persona + reset) + `/org` — a lista
 - [x] 3 · `/integrations` — mock completo
 - [x] 4 · `/diretrizes` (admin) ponta a ponta, com o loop de aprovação
-- [ ] 5 · `/feedback` — só o layout
+- [x] 5 · `/feedback` — só o layout
 - [ ] 6 · `lib/agente/` + tools + permissões + `renderizar` + skills + painel de chat — **fluxo 2**
   - [ ] ⏱ **timebox Eve: 45 min.** Não respondeu com tool call → cai pro AI SDK e segue
 - [ ] 7 · `/org/[id]` nos dois papéis, com chat embutido
