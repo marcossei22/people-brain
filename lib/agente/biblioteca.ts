@@ -37,10 +37,22 @@ const evidencia = z.object({
   fontes: z.array(fonte).describe('Nunca vazio. Afirmação sem fonte não entra.'),
 })
 
-/** Situação de um comportamento da régua contra a evidência do registro. */
+/**
+ * Situação de um comportamento da régua contra a evidência do registro.
+ *
+ * A descrição do enum vai para o modelo dentro do MANUAL, então ela é
+ * instrução de contagem, não legenda. Dizia "dois ou mais episódios é
+ * sustentado", que era a regra antiga e não é a que `situacaoDe` aplica —
+ * hoje a comparação é entre a nota e o que o nível pede. O modelo lia a regra
+ * errada aqui e a certa na tool, e escrevia os dois blocos da mesma resposta
+ * discordando sobre a mesma skill da mesma pessoa. É exatamente o bug que
+ * `lib/metricas.ts` foi criado para matar, reintroduzido por uma string.
+ */
 const situacao = z
   .enum(['sustentado', 'parcial', 'sem-evidencia'])
-  .describe('sustentado = dois ou mais episódios; parcial = um só; sem-evidencia = nenhum')
+  .describe(
+    'Copie o que a tool devolveu, nunca recalcule. sustentado = a nota alcança o que o nível pede; parcial = há evidência, mas abaixo do esperado; sem-evidencia = nenhum episódio sustenta o comportamento.',
+  )
 
 /**
  * Uma medida de gráfico.

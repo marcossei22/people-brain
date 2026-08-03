@@ -7,7 +7,7 @@
  *
  * Custa 20 minutos e elimina a única classe de erro que estraga a gravação.
  */
-import { JANELA } from './tipos'
+import { HOJE, JANELA } from './tipos'
 import { pessoas } from './pessoas'
 import { eventos } from './eventos'
 import { episodios } from './episodios'
@@ -16,6 +16,7 @@ import { lacunas } from './lacunas'
 import { regua, comportamentoIds } from './regua'
 import { feedbacks } from './feedbacks'
 import { achadosOrg } from './achados-org'
+import { avaliacoes, ciclos } from './ciclos'
 
 const erros: string[] = []
 const avisos: string[] = []
@@ -93,6 +94,22 @@ for (const e of eventos) {
     exigePessoa(onde, 'fonte.respondidoPor', e.fonte.respondidoPor)
     if (!lacunaIds.has(e.fonte.lacunaId))
       falha(onde, `fonte.lacunaId aponta para lacuna inexistente "${e.fonte.lacunaId}"`)
+  }
+
+  // 'proprio' é contexto que a pessoa adicionou ao PRÓPRIO registro (JORNADAS
+  // §C3). Terceiro escrevendo no registro de alguém não é essa fonte — seria
+  // um gestor anotando sobre um report sem passar por pergunta nenhuma, que é
+  // exatamente o que o modelo não deixa acontecer sem procedência declarada.
+  if (e.fonte.tipo === 'proprio') {
+    exigePessoa(onde, 'fonte.adicionadoPor', e.fonte.adicionadoPor)
+    // O "quando" da procedência é outro dado que o "quando" do trabalho: o
+    // evento é datado na janela do semestre, o ato de adicionar é datado no dia.
+    if (!dataValida(e.fonte.em)) falha(onde, `fonte.em inválido "${e.fonte.em}"`)
+    if (e.fonte.adicionadoPor !== e.pessoaId)
+      falha(
+        onde,
+        `fonte "proprio" adicionada por "${e.fonte.adicionadoPor}" no registro de "${e.pessoaId}" — só a própria pessoa adiciona contexto próprio`,
+      )
   }
 }
 
@@ -182,6 +199,7 @@ for (const l of lacunas) {
   exigePessoa(onde, 'pessoaId', l.pessoaId)
   exigePessoa(onde, 'perguntarA', l.perguntarA)
   if (!l.motivo?.trim()) falha(onde, 'sem motivo — o orçamento de pergunta exige declarar o porquê')
+  if (l.prazo && !dataValida(l.prazo)) falha(onde, `prazo inválido "${l.prazo}"`)
 
   if (l.status === 'respondida' && !l.resposta)
     falha(onde, 'está "respondida" mas não tem resposta')
@@ -231,6 +249,9 @@ for (const a of achadosOrg) {
   for (const epId of a.evidencia.episodioIds) {
     if (!episodioIds.has(epId)) falha(onde, `referencia episódio inexistente "${epId}"`)
   }
+  for (const lId of a.evidencia.lacunaIds ?? []) {
+    if (!lacunaIds.has(lId)) falha(onde, `referencia lacuna inexistente "${lId}"`)
+  }
   if (!a.recomendacao.trim()) falha(onde, 'achado sem recomendação')
 }
 
@@ -241,8 +262,113 @@ for (const r of regua) {
   r.derivado?.baseadoEm.forEach((id, i) => exigePessoa(onde, `derivado.baseadoEm[${i}]`, id))
 }
 
+// ── ciclos ────────────────────────────────────────────────────────────────
+duplicados('ciclos', ciclos.map((c) => c.id))
+const cicloIds = new Set(ciclos.map((c) => c.id))
+
+for (const c of ciclos) {
+  const onde = `ciclo ${c.id}`
+  if (!dataValida(c.inicio) || !dataValida(c.fim)) falha(onde, 'inicio/fim inválidos')
+  else if (c.inicio > c.fim) falha(onde, `inicio ${c.inicio} posterior a fim ${c.fim}`)
+
+  const { abre, fecha } = c.fechamento
+  if (!dataValida(abre) || !dataValida(fecha)) falha(onde, 'janela de fechamento com data inválida')
+  else if (abre > fecha) falha(onde, `a janela de fechamento abre (${abre}) depois de fechar (${fecha})`)
+  // Avaliar um período que ainda está correndo é avaliar previsão. A regra é
+  // de produto, não de calendário: é ela que impede o ciclo de voltar a ser
+  // uma janela que atravessa o semestre cobrando quem ainda está trabalhando.
+  else if (abre < c.fim)
+    falha(onde, `a janela de fechamento abre em ${abre}, antes de o período terminar (${c.fim})`)
+
+  if (c.status === 'em-fechamento' && !(HOJE >= abre && HOJE <= fecha))
+    falha(onde, `está "em-fechamento" mas hoje (${HOJE}) está fora da janela ${abre} → ${fecha}`)
+}
+
+// Um ciclo em fechamento por vez. Dois deixariam as telas escolhendo qual
+// mostrar, e nenhuma delas oferece essa escolha ao usuário — de propósito.
+if (ciclos.filter((c) => c.status === 'em-fechamento').length > 1)
+  falha('ciclos', 'mais de um ciclo em janela de fechamento ao mesmo tempo')
+
+// ── avaliações ────────────────────────────────────────────────────────────
+duplicados('avaliacoes', avaliacoes.map((a) => a.id))
+
+const porCicloEPessoa = new Set<string>()
+for (const a of avaliacoes) {
+  const onde = `avaliacao ${a.id}`
+  exigePessoa(onde, 'pessoaId', a.pessoaId)
+  exigePessoa(onde, 'por', a.por)
+  if (!cicloIds.has(a.cicloId)) falha(onde, `cicloId inexistente "${a.cicloId}"`)
+
+  const chave = `${a.cicloId}/${a.pessoaId}`
+  if (porCicloEPessoa.has(chave)) falha(onde, `segunda avaliação de "${a.pessoaId}" no mesmo ciclo`)
+  porCicloEPessoa.add(chave)
+
+  const p = pessoas.find((x) => x.id === a.pessoaId)
+  if (a.por === a.pessoaId) falha(onde, 'a pessoa avaliou a si mesma')
+  // Quem assina é o gestor direto — a mesma regra que `podeAvaliar` aplica na
+  // tela. Semente que contradiz a permissão é permissão que só existe na UI.
+  if (p && p.gestorId !== a.por)
+    falha(onde, `assinada por "${a.por}", que não é o gestor direto de ${p.nome}`)
+
+  // A régua julgada é a do nível que a pessoa OCUPA (JORNADAS G5). Avaliação
+  // contra o nível alvo responderia outra pergunta que não a do fechamento.
+  if (p && (p.trilha !== a.trilha || p.nivel !== a.nivel))
+    falha(
+      onde,
+      `julga ${a.trilha}/${a.nivel} e ${p.nome} ocupa ${p.trilha ?? '—'}/${p.nivel ?? '—'} — o fechamento julga o nível ocupado`,
+    )
+
+  const daRegua = regua.find((r) => r.trilha === a.trilha && r.nivel === a.nivel)
+  const esperados = new Set(daRegua?.comportamentos.map((c) => c.id) ?? [])
+
+  const vistos = new Set<string>()
+  for (const v of a.vereditos) {
+    const linha = `${onde} · ${v.comportamentoId}`
+    if (!esperados.has(v.comportamentoId))
+      falha(linha, `comportamento fora da régua de ${a.trilha}/${a.nivel}`)
+    if (vistos.has(v.comportamentoId)) falha(linha, 'veredito duplicado')
+    vistos.add(v.comportamentoId)
+
+    if (!dataValida(v.em)) falha(linha, `em inválido "${v.em}"`)
+    for (const [campo, n] of [['notaIA', v.notaIA], ['nota', v.nota]] as const) {
+      if (n !== undefined && (!Number.isInteger(n) || n < 1 || n > 5))
+        falha(linha, `${campo} "${n}" fora da escala de 1 a 5`)
+    }
+
+    // Nota que se move sem evidência nova deixou de ser contagem e virou
+    // opinião com um número na frente. É a regra inteira pela qual a nota
+    // existe, e por isso ela é validada e não só documentada.
+    if (v.saida === 'discordo') {
+      if (!v.eventoId) falha(linha, 'discordância sem o evento que a frase do gestor criou')
+      if (!v.episodioId) falha(linha, 'discordância sem o episódio citado')
+      if (v.episodioId && !episodioIds.has(v.episodioId))
+        falha(linha, `episódio citado inexistente "${v.episodioId}"`)
+    }
+    if (v.saida === 'nao-sei') {
+      if (!v.lacunaId) falha(linha, '"não sei" sem lacuna aberta — a pergunta não foi para lugar nenhum')
+      if (v.nota !== undefined)
+        falha(linha, '"não sei" com nota atribuída — o comportamento fechou sem lastro')
+    }
+    if (v.saida !== 'discordo' && v.notaIA !== v.nota)
+      falha(linha, `saída "${v.saida}" com nota diferente da que a IA propôs`)
+  }
+
+  // Assinar é assinar a régua inteira: linha sem resposta vale como concordo, e
+  // por isso ela existe no registro. Avaliação fechada pela metade deixaria o
+  // produto sem saber dizer se o comportamento foi lido e aceito ou pulado.
+  if (a.assinadaEm) {
+    if (!dataValida(a.assinadaEm)) falha(onde, `assinadaEm inválido "${a.assinadaEm}"`)
+    if (!a.decisao) falha(onde, 'está assinada e não tem decisão')
+    for (const id of esperados) {
+      if (!vistos.has(id)) falha(onde, `assinada sem veredito para "${id}"`)
+    }
+  } else if (a.decisao) {
+    falha(onde, 'tem decisão mas não foi assinada')
+  }
+}
+
 // ── saída ─────────────────────────────────────────────────────────────────
-const resumo = `${pessoas.length} pessoas · ${eventos.length} eventos · ${episodios.length} episódios · ${temas.length} temas · ${lacunas.length} lacunas · ${feedbacks.length} feedbacks · ${achadosOrg.length} achados`
+const resumo = `${pessoas.length} pessoas · ${eventos.length} eventos · ${episodios.length} episódios · ${temas.length} temas · ${lacunas.length} lacunas · ${feedbacks.length} feedbacks · ${achadosOrg.length} achados · ${ciclos.length} ciclo · ${avaliacoes.length} avaliações`
 
 if (avisos.length) {
   console.warn(`\n⚠  ${avisos.length} aviso(s):`)

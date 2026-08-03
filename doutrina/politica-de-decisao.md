@@ -18,12 +18,22 @@ O gestor abre o caso com o registro que já existe. Não há formulário.
 
 O caso precisa mostrar, comportamento a comportamento da régua do nível alvo:
 
+- onde a pessoa está e quanto o nível pede, na escala de 1 a 5 da régua
 - a evidência que sustenta cada comportamento, com link para a fonte
 - o que **não** tem evidência, declarado como tal
 - densidade de evidência da pessoa no período
 
 Caso sem lacuna declarada é caso incompleto. A ausência de evidência não é argumento contra a
-pessoa, mas esconder a ausência é argumento contra o caso.
+pessoa, mas esconder a ausência é argumento contra o caso. **Comportamento sem evidência entra
+como "sem evidência", nunca como nota baixa** — a nota é uma contagem do que o registro alcançou,
+e onde não há episódio nenhum não há o que contar. Inventar 1 ali é afirmar uma medida que
+ninguém fez.
+
+**E o comitê lê a nota junto com a densidade de evidência, sempre.** A escala é de evidência: 1
+é um episódio, 2 são dois. Num caso de densidade baixa, nota baixa diz primeiro que o registro é
+fino, e o que ela pede é a pergunta que falta — a mesma coisa que "sem evidência" pede. Só num
+caso de densidade alta o número baixo diz alguma coisa sobre o trabalho. Caso que traz a nota sem
+a densidade ao lado está pedindo ao comitê que leia um número sem denominador.
 
 ## Quem decide
 
@@ -36,7 +46,16 @@ pessoa, mas esconder a ausência é argumento contra o caso.
 
 ## O que o comitê não faz
 
-Não atribui nota. Não ordena pessoas em curva. Não discute potencial — discute o que aconteceu.
+**Não atribui nota à pessoa.** Nota existe neste produto, e ela é **por comportamento da régua**:
+sai calculada da evidência, com a conta publicada, e chega no caso já pronta — o comitê lê, não
+escreve. O que não existe em lugar nenhum é um número que resuma alguém. Quando este documento
+diz "não atribui nota", é disso que ele está falando: da pessoa como um número, não da leitura
+comportamento a comportamento, que é justamente o que o caso precisa trazer.
+
+**Não ordena pessoas em curva.** Cada caso é lido contra a régua do nível alvo, nunca contra os
+outros casos da mesa.
+
+**Não discute potencial.** Discute o que aconteceu.
 
 ## O que a pessoa avaliada tem direito de fazer
 

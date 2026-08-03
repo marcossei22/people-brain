@@ -10,6 +10,11 @@
  *
  * Embaixo, para quem tem escopo agregado, o diagnóstico de organização — que
  * é output de primeira classe e não nota de rodapé do fechamento (decisão #10).
+ *
+ * A contagem de cada linha sai do registro da sessão, não de `data/`. Esta tela
+ * fica a UM clique do dossiê, e a lista dizia "14 eventos · último registro há
+ * 10 dias" para quem tinha acabado de ver "15 eventos · há 1 dia" na tela
+ * anterior. Duas telas, um clique, discordando sobre a mesma pessoa.
  */
 
 import Link from 'next/link'
@@ -17,15 +22,26 @@ import { ArrowUpRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Densidade } from '@/components/shell/densidade'
-import { pessoasVisiveis, podeVerDiagnosticoOrg } from '@/lib/agente/permissoes'
+import {
+  pessoasAvaliaveis,
+  pessoasVisiveis,
+  podeVerDiagnosticoOrg,
+} from '@/lib/agente/permissoes'
 import { DiagnosticoOrg } from '@/components/brain/diagnostico-org'
-import { diasDesde, resumoDe } from '@/lib/memoria'
+import { cicloEmFechamento } from '@/data/ciclos'
+import type { Ciclo } from '@/data/tipos'
+import { diasAte } from '@/lib/ciclo'
+import { diasDesde } from '@/lib/memoria'
+import { useRegistro } from '@/lib/registro'
 import { useViewer } from '@/lib/viewer'
 
 export default function PaginaOrg() {
   const { viewer, geracao } = useViewer()
+  const { resumoDe } = useRegistro()
   const visiveis = pessoasVisiveis(viewer)
   const veDiagnostico = podeVerDiagnosticoOrg(viewer)
+  const ciclo = cicloEmFechamento()
+  const aAssinar = pessoasAvaliaveis(viewer)
 
   return (
     <div key={geracao} className="mx-auto max-w-5xl px-10 py-12">
@@ -38,6 +54,10 @@ export default function PaginaOrg() {
           {subtitulo(viewer.papel)}
         </p>
       </header>
+
+      {ciclo && (aAssinar.length > 0 || veDiagnostico) && (
+        <FaixaDoCiclo ciclo={ciclo} aAssinar={aAssinar.length} veOrganizacao={veDiagnostico} />
+      )}
 
       <div className="mt-10">
         <div className="flex items-baseline justify-between pb-2.5">
@@ -104,6 +124,65 @@ export default function PaginaOrg() {
   )
 }
 
+/**
+ * O gatilho do fechamento, onde quem vai fechar já está.
+ *
+ * A jornada do gestor começa com um aviso ("o ciclo do seu time fecha em 15
+ * dias, 5 pessoas") e o item de menu sozinho não é aviso: ele está lá o ano
+ * inteiro, igual, com ou sem janela aberta. A faixa só existe enquanto existe
+ * ciclo em fechamento — é a diferença entre navegação e notificação.
+ *
+ * Dois destinos, e eles não são o mesmo em escala diferente: um é a lista de
+ * quem o viewer ASSINA, o outro é a leitura de como a organização inteira está
+ * fechando. A Helena tem os dois, e é a única que tem.
+ */
+function FaixaDoCiclo({
+  ciclo,
+  aAssinar,
+  veOrganizacao,
+}: {
+  ciclo: Ciclo
+  aAssinar: number
+  veOrganizacao: boolean
+}) {
+  const dias = diasAte(ciclo.fechamento.fecha)
+
+  return (
+    <div
+      className="surgir mt-8 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 rounded-sm border border-comp/25 bg-comp-suave/25 px-4 py-3.5"
+      style={{ animationDelay: '40ms' }}
+    >
+      <div className="min-w-0">
+        <p className="etiqueta text-comp">Ciclo em fechamento</p>
+        <p className="prosa mt-1 text-[0.95rem] leading-snug">
+          {ciclo.nome} · a janela fecha em {dias} {dias === 1 ? 'dia' : 'dias'}.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        {aAssinar > 0 && (
+          <Link
+            href="/ciclo"
+            className="group inline-flex items-center gap-1 text-[0.85rem] underline-offset-4 hover:underline"
+          >
+            Fechar o ciclo do seu time · {aAssinar} {aAssinar === 1 ? 'pessoa' : 'pessoas'}
+            <ArrowUpRight className="size-3.5 shrink-0" />
+          </Link>
+        )}
+        {veOrganizacao && (
+          <Link
+            href="/ciclo/organizacao"
+            className="group inline-flex items-center gap-1 text-[0.85rem] underline-offset-4 hover:underline"
+          >
+            Acompanhar o ciclo na organização
+            <ArrowUpRight className="size-3.5 shrink-0" />
+          </Link>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function titulo(papel: string) {
   if (papel === 'chro') return 'Organização'
   if (papel === 'colaborador') return 'Seu registro'
@@ -118,6 +197,9 @@ function subtitulo(papel: string) {
 
 function textoDoSilencio(dias?: number) {
   if (dias === undefined) return 'sem registro no semestre'
-  if (dias <= 21) return `último registro há ${dias} dias`
-  return `sem registro há ${dias} dias`
+  // O singular só é alcançável desde que a lista passou a ler o registro da
+  // sessão: na semente o mais recente era de oito dias atrás.
+  const quando = `${dias} ${dias === 1 ? 'dia' : 'dias'}`
+  if (dias <= 21) return `último registro há ${quando}`
+  return `sem registro há ${quando}`
 }

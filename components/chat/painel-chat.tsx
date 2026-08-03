@@ -8,7 +8,9 @@
  *
  * Única superfície com LLM. O viewer vai no header `x-people-brain-persona`,
  * que o canal do eve resolve ANTES do modelo entrar no turno — é assim que a
- * permissão continua sendo código (decisão #21).
+ * permissão continua sendo código (decisão #21). Junto com ele vai o delta da
+ * sessão, pelo mesmo caminho e pelo mesmo motivo: sem ele o Brain responde pela
+ * semente enquanto o dossiê atrás do painel já mostra o que a pessoa escreveu.
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -22,6 +24,8 @@ import { PassosDaTool } from './passos-da-tool'
 import type { PassoTool } from './passos-da-tool'
 import { useChat } from '@/lib/chat'
 import { nomeDe } from '@/lib/memoria'
+import { useRegistro } from '@/lib/registro'
+import { HEADER_REGISTRO, serializar } from '@/lib/sessao'
 import { useViewer } from '@/lib/viewer'
 import type { Viewer } from '@/lib/viewer'
 
@@ -86,11 +90,26 @@ export function PainelChat() {
 
 function Painel({ viewer }: { viewer: Viewer }) {
   const { aberto, fechar, perguntaInicial, consumirPergunta, registrarConversa } = useChat()
+  const { sessao } = useRegistro()
   const fim = useRef<HTMLDivElement>(null)
   const [rascunho, setRascunho] = useState('')
 
+  /* Por que uma ref, e não `sessao` direto: o `useEveAgent` guarda a função de
+   * headers uma vez, quando cria o store, mas a CHAMA antes de cada requisição.
+   * Lida do closure, ela mandaria para sempre o registro do primeiro render — o
+   * turno seguinte ao reconhecimento veria a régua de antes dele. A ref é a
+   * mesma referência em todo render e carrega o delta atual; o efeito a atualiza
+   * no commit, muito antes de qualquer clique poder disparar um envio. */
+  const registro = useRef(sessao)
+  useEffect(() => {
+    registro.current = sessao
+  }, [sessao])
+
   const agent = useEveAgent({
-    headers: () => ({ 'x-people-brain-persona': viewer.pessoaId }),
+    headers: () => ({
+      'x-people-brain-persona': viewer.pessoaId,
+      [HEADER_REGISTRO]: serializar(registro.current),
+    }),
   })
 
   const ocupado = agent.status === 'submitted' || agent.status === 'streaming'

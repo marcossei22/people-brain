@@ -20,7 +20,8 @@ import { AlertCircle, Lock, Minus, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Fonte } from '@/components/brain/fonte'
 import { Caixa, TiraDeCobertura } from '@/components/brain/graficos'
-import { eventoPorId } from '@/data/eventos'
+import { dataCurta, nomeDe } from '@/lib/memoria'
+import { useRegistro } from '@/lib/registro'
 import type { PropsDe } from '@/lib/agente/biblioteca'
 
 export { Barras, Cobertura, Distribuicao, Indicadores, Serie } from '@/components/brain/graficos'
@@ -28,17 +29,25 @@ export { Barras, Cobertura, Distribuicao, Indicadores, Serie } from '@/component
 /**
  * A evidência de um card sai do registro, não do payload.
  *
- * O modelo manda só o `eventoId`; a frase, o canal e o dia vêm de
- * `data/eventos.ts`. É o mesmo componente de fonte do dossiê, então o drill
- * down até a mensagem original é o mesmo nos dois lugares — e o modelo não
- * tem como citar uma frase que o registro não tem.
+ * O modelo manda só o `eventoId`; a frase, o canal e o dia vêm do registro. É o
+ * mesmo componente de fonte do dossiê, então o drill down até a mensagem
+ * original é o mesmo nos dois lugares — e o modelo não tem como citar uma frase
+ * que o registro não tem.
+ *
+ * Lê pelo `useRegistro()` e não por `data/eventos.ts` por duas razões que são a
+ * mesma: evidência criada nesta sessão existe e precisa aparecer, e evidência
+ * CONTESTADA nesta sessão não pode aparecer limpa. O mesmo evento estava marcado
+ * como contestado no dossiê da Carla e desenhado como lastro intocado da
+ * promoção dela no chat da gestora.
  */
 function Fontes({ fontes }: { fontes: { eventoId: string }[] }) {
+  const { eventoPorId, contestacaoDe } = useRegistro()
   if (!fontes?.length) return null
   return (
     <ul className="mt-1.5 space-y-1 border-l-2 border-border pl-3">
       {fontes.map((f) => {
         const ev = eventoPorId(f.eventoId)
+        const contestacao = contestacaoDe(f.eventoId)
         return (
           <li key={f.eventoId} className="text-[0.78rem] leading-snug text-muted-foreground">
             {ev ? (
@@ -47,6 +56,15 @@ function Fontes({ fontes }: { fontes: { eventoId: string }[] }) {
               </>
             ) : (
               <span className="font-mono text-[0.68rem] text-foreground/35">{f.eventoId}</span>
+            )}
+            {contestacao && (
+              <span className="mt-1 block leading-snug">
+                <span className="etiqueta mr-1.5 text-comp">contestado</span>
+                {contestacao.motivo}
+                <span className="mt-0.5 block font-mono text-[0.68rem] text-muted-foreground/70">
+                  {nomeDe(contestacao.por)} · {dataCurta(contestacao.em)}
+                </span>
+              </span>
             )}
           </li>
         )

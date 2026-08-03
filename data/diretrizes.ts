@@ -45,11 +45,11 @@ export const diretrizes: Diretriz[] = [
     nomeDoArquivoOriginal: 'ladder-aurora-v3.pdf',
     usadoPara: 'Comparar a evidência de uma pessoa contra a expectativa do nível.',
     naoUsadoPara: 'Ordenar pessoas entre si, ou produzir nota.',
-    sugestaoPendente: {
-      texto:
-        'Adicionar a Engenharia Sênior: "transforma dependência entre times em acordo com dono e prazo".',
-      baseadoEm: '2 casos independentes neste semestre',
-    },
+    /* Sem `sugestaoPendente` escrita, e é a única ficha assim. As sugestões da
+     * régua são calculadas do registro em `lib/regua-viva.ts` — guardar aqui
+     * uma cópia em prosa seria a mesma afirmação em dois lugares, com a de cá
+     * envelhecendo sozinha assim que a evidência mudasse. Quem conta as
+     * pendentes no índice pergunta ao cálculo. */
   },
   {
     id: 'cultura',

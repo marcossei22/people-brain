@@ -17,7 +17,14 @@
  * O produto avalia skill contra o nível — isso é o trabalho dele. O que ele
  * não faz é ordenar gente e medir cultura, e é por isso que uma escala de um
  * tom só, sobre eixos nomeados pela régua, diz tudo o que precisa dizer.
+ *
+ * O arquivo é visual e continua sendo: quem sabe abrir um comportamento até a
+ * fonte é `components/brain/comportamento.tsx`, e a `Cobertura` só o chama.
  */
+
+import { AbrirComportamento, SetaDeAbertura } from '@/components/brain/comportamento'
+import type { EpisodioId } from '@/data/tipos'
+import type { Parcela } from '@/lib/metricas'
 
 /** A caixa padrão de todo bloco renderizado. */
 export function Caixa({ children }: { children: React.ReactNode }) {
@@ -483,13 +490,35 @@ export function TiraDeCobertura({ itens }: { itens: { situacao: Situacao }[] }) 
   )
 }
 
+/**
+ * Uma linha da régua. Os quatro primeiros campos desenham; os quatro últimos
+ * fazem a linha ABRIR.
+ *
+ * Eles são opcionais porque este componente tem dois autores: o dossiê passa o
+ * que `comportamentosCobertos()` devolveu, com parcelas e episódios, e o agente
+ * o preenche a partir do que leu numa tool, onde só os quatro primeiros existem.
+ * Sem os campos de abertura a linha continua sendo a mesma linha — só não leva
+ * a lugar nenhum, que era o estado anterior das duas.
+ */
+interface ItemDeCobertura {
+  rotulo?: string
+  texto: string
+  situacao: Situacao
+  nivel?: number
+  esperado?: number
+  observavel?: string
+  episodioIds?: EpisodioId[]
+  parcelas?: Parcela[]
+  soma?: number
+}
+
 export function Cobertura({
   titulo,
   itens,
   nota,
 }: {
   titulo: string
-  itens: { rotulo?: string; texto: string; situacao: Situacao; nivel?: number; esperado?: number }[]
+  itens: ItemDeCobertura[]
   nota?: string
 }) {
   if (!itens?.length) return null
@@ -529,32 +558,8 @@ export function Cobertura({
 
       <ul className="mt-4 space-y-2.5">
         {itens.map((i, k) => (
-          <li key={k} className="flex items-start justify-between gap-4">
-            <span className="min-w-0 text-[0.85rem] leading-snug">
-              {i.rotulo && (
-                <span className="mr-1.5 font-mono text-[0.68rem] uppercase tracking-wider text-comp">
-                  {i.rotulo}
-                </span>
-              )}
-              {i.texto}
-            </span>
-
-            {/* A nota ao lado do que o nível pede, sempre as duas. Um "4"
-                sozinho não quer dizer nada; "4 · pede 3" é a frase inteira. */}
-            <span className="shrink-0 whitespace-nowrap font-mono text-[0.72rem] tabular-nums">
-              {i.nivel === undefined ? (
-                <span className="text-foreground/40">sem evidência</span>
-              ) : (
-                <>
-                  <span className={i.situacao === 'sustentado' ? 'text-comp' : 'text-foreground'}>
-                    {i.nivel}
-                  </span>
-                  {i.esperado !== undefined && (
-                    <span className="text-muted-foreground/70"> · pede {i.esperado}</span>
-                  )}
-                </>
-              )}
-            </span>
+          <li key={k}>
+            <LinhaDaRegua item={i} />
           </li>
         ))}
       </ul>
@@ -567,3 +572,72 @@ export function Cobertura({
     </Caixa>
   )
 }
+
+/**
+ * O comportamento e a nota dele, na tira — e o clique que leva à evidência.
+ *
+ * A tira era a única afirmação do dossiê que não abria, e era a mais importante
+ * da tela para quem está sendo avaliado: "parcial, 2 · pede 4" sem caminho até
+ * os episódios é exatamente o número sem fonte que este produto existe para não
+ * produzir.
+ *
+ * A linha SEM evidência abre também, e é o caso que mais precisa abrir: o que
+ * ela mostra é o observável que a régua pede e a razão de a ausência estar fora
+ * da escala. Deixá-la morta seria oferecer "sem evidência" como veredito final.
+ */
+function LinhaDaRegua({ item }: { item: ItemDeCobertura }) {
+  const conteudo = (
+    <div className="flex items-start justify-between gap-4">
+      <span className="min-w-0 text-[0.85rem] leading-snug">
+        {item.rotulo && (
+          <span className="mr-1.5 font-mono text-[0.68rem] uppercase tracking-wider text-comp">
+            {item.rotulo}
+          </span>
+        )}
+        {item.texto}
+      </span>
+
+      {/* A nota ao lado do que o nível pede, sempre as duas. Um "4" sozinho não
+          quer dizer nada; "4 · pede 3" é a frase inteira. */}
+      <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-mono text-[0.72rem] tabular-nums">
+        {item.nivel === undefined ? (
+          <span className="text-foreground/40">sem evidência</span>
+        ) : (
+          <span>
+            <span className={item.situacao === 'sustentado' ? 'text-comp' : 'text-foreground'}>
+              {item.nivel}
+            </span>
+            {item.esperado !== undefined && (
+              <span className="text-muted-foreground/70"> · pede {item.esperado}</span>
+            )}
+          </span>
+        )}
+        {abrivel(item) && <SetaDeAbertura />}
+      </span>
+    </div>
+  )
+
+  if (!abrivel(item)) return conteudo
+
+  return (
+    <AbrirComportamento
+      className="-mx-1.5 block w-[calc(100%+0.75rem)] rounded-sm px-1.5 py-0.5 transition-colors hover:bg-foreground/[0.04]"
+      comportamento={{
+        rotulo: item.rotulo ?? item.texto,
+        texto: item.texto,
+        observavel: item.observavel!,
+        esperado: item.esperado!,
+        nivel: item.nivel,
+        parcelas: item.parcelas,
+        soma: item.soma,
+        episodioIds: item.episodioIds ?? [],
+      }}
+    >
+      {conteudo}
+    </AbrirComportamento>
+  )
+}
+
+/** Abre quem sabe dizer o que o nível pede: é o observável que transforma a
+ *  linha sem evidência em pergunta em vez de veredito. */
+const abrivel = (i: ItemDeCobertura) => Boolean(i.observavel) && i.esperado !== undefined

@@ -9,16 +9,24 @@
  * de alocação.
  *
  * Nenhum achado nomeia culpado. A unidade de análise é o sistema.
+ *
+ * Um achado que depende de pergunta tem prazo de validade, e por isso esta tela
+ * consulta a sessão: "faltam duas perguntas" continuava escrito depois de as
+ * duas terem sido respondidas na caixa desta semana, com o chip da pessoa logo
+ * abaixo levando ao dossiê onde a resposta estava. A mesma tela afirmando que a
+ * evidência falta e que ela existe.
  */
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { achadosOrg, NOME_TIPO_ACHADO } from '@/data/achados-org'
 import { episodioPorId } from '@/data/episodios'
-import { nomeDe } from '@/lib/memoria'
+import { dataCurta, nomeDe } from '@/lib/memoria'
+import { useRegistro } from '@/lib/registro'
+import { estadoDoAchado } from '@/lib/sessao'
 
 export function DiagnosticoOrg() {
   return (
@@ -50,6 +58,8 @@ function Achado({
   atraso: number
 }) {
   const [aberto, setAberto] = useState(false)
+  const { sessao } = useRegistro()
+  const estado = estadoDoAchado(sessao, achado)
 
   return (
     <li className="surgir border-b border-border/70" style={{ animationDelay: `${120 + atraso * 50}ms` }}>
@@ -66,6 +76,12 @@ function Achado({
               {achado.evidencia.pessoaIds.length}{' '}
               {achado.evidencia.pessoaIds.length === 1 ? 'pessoa' : 'pessoas'}
             </span>
+            {estado.superado && (
+              <span className="inline-flex items-center gap-1 rounded-sm bg-comp-suave/45 px-1.5 py-[3px] font-mono text-[0.68rem] leading-none text-comp">
+                <Check className="size-3 shrink-0" />
+                evidência chegou
+              </span>
+            )}
           </div>
           <h3 className="display mt-2 max-w-2xl text-[1.15rem] leading-snug tracking-tight">
             {achado.titulo}
@@ -80,6 +96,35 @@ function Achado({
 
       {aberto && (
         <div className="pb-6 pl-0 pr-10">
+          {/* A resposta vem antes da recomendação, e a recomendação passa a ser
+              datada. O achado não é apagado — ele aconteceu —, mas quem lê
+              precisa saber, na primeira linha, que a pergunta já tem resposta. */}
+          {estado.respondidas.length > 0 && (
+            <div className="mb-5 max-w-2xl border-l-2 border-comp/40 pl-3">
+              <p className="etiqueta pb-1.5 text-comp">
+                {estado.abertas.length === 0
+                  ? 'A evidência que faltava chegou'
+                  : `${estado.respondidas.length} de ${estado.lacunas.length} perguntas respondidas`}
+              </p>
+              <ul className="space-y-2.5">
+                {estado.respondidas.map((l) => (
+                  <li key={l.id}>
+                    <p className="text-[0.85rem] leading-snug text-muted-foreground">
+                      {l.pergunta}
+                    </p>
+                    <p className="prosa mt-1 text-[0.9rem] leading-snug">{l.resposta!.texto}</p>
+                    <p className="mt-0.5 font-mono text-[0.68rem] text-muted-foreground/70">
+                      {nomeDe(l.resposta!.por)} · {dataCurta(l.resposta!.em)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {estado.respondidas.length > 0 && (
+            <p className="etiqueta pb-2">Leitura de quando o achado saiu</p>
+          )}
           <p className="prosa max-w-2xl text-[0.95rem] leading-relaxed">{achado.recomendacao}</p>
 
           <p className="etiqueta mt-5 pb-2">Quem aparece nisso</p>

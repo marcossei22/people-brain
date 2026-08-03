@@ -1,8 +1,15 @@
 /**
  * Consultas sobre a memória — ARQUITETURA.md §6.3.
- * Funções puras e determinísticas sobre os dados tipados. As tools do agente
- * (passo 4) chamam daqui depois de passar por `permissoes.ts`; as telas
- * chamam direto, sem passar pelo agente.
+ * Funções puras e determinísticas sobre os dados tipados.
+ *
+ * TUDO AQUI VÊ SÓ A SEMENTE. Quem conta alguma coisa que a sessão pode ter
+ * mudado — evento, feedback, lacuna, estrela — chama `lib/sessao.ts`, que
+ * mescla as duas e é a mesma leitura que as tools do agente usam. Contar por
+ * aqui numa tela que escreve é como o dossiê e a lista de `/org` passaram a
+ * discordar sobre a mesma pessoa a um clique de distância.
+ *
+ * O que continua saindo daqui é o que a sessão não cria: pessoa, episódio,
+ * tema, e as conversões de data.
  */
 
 import { pessoas } from '@/data/pessoas'
@@ -11,6 +18,7 @@ import { episodios } from '@/data/episodios'
 import { temas } from '@/data/temas'
 import { lacunas } from '@/data/lacunas'
 import { feedbacks } from '@/data/feedbacks'
+import { HOJE } from '@/data/tipos'
 import type { Pessoa, PessoaId } from '@/data/tipos'
 
 export const pessoa = (id: PessoaId): Pessoa | undefined => pessoas.find((p) => p.id === id)
@@ -45,10 +53,19 @@ export function dataCurta(iso: string): string {
   return `${Number(dia)} ${MESES[Number(mes) - 1]}`
 }
 
-export function diasDesde(iso: string | undefined, hoje = '2026-08-01'): number | undefined {
+export function diasDesde(iso: string | undefined, hoje: string = HOJE): number | undefined {
   if (!iso) return undefined
   const ms = Date.parse(hoje) - Date.parse(iso)
   return Math.max(0, Math.round(ms / 86_400_000))
+}
+
+/** Dias daqui até uma data. O par de `diasDesde` para a frente: a janela de
+ *  fechamento é a única coisa do produto que conta nessa direção, e ela é dita
+ *  em três telas — a lista do ciclo, o painel do gestor e o aviso que a pessoa
+ *  avaliada recebe. Uma conta só, para as três não discordarem sobre quantos
+ *  dias faltam. */
+export function diasAte(iso: string, hoje: string = HOJE): number {
+  return Math.max(0, Math.round((Date.parse(iso) - Date.parse(hoje)) / 86_400_000))
 }
 
 export const feedbacksDe = (pessoaId: PessoaId) =>

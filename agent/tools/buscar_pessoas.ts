@@ -2,8 +2,8 @@ import { defineTool } from 'eve/tools'
 import { z } from 'zod'
 import { pessoas } from '../../data/pessoas'
 import { pessoasVisiveis } from '../../lib/agente/permissoes'
-import { resumoDe } from '../../lib/memoria'
-import { viewerDaSessao } from '../lib/viewer-da-sessao'
+import { resumoDe } from '../../lib/sessao'
+import { registroDaSessao, viewerDaSessao } from '../lib/viewer-da-sessao'
 
 export default defineTool({
   description:
@@ -17,6 +17,9 @@ export default defineTool({
   async execute(filtros, ctx) {
     const viewer = viewerDaSessao(ctx)
     const visiveis = pessoasVisiveis(viewer)
+    // O resumo vem do registro mesclado — é a mesma contagem que a linha de
+    // `/org` mostra, e ela muda no segundo em que alguém escreve.
+    const registro = registroDaSessao(ctx)
 
     const filtradas = visiveis.filter(
       (p) =>
@@ -40,7 +43,7 @@ export default defineTool({
         time: p.time,
         gestorId: p.gestorId,
         densidadeEvidencia: p.densidadeEvidencia,
-        ...resumoDe(p.id),
+        ...resumoDe(registro, p.id),
       })),
     }
   },

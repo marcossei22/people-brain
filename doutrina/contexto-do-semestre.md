@@ -24,6 +24,23 @@ ausência de rastro. Onde o registro estiver vazio, perguntar antes de concluir.
 Entrega adiada por dependência externa não conta contra a pessoa. Conta contra a organização, e
 é assim que deve aparecer no fechamento.
 
+## Onde o contexto entra, já que ele não entra na conta
+
+A nota contra a régua é contagem de evidência: episódios, firmeza do padrão, reconhecimento,
+trabalho acima do cargo. Bloqueio externo e ausência de rastro não são parcelas, e não devem
+ser — parcela de contexto seria alguém movendo o número à mão, e a nota deixaria de ser
+verificável.
+
+O contexto entra em três lugares, todos ao redor do número:
+
+- **No diagnóstico da organização**, que é lido antes das leituras individuais. Se três pessoas
+  atrasaram pela mesma fila, isso se diz uma vez, sobre o sistema, antes de qualquer nota.
+- **Na leitura escrita ao lado da nota.** Onde houver bloqueio ou plantão, isso se declara junto
+  com o número, com a fonte. Nota fina de quem passou seis semanas em incidente é afirmação
+  sobre o registro, não sobre a pessoa.
+- **Na evidência que alguém acrescenta.** Contexto que vira episódio move a conta pelo único
+  caminho que ela aceita, que é mais evidência.
+
 ## Validade
 
 Este documento vale para o ciclo de fevereiro a julho de 2026 e deve ser reescrito no próximo.

@@ -1,8 +1,8 @@
 import { defineTool } from 'eve/tools'
 import { z } from 'zod'
-import { podeConsultar } from '../../lib/agente/permissoes'
-import { lacunas } from '../../data/lacunas'
-import { nomeDe, viewerDaSessao } from '../lib/viewer-da-sessao'
+import { podeConsultar, pessoasVisiveis } from '../../lib/agente/permissoes'
+import { lacunasDe } from '../../lib/sessao'
+import { nomeDe, registroDaSessao, viewerDaSessao } from '../lib/viewer-da-sessao'
 
 export default defineTool({
   description:
@@ -18,10 +18,15 @@ export default defineTool({
       if (!auth.ok) return { negado: true, motivo: auth.motivo }
     }
 
-    const lista = lacunas
-      .filter((l) => !pessoaId || l.pessoaId === pessoaId)
+    /* Pelo registro mesclado, e não por `data/lacunas.ts`: uma lacuna respondida
+     * na caixa desta semana continuava "aberta" para o agente, e o chat
+     * reperguntava o que o dossiê ao lado já mostrava respondido — gastando uma
+     * das perguntas da semana com o que o registro tinha. */
+    const registro = registroDaSessao(ctx)
+    const alvos = pessoaId ? [pessoaId] : pessoasVisiveis(viewer).map((p) => p.id)
+    const lista = alvos
+      .flatMap((id) => lacunasDe(registro, id))
       .filter((l) => !status || l.status === status)
-      .filter((l) => podeConsultar(viewer, l.pessoaId).ok)
 
     return {
       total: lista.length,
@@ -33,7 +38,9 @@ export default defineTool({
         motivo: l.motivo,
         valor: l.valor,
         status: l.status,
-        resposta: l.resposta ? { texto: l.resposta.texto, por: nomeDe(l.resposta.por), em: l.resposta.em } : null,
+        resposta: l.resposta
+          ? { texto: l.resposta.texto, por: nomeDe(l.resposta.por), em: l.resposta.em }
+          : null,
       })),
     }
   },

@@ -17,12 +17,24 @@ import { Separator } from '@/components/ui/separator'
 import { SemAcesso } from '@/components/brain/sem-acesso'
 import { formatarData } from '@/components/brain/diretriz'
 import { SubirDocumento } from './subir-documento'
+import type { Diretriz } from '@/data/diretrizes'
 import { diretrizes, NOME_ORIGEM, NOME_TIPO } from '@/data/diretrizes'
 import { podeAdministrar } from '@/lib/agente/permissoes'
+import { useRegistro } from '@/lib/registro'
+import { sugestoesDaRegua } from '@/lib/regua-viva'
+import type { Registro } from '@/lib/sessao'
 import { useViewer } from '@/lib/viewer'
+
+/* A régua não guarda sugestão escrita: as dela nascem do registro, e o índice
+ * pergunta ao cálculo em vez de ao dado. Sem isto, o selo aqui e o card lá
+ * dentro discordariam no instante em que a evidência mudasse — que é o único
+ * instante em que alguém está olhando. */
+const temSugestao = (d: Diretriz, registro: Registro) =>
+  d.tipo === 'regua' ? sugestoesDaRegua(registro).length > 0 : Boolean(d.sugestaoPendente)
 
 export function IndiceDiretrizes() {
   const { viewer, geracao } = useViewer()
+  const { sessao } = useRegistro()
   const [subindo, setSubindo] = useState(false)
 
   if (!podeAdministrar(viewer)) {
@@ -31,7 +43,7 @@ export function IndiceDiretrizes() {
     )
   }
 
-  const pendentes = diretrizes.filter((d) => d.sugestaoPendente).length
+  const pendentes = diretrizes.filter((d) => temSugestao(d, sessao)).length
 
   return (
     <div key={geracao} className="mx-auto max-w-5xl px-10 py-12">
@@ -81,7 +93,7 @@ export function IndiceDiretrizes() {
                   <Badge variant="outline" className="etiqueta px-1.5 py-[3px]">
                     {NOME_TIPO[d.tipo]}
                   </Badge>
-                  {d.sugestaoPendente && (
+                  {temSugestao(d, sessao) && (
                     <Badge
                       variant="outline"
                       className="etiqueta gap-1 border-comp/35 bg-comp-suave/40 px-1.5 py-[3px] text-comp"

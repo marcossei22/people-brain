@@ -7,8 +7,14 @@ description: Use quando pedirem para montar, preparar ou defender um caso de pro
 ## Procedimento
 
 1. **Primeira rodada, tudo junto:** `ler_doutrina` de `politica-de-decisao` (o que o comitê
-   exige) + `buscar_pessoas` + `ler_temas` + `ler_episodios` + `listar_lacunas`.
-2. **Segunda rodada:** `ler_regua` do nível alvo, que depende da trilha e do nível da primeira.
+   exige) + `buscar_pessoas` + `ler_temas` + `ler_episodios` + `listar_lacunas` + `ler_ciclo` da
+   pessoa. O último existe para você não montar um caso que já foi aberto: se o gestor já assinou
+   "abrir caso de promoção" neste ciclo, diga isso primeiro — o que falta ali é a mesa, não o caso.
+2. **Segunda rodada:** `ler_regua` do nível alvo **com o `pessoaId`**, que depende da trilha e do
+   nível da primeira. Sem o `pessoaId` a régua volta crua, sem `nivel` e sem `situacao` — e o
+   comitê exige a coluna "onde a pessoa está", na escala de 1 a 5. Derivar esses números de cabeça
+   a partir dos temas produz um caso que discorda da teia do dossiê da mesma pessoa, que é o lugar
+   onde a divergência custa mais caro.
 
 O tema é a unidade do caso, porque mostra padrão e não episódio isolado. Os episódios já trazem
 os `eventoIds`; `ler_eventos` só quando faltar a frase exata de algo.
@@ -19,7 +25,10 @@ os `eventoIds`; `ler_eventos` só quando faltar a frase exata de algo.
 
 Organize por **comportamento da régua**, não por ordem cronológica. O comitê lê a régua.
 
-Para cada comportamento: a afirmação, os episódios que a sustentam, e o link até o evento.
+Para cada comportamento: **onde ela está e quanto o nível pede**, os dois números copiados do
+`ler_regua`, a afirmação, os episódios que a sustentam e o link até o evento. Comportamento sem
+evidência entra como "sem evidência" — nunca como nota baixa. A ausência pede a pergunta que falta;
+a nota baixa afirma o que o registro alcançou. Ao comitê, as duas levam a decisões opostas.
 
 Declare a densidade de evidência da pessoa logo no começo. Um caso construído sobre densidade
 baixa é um caso mais fraco, e esconder isso é o que produz decisão injusta.

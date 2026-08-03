@@ -110,17 +110,22 @@ A meia-vida útil se mede em dias.
 → A métrica-mãe do sistema é **latência**, não volume nem adoção.
 
 **3. Separe o treinador do juiz.**
-Loop contínuo = desenvolvimento (privado, do colaborador, sem consequência de mérito). Loop periódico = julgamento (calibrado, transparente, com consequência).
-→ Duas superfícies, duas regras de visibilidade. Feedback de coaching **não** entra automaticamente em calibração.
+Loop contínuo = desenvolvimento, disparado por evento. Loop periódico = julgamento, com consequência de nível e mérito.
+→ Duas cadências, **uma leitura só**. O que separa os dois loops não é visibilidade — não existe arquivo secreto, e a nota contra a régua está no dossiê da pessoa desde o primeiro dia. É o que cada loop **produz**: o contínuo produz conversa e reconhecimento; o periódico produz decisão. O que nunca atravessa de um para o outro é o **teor da correção** — o registro guarda que a conversa existiu, com data e episódio, nunca o que foi dito nela. O reconhecimento atravessa, e de propósito: ele é evidência, e evidência é o que a régua pesa (§2.5). Um sistema em que marcar o momento não move a leitura é um sistema dizendo ao gestor que reconhecer não conta.
 
 **4. Sem arquivo secreto. O colaborador é o primeiro leitor do próprio registro.**
 Tudo que a IA captura sobre a pessoa é visível pra ela, no mesmo instante, com a fonte. Ela anota, contextualiza, contesta.
 → É a espinha moral **e** o maior driver de qualidade de dado: ela corrige o que a IA errou. Nenhum sistema de vigilância consegue isso.
 
-**5. A IA lê skill contra a régua. O humano decide o que fazer com a leitura.**
+**5. A IA pontua comportamento contra a régua. O humano decide o que fazer com a nota.**
 Avaliar trabalho observável contra um nível escrito é o trabalho da IA, e ela faz isso melhor que um gestor com doze reports reconstruindo seis meses de cabeça: comportamento a comportamento, com a fonte de cada afirmação. Recusar essa leitura seria devolver o problema para quem o produto veio resolver.
+→ A nota é de 1 a 5, é de um comportamento da régua, e é **contagem com regra publicada — não opinião com um número na frente**: quantos episódios distintos sustentam, quão firme é o padrão, se alguém reconheceu, se o trabalho foi acima do cargo. Por isso ela é clicável até a fonte como qualquer outra afirmação. Um gestor pode discordar da regra; ele não pode dizer que não sabe de onde o 4 veio — o que é mais do que se consegue dizer do parágrafo que ele escreveria de memória.
+→ **"Sem evidência" não é o degrau de baixo da escala — está fora dela.** A conta só roda onde há episódio; sem episódio nenhum ela não devolve número, e a tela escreve "sem evidência". Isso é um estado do registro, não uma afirmação sobre a pessoa, e a saída dele é uma pergunta na semana seguinte.
+→ **E o degrau de baixo, quando existe, também é contagem.** Nota 1 é um episódio. Nota 2 são dois, ou um com padrão firme. Não é veredito de fraqueza — é o quanto o registro alcançou, e é exatamente o que Design, People e Finance tendem a produzir (§7.1). Por isso a régua nunca aparece sem a **densidade de evidência** ao lado: com densidade baixa, nota baixa pede a mesma coisa que "sem evidência" pede. **O que autoriza ler o número como afirmação sobre o trabalho é densidade alta** — registro que alcançou e mesmo assim não encontrou o comportamento. O sistema que confunde as duas leituras é o sistema de vigilância que eu me recusei a construir.
+→ **E o contexto entra na leitura, nunca na conta.** Bloqueio externo, plantão, trabalho sem rastro: o `contexto-do-semestre` diz o que não conta contra a pessoa, e nada disso é parcela. Uma parcela de contexto seria um humano movendo o número à mão, que é a opinião com número na frente que a contagem existe para não ser. O contexto chega por três caminhos, todos ao redor do número e nenhum dentro dele: o diagnóstico de organização, que roda **antes** do individual no fechamento; a leitura escrita ao lado da nota, com fonte; e o `Discordo` do gestor, que vira evidência nova — e evidência é o único caminho pelo qual a conta se move.
 
-As linhas vermelhas são outras três, e essas são de arquitetura, não disclaimer de compliance:
+As linhas vermelhas são outras quatro, e essas são de arquitetura, não disclaimer de compliance:
+- **Não pontua a pessoa.** O número é do comportamento. Não existe nota geral, média das outras, nem campo no modelo de dados onde uma coisa dessas caberia — e é aí que esse "não" se sustenta, não numa instrução de prompt.
 - **Não ordena pessoas.** Cada uma é lida contra o nível, nunca contra as colegas. Sem rating relativo, sem curva, sem leaderboard.
 - **Não mede cultura.** Valores governam como se diz, nunca se a pessoa é boa (§ abaixo).
 - **Não decide.** Promover, ajustar comp, desligar: dependem de orçamento, timing e calibração entre times — coisas que não estão no registro.
@@ -128,8 +133,9 @@ As linhas vermelhas são outras três, e essas são de arquitetura, não disclai
 **6. Performance é propriedade do sistema, não só da pessoa.**
 Contexto importa: projeto ruim, expectativa mal definida, dependência travada, troca de gestor.
 → O fechamento produz **diagnóstico de organização**, não só 700 vereditos. (§3.4)
+→ E a **ordem** virou parte do princípio no dia em que a leitura virou número: o diagnóstico de organização é lido **antes** das leituras individuais do time, nunca depois. O Rafael, travado duas vezes pela fila de Dados, aparece com evidência fina em entrega — a conta não sabe de bloqueio externo, e não deve saber (§2.5). Quem lê a nota dele precisa já ter lido que a fila trava seis pessoas em três squads. Diagnóstico depois do veredito é errata.
 
-**Sobre o gestor:** o modelo o trata como **editor e treinador**, não autor e escriba. Hoje pedimos que ele seja historiador (lembrar), redator (escrever) e juiz (decidir). Ele é ruim nos dois primeiros, e o terceiro é o único que só ele pode fazer. Tire os dois primeiros dele.
+**Sobre o gestor:** o modelo o trata como **editor e treinador**, não autor e escriba. Hoje pedimos que ele seja historiador (lembrar), redator (escrever), avaliador (pesar o trabalho contra a régua) e juiz (decidir). Ele é ruim nos três primeiros, e não por caráter: ninguém com doze reports lembra, escreve e pesa seis meses de doze pessoas numa semana. Só o quarto é intransferível — decidir nível, promoção e mérito depende de orçamento, timing e calibração, que não estão no registro. Tire os três primeiros dele.
 
 ---
 
@@ -170,7 +176,7 @@ Quatro fases. **Três são contínuas. Só uma tem data no calendário.**
 
 ### 3.1 Setup — escrever a régua
 
-Meu desenho original era todo centrado em evidência: capturar o que aconteceu. Mas **evidência sem régua é diário.** Não dá pra dizer que a Carla está acima do nível dela sem uma definição do nível dela. A IA comprime seis meses de trabalho; ela não julga sem saber o que a empresa espera.
+Meu desenho original era todo centrado em evidência: capturar o que aconteceu. Mas **evidência sem régua é diário.** Não dá pra dizer que a Carla está acima do nível dela sem uma definição do nível dela. A régua não é o contexto do julgamento — ela **é** o julgamento: é contra ela que a IA pontua cada comportamento, e é dela que sai o número que o gestor confirma ou contesta. Sem régua escrita, sobra um diário bem organizado.
 
 E aqui mora uma coisa maior do que parece:
 
@@ -288,7 +294,7 @@ Regra que sustenta tudo:
 
 > **Você marca um momento, não uma pessoa.**
 
-A estrela gruda no **episódio** ("essa migração foi acima do nível dela"), nunca na Carla como escalar. Isso não viola a linha vermelha de §2.5 — é humano marcando evento, não máquina pontuando gente. E ela vale muito mais que um "like":
+A estrela gruda no **episódio** ("essa migração foi acima do nível dela"), nunca na Carla como escalar. E ela não escapa da régua — ela **entra** na conta: "houve reconhecimento" é uma das parcelas da nota daquele comportamento (§2.5). Se marcar um momento não mexesse na leitura, o produto estaria dizendo ao gestor que reconhecer não muda nada. Ela vale muito mais que um "like":
 
 - **Custo:** 1 segundo, contra 4 minutos de um feedback escrito. Você coleta ~50× mais sinal.
 - **É rótulo de treino.** Cada estrela é um gestor ensinando o sistema o que é "bom" *aqui*. 500 estrelas × 58 gestores = o sistema aprende a régua real da empresa — que volta pro Setup e atualiza o ladder (§3.1). **É o loop fechado que a Comp exige acima de N4, com mecanismo concreto.**
@@ -296,13 +302,15 @@ A estrela gruda no **episódio** ("essa migração foi acima do nível dela"), n
 
 **Duas guardas obrigatórias:**
 
-**1. Estrela não é ranking.** Se "quem tem mais estrelas" virar critério, você reconstruiu métrica de popularidade com passos extras e os gestores gameiam em 60 dias. É input de evidência, nunca placar. O colaborador vê as dele; leaderboard não existe.
+**1. Estrela não é ranking — e agora ela vale ponto, então a guarda precisa ser mais dura que "não some estrelas".** Ela vale **+1 num teto de 5**, num comportamento, e **só onde já existe episódio**: estrela não cria evidência, ela pesa evidência que já está no registro. Distribuir estrela para inflar dá +1 em todo mundo, o que não move ninguém em relação a ninguém — a nota é contra a régua, nunca contra as colegas. E o gesto é público na direção certa: o reconhecimento inteiro fica no episódio, com autor e data, visível para a pessoa e para o RH; **taxa de estrela por gestor é sinal de qualidade do ciclo** (§ jornada A4), do mesmo jeito que taxa de discordância. O que continua não existindo é a **soma**: ninguém conta estrelas por pessoa, não existe total, não existe leaderboard. Gaming aqui não é impossível — é visível, é barato de auditar, e não produz o número que se ganharia gameando.
 
-**2. Não existe estrela negativa.**
+**2. Não existe estrela negativa, e a nota não é uma.**
 
 > **Reconhecimento pode ser um clique. Preocupação tem que ser uma conversa.**
 
-Marcação de "isso foi mal" cria dossiê de deméritos: é gelado, é chilling, e no Brasil é passivo trabalhista puro. Quando o gestor quer sinalizar problema, o sistema **não oferece marcação** — oferece o rascunho da conversa. A assimetria é proposital e é coerente com separar treinador de juiz.
+Marcação de "isso foi mal" cria dossiê de deméritos: é gelado, é chilling, e no Brasil é passivo trabalhista puro. Quando o gestor quer sinalizar problema, o sistema **não oferece marcação** — oferece o rascunho da conversa.
+
+A objeção óbvia à doutrina nova mora aqui: *"a IA registra que a pessoa está em 1 contra um esperado 4 — isso não é o dossiê de deméritos que vocês recusaram?"* Não, e a diferença é de mecanismo, não de tom. **Nenhuma parcela da nota subtrai.** Não existe um campo onde alguém escreva "isso foi mal": a conta só soma evidência, e um número baixo é a ausência dela, não um demérito registrado por alguém. Ele não tem autor humano, ele **se move sozinho para cima** quando o episódio seguinte entra, e a pessoa o vê no mesmo instante que o gestor, com o direito de contestar e de adicionar o que o sistema não podia saber. O que é passivo trabalhista é o registro que só desce e só por decisão de alguém, sem regra publicada e sem contraditório. Este é o oposto disso — é o registro declarando o que ainda não viu.
 
 #### O chat — o que faz o produto ser aberto toda semana
 
@@ -430,7 +438,9 @@ O fluxo 2 resolvendo os dois lados na mesma superfície prova de uma vez: propri
   o produto: **o protótipo não imita a interface do Slack**, e o mesmo loop roda em `/feedback`. O
   app web é pra **ler e decidir**, não pra produzir.
 - O colaborador **não tem** trabalho de performance pra fazer. Não existe formulário em lugar nenhum.
-- Em nenhuma tela existe um número de 1 a 5 atribuído a uma pessoa pela IA.
+- O número de 1 a 5 na tela é sempre de um **comportamento da régua**, e ele abre na contagem e na
+  evidência que o produziram. Não existe tela com uma nota da pessoa — nem geral, nem média das
+  outras, nem posição numa lista. É a distinção inteira, e ela dá pra apontar na tela.
 
 ---
 
@@ -440,7 +450,7 @@ Onde se ganha ou se perde a entrevista. Cada "não" é aposta.
 
 | Não construo | Por quê |
 |---|---|
-| **Score / rating de pessoa gerado por IA** | Mata a confiança no dia 1, é indefensável sob LGPD, e transfere pra máquina a única coisa que só o humano faz. Se eu construir isso, o resto do sistema é rejeitado por tabela. |
+| **A pessoa como escalar — rating geral, nota única, posição em lista** | A IA pontua comportamento contra a régua, e cada nota abre na contagem que a produziu. Um número que resume a pessoa não abre em nada: é média de coisas que não se somam, e a primeira pergunta que ele leva — *"de onde veio o 3,4?"* — não tem resposta. Sob LGPD o argumento é o inverso do que se costuma dizer: nota calculada com regra publicada e fonte clicável é **mais** auditável que um parágrafo escrito de memória; o que é indefensável é o escalar opaco. Não existe campo pra ele no modelo de dados, que é o único lugar onde esse tipo de "não" se sustenta. |
 | **Estrela negativa / marcação de demérito** | Reconhecimento pode ser um clique; preocupação tem que ser conversa. Dossiê de deméritos é chilling e é passivo trabalhista. |
 | **Análise de sentimento, tom, horas online, tempo de resposta** | Vigilância. Destrói o ativo (confiança) que torna o dado bom. E mede esforço, não contribuição. |
 | **Chat respondendo sobre estado emocional / risco de saída individual** | A IA não sabe. Fingir que sabe é o produto que eu recusei. |
@@ -458,10 +468,12 @@ Onde se ganha ou se perde a entrevista. Cada "não" é aposta.
 
 Honestidade aqui vale mais que solução perfeita.
 
-**1. Densidade de evidência é desigual — e enviesa.**
-Eng e Sales deixam rastro rico; Design, People e Finance quase nada. Risco: legibilidade digital vira proxy de performance.
-→ O loop de perguntar (§3.2) é a mitigação principal — onde o rastro é fino, o sistema *pergunta* em vez de adivinhar. Mais: captura manual em 1 clique (`/brain` numa thread), densidade **exibida** no dossiê ("17 evidências" vs. "3"), e nunca comparar trilhas de densidade diferente.
-→ **A parte honesta:** no V1 este produto é melhor pra Eng e GTM que pra G&A. Eu digo isso no vídeo.
+**1. Densidade de evidência é desigual — e enviesa. A nota piorou esse risco, e eu não vou fingir que não.**
+Eng e Sales deixam rastro rico; Design, People e Finance quase nada. Risco: legibilidade digital vira proxy de performance. E duas das quatro parcelas da nota — episódios distintos, firmeza do padrão — são densidade de evidência com outro nome. **Quem deixa pouco rastro não recebe mais um registro incompleto: recebe 1 ou 2 contra um esperado 4.** Um número é mais fácil de ler mal que um espaço em branco, e o Diego, que é Design Lead, é o caso do protótipo.
+→ O loop de perguntar (§3.2) continua sendo a mitigação principal, e a nota **aumenta** o valor dela: onde o rastro é fino, o sistema pergunta em vez de adivinhar, e cada resposta é um episódio que move a conta. Mais: captura manual em 1 clique (`/brain` numa thread) e densidade **exibida ao lado da régua**, nunca numa aba separada.
+→ E a regra de leitura que a escala obriga (§2.5): **nota baixa em densidade baixa é afirmação sobre o registro, não sobre a pessoa** — a saída dela é a mesma de "sem evidência", que é a pergunta da semana seguinte. Só densidade alta autoriza ler o número baixo como afirmação sobre o trabalho. Não é ressalva de rodapé: é o que a IA escreve ao lado do número, e é o que a tela do ciclo mostra ao RH como sinal de qualidade ("quem está sendo avaliado com pouco lastro").
+→ Duas coisas que a escala **não** permite mais dizer da forma antiga: comparar trilhas de densidade diferente continua proibido, mas agora a proibição precisa ser de produto e não de etiqueta — a régua é por trilha e por nível, e não existe tela que ponha duas trilhas na mesma teia. E "onde o rastro é fino, sai sem evidência" virou "onde o rastro é fino, sai nota baixa **com a densidade colada nela**".
+→ **A parte honesta:** no V1 este produto é melhor pra Eng e GTM que pra G&A, e a nota torna isso mais visível, não menos. Eu digo isso no vídeo.
 
 **2. Régua ruim aplicada com consistência perfeita.**
 O Setup pode sistematizar um padrão ruim em 700 pessoas. → FDE desafia o ladder em vez de digitalizar; derivação por evidência corrige com o tempo. Mas é risco real, não hipotético.
@@ -470,7 +482,7 @@ O Setup pode sistematizar um padrão ruim em 700 pessoas. → FDE desafia o ladd
 Mais toques = mais chance de virar ruído. → Teto rígido, silêncio permitido, e contra-métrica de taxa de dispensa. Acima de 50%, o modelo de detecção está errado, não o usuário.
 
 **4. Latência vs. acurácia.**
-Feedback rápido sobre evidência incompleta pode estar errado. → A IA **propõe**, não afirma; o rascunho carrega a evidência à vista pro gestor pegar o erro antes de enviar; e a ação default é *perguntar*, não *julgar*.
+Feedback rápido sobre evidência incompleta pode estar errado. → A IA **propõe**, não afirma: o veredito por comportamento chega com a evidência à vista, pro gestor pegar o erro antes de enviar. E o sistema não escolhe entre perguntar e julgar — faz os dois, e é a mesma função que separa um caso do outro: onde há episódio, sai nota contra a régua; onde não há, sai "sem evidência" e a lacuna vira pergunta na semana seguinte. Inventar nota baixa no lugar de perguntar seria trocar acurácia por velocidade exatamente onde dói.
 
 **5. O tempo do gestor não fica de graça.**
 Não elimino o custo — troco 15h concentradas numa semana por ~20min/semana distribuídos (~17h/ano vs. ~28h/ano), com valor muito maior. Alguns gestores **preferem** o lote. Aposto contra eles: o lote é exatamente o que produz feedback genérico.
@@ -480,7 +492,7 @@ Se o gestor não dá feedback porque **não quer o conflito**, IA nenhuma resolv
 → Mitigação de operating model, não de produto: ação default é observação e reconhecimento (baixo custo social), e a **cobertura de feedback do gestor fica visível pro gestor dele**. Deixa de ser tarefa invisível.
 
 **7. "Feedback rascunhado por IA é autêntico?"**
-A IA não dá a opinião — dá a memória, a evidência e a primeira frase. O julgamento é humano. E o benchmark honesto não é o feedback ideal: é o parágrafo genérico escrito às 23h do dia do prazo. Contra esse, ganho fácil.
+A IA não dá opinião — dá a memória, a evidência, a leitura contra a régua e a primeira frase, cada afirmação com a fonte pendurada. O que continua humano é a **decisão**: nível, promoção, mérito. E o benchmark honesto não é o feedback ideal: é o parágrafo genérico escrito às 23h do dia do prazo, sem uma fonte, terminando numa nota que o próprio autor não sabe justificar. A nota da IA, essa, abre na contagem. Contra esse benchmark, ganho fácil — e ganho justamente na parte que parecia indefensável.
 
 ---
 

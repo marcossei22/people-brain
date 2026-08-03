@@ -8,9 +8,17 @@ import type { NivelRegua } from './tipos'
  * contexto e processo. Por isso é o único estruturado — `Tema.comportamentosRegua`
  * referencia estes ids, e é essa referência que liga padrão observado a decisão.
  *
- * `derivado` é a régua viva do PLANO.md §3.1: uma sugestão que nasceu da
- * evidência real e está esperando decisão humana. Régua congelada morre —
- * é o mecanismo de N5 (decisão #8).
+ * AQUI SÓ MORA A RÉGUA ESCRITA. A régua viva do PLANO.md §3.1 — as sugestões de
+ * recalibração que esperam decisão humana — saiu deste arquivo e virou cálculo
+ * em `lib/regua-viva.ts`. Ela vivia aqui como o campo `derivado`, três frases
+ * digitadas à mão que a tela anunciava como "derivado da evidência de Carla e
+ * Rafael": a única afirmação do produto que não abria em fonte nenhuma era
+ * justamente a que se dizia derivada. Duas delas não sobreviveram ao cálculo, e
+ * o motivo de cada uma está escrito no fim de `lib/regua-viva.ts`.
+ *
+ * O campo `derivado` continua existindo em `NivelRegua` e continua vazio aqui,
+ * de propósito: uma régua que uma empresa real subisse por arquivo pode chegar
+ * com sugestão junto. O que não pode é a demo escrever a própria.
  */
 export const regua: NivelRegua[] = [
   {
@@ -88,20 +96,6 @@ export const regua: NivelRegua[] = [
         observavel: 'Alguém no time passa a fazer sozinho o que só essa pessoa fazia.',
       },
     ],
-    derivado: {
-      sugestao:
-        'Adicionar comportamento: "transforma dependência entre times em acordo com dono e prazo". Apareceu em dois casos independentes neste semestre e hoje não tem onde ser creditado na régua.',
-      baseadoEm: ['carla', 'rafael'],
-      status: 'proposto',
-      virariaComportamento: {
-        id: 'eng-senior-acordo',
-        rotulo: 'Acordo',
-        esperado: 3,
-        texto: 'Transforma dependência entre times em acordo com dono e prazo.',
-        observavel:
-          'O bloqueio vira acordo com responsável e data, registrado onde os dois times veem.',
-      },
-    },
   },
   {
     trilha: 'eng',
@@ -282,12 +276,6 @@ export const regua: NivelRegua[] = [
         observavel: 'O efeito do desenho aparece medido, não afirmado.',
       },
     ],
-    derivado: {
-      sugestao:
-        'Design é a trilha com menor densidade de evidência da Aurora: 5 eventos no semestre contra uma média de 9. Não é falta de trabalho — é que pesquisa, facilitação e sustentação de design system não deixam rastro em PR nem em thread. Vale escrever na régua o que conta como observável aqui, ou o registro vai continuar punindo a função.',
-      baseadoEm: ['diego'],
-      status: 'proposto',
-    },
   },
 ]
 
@@ -297,6 +285,12 @@ export const lerRegua = (trilha: string, nivel: string) =>
 export const comportamentoIds = new Set(
   regua.flatMap((r) => r.comportamentos.map((c) => c.id)),
 )
+
+/** Um comportamento pelo id, sem saber de que trilha ou nível ele é. Existe
+ *  porque quem guarda a ligação (`Tema`, `Veredito`, `Lastro`) guarda só o id —
+ *  e três lugares já vinham refazendo este `flatMap` à mão. */
+export const comportamentoPorId = (id: string) =>
+  regua.flatMap((r) => r.comportamentos).find((c) => c.id === id)
 
 export const NOME_TRILHA: Record<string, string> = {
   eng: 'Engenharia',

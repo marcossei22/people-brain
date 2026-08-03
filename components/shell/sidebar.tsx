@@ -8,14 +8,24 @@
  * para o layout não mudar depois.
  */
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookMarked, Building2, Inbox, MessageSquarePlus, Plug } from 'lucide-react'
+import logo from '@/public/logo.png'
+import {
+  BookMarked,
+  Building2,
+  CalendarCheck,
+  CalendarClock,
+  Inbox,
+  MessageSquarePlus,
+  Plug,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { SeletorPersona } from './seletor-persona'
-import { podeAdministrar } from '@/lib/agente/permissoes'
+import { podeAdministrar, pessoasAvaliaveis, quemAvalia } from '@/lib/agente/permissoes'
 import { useChat } from '@/lib/chat'
 import { useViewer } from '@/lib/viewer'
 
@@ -25,11 +35,33 @@ interface Item {
   icone: LucideIcon
   nota: string
   soAdmin?: boolean
+  /** Só para quem assina o fechamento de alguém. Quem não avalia ninguém não
+   *  tem ciclo para operar, e um item de menu que abre em "você não assina o
+   *  fechamento de ninguém" é ruído permanente na navegação. */
+  soQuemAvalia?: boolean
+  /** O espelho do anterior: só para quem TEM ciclo a ser fechado por alguém. A
+   *  Marina e a Helena não têm — o item some, e some porque não há nada
+   *  acontecendo, não porque foi escondido. */
+  soQuemEAvaliado?: boolean
 }
 
 const ITENS: Item[] = [
   { href: '/org', rotulo: 'Organização', icone: Building2, nota: 'Quem você alcança' },
   { href: '/feedback', rotulo: 'Pendências', icone: Inbox, nota: 'Sua atenção da semana' },
+  {
+    href: '/ciclo',
+    rotulo: 'Ciclo',
+    icone: CalendarCheck,
+    nota: 'O fechamento do semestre',
+    soQuemAvalia: true,
+  },
+  {
+    href: '/meu-ciclo',
+    rotulo: 'Meu ciclo',
+    icone: CalendarClock,
+    nota: 'Antes de fechar',
+    soQuemEAvaliado: true,
+  },
   {
     href: '/diretrizes',
     rotulo: 'Diretrizes',
@@ -45,18 +77,29 @@ export function Sidebar() {
   const { viewer } = useViewer()
   const { abrir: abrirChat, conversa } = useChat()
   const admin = podeAdministrar(viewer)
+  const avalia = pessoasAvaliaveis(viewer).length > 0
+  const eAvaliado = Boolean(quemAvalia(viewer.pessoaId))
 
   return (
     <aside className="sticky top-0 z-10 flex h-dvh w-[16.5rem] shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
       <div className="px-5 pb-4 pt-6">
-        <Link href="/org" className="block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-          <h1 className="display text-[1.4rem] leading-none tracking-tight">People Brain</h1>
+        <Link
+          href="/org"
+          aria-label="People Brain"
+          className="block overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        >
+          <Image src={logo} alt="People Brain" priority className="h-auto w-1/2" />
         </Link>
       </div>
 
       <nav className="px-2.5">
         <ul className="space-y-0.5">
-          {ITENS.filter((i) => !i.soAdmin || admin).map((item) => {
+          {ITENS.filter(
+            (i) =>
+              (!i.soAdmin || admin) &&
+              (!i.soQuemAvalia || avalia) &&
+              (!i.soQuemEAvaliado || eAvaliado),
+          ).map((item) => {
             const ativo = pathname === item.href || pathname.startsWith(`${item.href}/`)
             const Icone = item.icone
             return (

@@ -58,6 +58,9 @@ export const achadosOrg: AchadoOrg[] = [
     evidencia: {
       pessoaIds: ['carla', 'diego'],
       episodioIds: ['ep-carla-dados', 'ep-diego-checkout'],
+      // As duas perguntas de que este achado depende. Respondidas, ele cai:
+      // o bloqueio era a evidência faltando, e ela deixou de faltar.
+      lacunaIds: ['lac-carla-articulacao', 'lac-diego-direcao'],
     },
     recomendacao:
       'Nos dois casos o resultado está registrado e a ação que o produziu não. Da Carla falta a articulação que virou fila dedicada; do Diego falta quem estava na sala quando o escopo foi decidido. São duas perguntas, não dois processos — e ambas cabem no orçamento desta semana.',

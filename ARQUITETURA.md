@@ -231,7 +231,26 @@ interface Lacuna {
   resposta?: { texto: string; por: PessoaId; em: string }
 }
 
-interface ComportamentoRegua { id: string; texto: string; observavel: string }
+/** Um comportamento da régua — a unidade contra a qual a IA pontua.
+ *
+ *  `esperado` é a régua propriamente dita: quanto ESTE nível pede nesta
+ *  skill, de 1 a 5. A escala é publicada — 1 é "está aprendendo", 3 é "faz
+ *  de forma consistente", 4 é "é referência disso no time", 5 é "define o
+ *  padrão da empresa" — e varia entre skills do mesmo nível de propósito.
+ *  Um sênior tem que ser referência em risco e influência, e basta ser
+ *  consistente em mentoria; régua com o mesmo número em tudo é régua que
+ *  ninguém escreveu.
+ *
+ *  É contra este número que a leitura da pessoa é pesada (§7.4): a nota
+ *  calculada, comparada com `esperado`, é o que produz `situacao`. Uma
+ *  régua sem escala descreve um sistema que não pontua. */
+interface ComportamentoRegua {
+  id: string
+  rotulo: string     // nome curto da skill — o que cabe na ponta da teia
+  esperado: number   // 1..5
+  texto: string
+  observavel: string
+}
 
 interface NivelRegua {
   trilha: Trilha; nivel: Nivel
@@ -354,7 +373,7 @@ Todas determinísticas, todas permissionadas (§6.5).
 | `lerEpisodios` | `{ pessoaId, periodo?, comEstrela? }` |
 | `lerTemas` | `{ pessoaId }` |
 | `listarLacunas` | `{ pessoaId?, status? }` |
-| `lerRegua` | `{ trilha, nivel }` |
+| `lerRegua` | `{ trilha, nivel, pessoaId? }` — sem `pessoaId`, é a régua crua. **Com `pessoaId`, é o veredito**: cada comportamento volta com `esperado`, `nivel` (1 a 5, ausente quando não há evidência), `episodios` e `situacao`, calculados em `lib/metricas.ts` (§7.4) |
 | `renderizar` | `{ tipo, payload }` — §7 |
 
 ### 6.5 As skills
@@ -366,7 +385,7 @@ componente renderizar**.
 |---|---|
 | `preparar-1a1.md` | Últimos episódios + lacunas abertas + gap de régua → pauta |
 | `montar-caso-de-promocao.md` | Temas × comportamentos da régua, com evidência por comportamento |
-| `comparar-com-regua.md` | Gap comportamento a comportamento, declarando o que não tem evidência |
+| `comparar-com-regua.md` | O veredito comportamento a comportamento: copia a nota que veio da tool (nunca recalcula) e declara o que não tem evidência — sem nunca escrever 1 no lugar de "sem evidência" |
 | `rascunhar-feedback.md` | Episódio → rascunho específico, no tom da empresa, citando fonte |
 | `identificar-lacunas.md` | O que falta pra sustentar uma decisão próxima |
 | `diagnosticar-organizacao.md` | Agrega padrões entre pessoas — o "Dados é gargalo", não "o Rafa é lento" |
@@ -462,9 +481,34 @@ Duas decisões de fidelidade que o dado real obrigou:
 E a lição que só apareceu com a mesma régua em duas superfícies: **a contagem virou código**.
 A regra "dois episódios é sustentado" estava escrita em prosa na skill e o modelo a aplicava de
 cabeça — na primeira vez que o dossiê e o chat mostraram a Carla lado a lado, um dizia 4 de 5 e o
-outro 1 de 5. Agora `ler_regua` aceita `pessoaId` e devolve a `situacao` já calculada por
-`lib/metricas.ts`, que é o mesmo módulo que alimenta o dossiê. Mesma regra do §6.6: o que não
-pode divergir não vive no prompt.
+outro 1 de 5. Agora `ler_regua` aceita `pessoaId` e devolve a leitura já calculada por
+`lib/metricas.ts` — `nivel` de 1 a 5 contra o `esperado` do comportamento, os episódios que
+sustentam, e a `situacao` derivada dos dois —, que é o mesmo módulo que alimenta o dossiê. Mesma
+regra do §6.6: o que não pode divergir não vive no prompt.
+
+**E é aqui que "a IA pontua" deixa de ser posição e vira implementação.** A nota não é opinião com
+um número na frente: é contagem com regra publicada — episódios distintos (teto 3), mais firmeza
+do padrão, mais reconhecimento, mais trabalho acima do cargo, teto 5. Cada parcela sai do
+registro, então cada nota abre na fonte como qualquer outra afirmação da tela. Um gestor pode
+discordar da regra; não pode dizer que não sabe de onde o 4 veio.
+
+A distinção que a mesma função carrega, e que a doutrina precisa repetir em todo lugar:
+`pontuar()` devolve `undefined`, **não 1**, quando não há episódio nenhum. "Sem evidência" está
+**fora da escala**, não no degrau de baixo dela — a conta só roda onde há episódio. E é a tool, não
+o modelo, que decide qual das duas sai.
+
+O que a escala **não** diz, e que a doutrina teve que aprender lendo a própria função: o degrau de
+baixo também é contagem. `nivel: 1` é `eps.size === 1` sem confiança alta, sem estrela e sem
+`nivelObservado` acima — é registro fino, não fraqueza. Duas das quatro parcelas (episódios
+distintos, `Tema.confianca`, que é função da densidade) medem quanto rastro a pessoa deixou, então
+**nota baixa é primeiro uma medida do registro**. É por isso que nenhuma superfície mostra a régua
+sem a densidade de evidência ao lado — não é ornamento de UI, é o denominador do número (PLANO §7,
+trade-off 1).
+
+E a propriedade que sustenta a guarda de §3.3: **nenhuma parcela subtrai.** `Math.min(eps.size, 3)`
+mais três `+1` condicionais, teto 5. Não existe caminho no código pelo qual alguém baixe a nota de
+alguém — ela só sobe, e sobe quando entra evidência. Um campo de demérito seria uma parcela
+negativa, e não há onde ela caberia.
 
 ### 7.2 Tool call visível
 
@@ -494,7 +538,7 @@ Todos com **fonte clicável** — princípio §2.1 do PLANO.md ("nenhuma frase s
 | `Cobertura` | A régua de um nível em uma tira, comportamento a comportamento |
 | `Dossie` | Trajetória, temas, episódios por impacto, densidade de evidência declarada |
 | `Timeline` | Linha do tempo; cada episódio expande até os eventos e suas fontes |
-| `Gap` | Régua do nível alvo × evidência, comportamento a comportamento, com a tira no topo |
+| `Gap` | Régua × evidência, comportamento a comportamento, com a tira no topo. O nível é o **alvo** quando a pergunta é o que falta para subir, e o **ocupado** quando é se ela sustenta o nível dela — que é a pergunta do fechamento |
 | `Lacunas` | O que o sistema sabe que não sabe, com motivo e a quem perguntar |
 | `Briefing` | Pauta de 1:1 com evidência recente |
 | `Diagnostico` | Achado de organização + as pessoas afetadas |
@@ -549,6 +593,14 @@ Abre com **Leitura do registro**: evidência por mês, de onde ela veio, e a ré
 uma tira. A leitura de conjunto antes do detalhe — a mesma ordem que o agente usa no chat, com os
 mesmos componentes (§7.4). O que muda é o autor: aqui é `lib/metricas.ts` sobre `data/`, sem
 modelo no caminho, porque esta tela precisa sair igual em toda tomada.
+
+> **O texto de abertura dessa seção é da doutrina antiga e precisa mudar.** Ele diz hoje "nada aqui
+> mede desempenho — mede o quanto o registro alcançou", e a `Cobertura` é desenhada três elementos
+> abaixo dele, medindo comportamento contra a régua. É a última frase da doutrina antiga ainda
+> escrita em produto, e está no fluxo 3, que é gravado. O que ela precisa dizer são as duas coisas
+> que a seção de fato mostra: **contagem do que o registro alcançou** (evidência por mês, de onde
+> veio) **e a leitura contra a régua** — com a densidade servindo de denominador da segunda, que é
+> a regra de leitura de PLANO §7, trade-off 1.
 
 Um componente, dois observadores (§4). Como colaborador, ganha três affordances:
 `Adicionar contexto` · `Contestar item` · `Pedir feedback a um par sobre este episódio`.

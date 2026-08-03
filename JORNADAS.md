@@ -24,9 +24,19 @@ a evidência que a sustenta, até a mensagem, o PR ou o documento de origem.
 coisa que a IA propôs. Ao sobrescrever, ele diz por quê — e o porquê vira evidência nova, marcada
 como obtida por pergunta. O sistema fica melhor porque alguém discordou dele.
 
-**4. A pessoa é a primeira leitora do próprio registro.** Não existe versão que ela não veja. O que
-ela não vê antes do fechamento é a **nota em rascunho** — evidência ela vê o tempo todo, veredito
-ela vê quando o gestor decide.
+**4. A pessoa é a primeira leitora do próprio registro.** Não existe versão que ela não veja — e
+isso inclui a nota. A leitura da IA contra a régua está no dossiê dela desde o primeiro dia,
+comportamento a comportamento, com a conta e a evidência abertas. **Não existe rascunho
+escondido:** nota que só aparece no fechamento é arquivo secreto com data marcada. O que não
+existe antes do fechamento é a **decisão** — subir de nível, abrir caso, esperar —, e não porque
+esteja escondida: ela ainda não foi tomada.
+
+> **A única janela em que o gestor vê algo antes dela é a sessão de fechamento, e o que ele vê ali
+> é o que ele mesmo está escrevendo.** A nota na tela dele é a mesma que ela lê no dossiê naquele
+> instante — nenhuma das duas se move enquanto ele percorre a régua. O que ainda não chegou nela
+> são as discordâncias dele, porque ele ainda está tomando a decisão. Ao assinar, cada uma entra no
+> registro dela como evidência, com autor e data. Rascunho escondido seria uma **leitura** que ela
+> não vê; uma decisão em curso é outra coisa, e ela dura o tempo de uma sessão.
 
 **5. Reconhecimento pode ser um clique. Preocupação tem que ser uma conversa.** Não existe marcação
 negativa em lugar nenhum do produto.
@@ -91,6 +101,9 @@ no tom da empresa, ou ignora. Ignorar é permitido e não gera cobrança.
 
 - **Reconhecer** — um clique. Abre um campo opcional de uma linha. É a unidade mais barata de
   julgamento humano, e é rótulo de treino: cada reconhecimento ensina o sistema o que é bom aqui.
+  **E o botão diz o que faz:** reconhecer vale +1 na nota daquele comportamento contra a régua, e a
+  tela avisa isso antes do clique. Um gesto que altera avaliação sem avisar quem clica é armadilha;
+  um gesto que altera avaliação e declara isso é o produto dizendo que reconhecer conta.
 - **Conversar sobre isso** — abre o chat, a IA rascunha a conversa a partir do episódio, citando a
   evidência. Ela edita e marca como conversado.
 
@@ -127,31 +140,72 @@ no tom da empresa, ou ignora. Ignorar é permitido e não gera cobrança.
 fechamento, que tem duas colunas:
 
 - **Esquerda:** o dossiê do período, inteiro, como ela sempre viu.
-- **Direita:** a régua do nível atual, comportamento a comportamento, **já avaliada pela IA**.
+- **Direita:** a régua do nível atual, comportamento a comportamento, **já pontuada pela IA**.
+
+> **Qual régua aparece onde, e por quê.** O fechamento julga o nível que a pessoa ocupa: a
+> pergunta é "ela sustenta o que já é dela?". O dossiê que ela abre o ano inteiro (C2) mostra a
+> régua do **nível alvo**, porque ali a pergunta é "o que falta para subir". Réguas diferentes,
+> **a mesma conta** — a nota de um comportamento é calculada do mesmo jeito contra qualquer nível.
 
 Cada comportamento chega assim:
 
 ```
 Move trabalho em times sobre os quais não tem autoridade
-   ● CONSISTENTE                                    [ver as 3 evidências]
+   4 de 4 · SUSTENTADO                              [ver as 3 evidências]
    Destravou a dependência com Dados: levou o gargalo para pauta
    recorrente, negociou fila dedicada, documentou o handoff.
 ```
 
-A escala tem quatro níveis, e ela é sobre o comportamento, nunca sobre a pessoa:
+Dois números e uma palavra. Os três são sobre o **comportamento**, nunca sobre a pessoa.
 
-| Nível | Significa |
+**O que o nível pede**, de 1 a 5, é a régua escrita no Setup: 1 é "está aprendendo", 3 é "faz de
+forma consistente", 4 é "é referência disso no time", 5 é "define o padrão da empresa". Varia
+entre skills do mesmo nível de propósito — régua com o mesmo número em tudo é régua que ninguém
+escreveu.
+
+**Onde a pessoa está**, na mesma escala, é contagem: episódios distintos que sustentam o
+comportamento (teto 3), mais um se o padrão é firme, mais um se houve reconhecimento, mais um se o
+trabalho foi observado acima do cargo. Teto 5, e **nenhuma parcela subtrai**. A regra é publicada e
+cada parcela abre no que a produziu — os episódios, o tema que firmou o padrão, o reconhecimento
+com autor e data, o episódio marcado como acima do nível. Duas delas param primeiro numa leitura do
+Brain (o tema, a marca de nível) e não direto numa mensagem, e é por isso que elas abrem no
+episódio de baixo: são uma parada a mais até a fonte, não uma afirmação sem fonte. Ninguém precisa
+acreditar no número — dá para descer até o Slack nas quatro.
+
+> **Duas skills com a mesma evidência de base saem com números diferentes, e a diferença tem
+> nome.** Risco 4 e influência 3 na mesma Carla não é ruído: é a estrela que existe num caso e não
+> no outro. É por isso que as parcelas são separadas em vez de somadas numa só — teia com todas as
+> pontas no máximo não é leitura, é decoração.
+
+**A palavra é derivada dos dois números**, para a leitura de conjunto não depender de aritmética:
+
+| Situação | Quando |
 |---|---|
-| **Referência** | Sustenta e é exemplo para o time |
-| **Consistente** | Sustenta o comportamento no período |
-| **Parcial** | Aparece, mas não em todo o período ou só em um contexto |
-| **Sem evidência** | O registro não alcança |
+| **Sustentado** | Onde ela está alcança o que o nível pede |
+| **Parcial** | Há evidência, e ela não chega no que o nível pede |
+| **Sem evidência** | O registro não alcança — e isso está **fora da escala**, não no degrau 1 |
+
+A última linha é a que impede o fechamento de virar vigilância. A conta só roda onde há episódio:
+sem episódio nenhum não sai número, sai a palavra. E o degrau de baixo, quando ele sai, também é
+contagem — **nota 1 é um episódio, não um veredito de fraqueza.** Por isso a densidade de evidência
+da pessoa aparece ao lado da régua nesta tela: com densidade baixa, nota baixa pede a mesma coisa
+que "sem evidência" pede, que é uma pergunta na semana seguinte. O que autoriza ler o número como
+afirmação sobre o trabalho é densidade alta — registro que alcançou e mesmo assim não encontrou o
+comportamento.
+
+E o que a conta **não** sabe: bloqueio externo, plantão, seis semanas de incidente. Nada disso é
+parcela, e não deve ser — parcela de contexto seria alguém movendo o número à mão. Por isso o
+diagnóstico de organização é lido antes desta tela, e por isso a leitura escrita ao lado do número
+carrega o contexto, com fonte.
 
 **Faz:** percorre a lista. Para cada linha, três saídas:
 
 1. **Concordo** — um clique, ou não faz nada. O padrão é concordar.
-2. **Discordo** — muda o nível. A IA pergunta na hora: *"Qual episódio sustenta isso? O que ela
-   fez?"* Ela responde em uma frase.
+2. **Discordo** — a IA pergunta na hora: *"Qual episódio sustenta isso? O que ela fez?"* Ela
+   responde em uma frase, e é **a resposta que move a nota**, não o clique. A frase vira evidência
+   nova, com fonte humana e o nome dela; a conta a soma como somaria qualquer episódio. Nota que se
+   move sem evidência nova deixou de ser contagem e virou opinião com um número na frente — que é o
+   argumento inteiro pelo qual a nota existe.
 3. **Não sei** — vira lacuna aberta com nome e prazo, e o fechamento registra que aquele
    comportamento ficou sem lastro.
 
@@ -202,16 +256,19 @@ primeira tela é o registro dela, não um tour.
 **Gatilho:** ela abre o produto quando quer.
 
 **Vê:** no dossiê, abaixo dos padrões, a **régua do próximo nível**, comportamento a comportamento,
-com o estado da evidência:
+já pesada contra o registro dela:
 
 ```
-Recebe problema, não tarefa                     ○ sem evidência
-Move trabalho em times sem autoridade           ◐ parcial
-Trata dependência travada como problema próprio ● sustentado    2 episódios
+Recebe problema, não tarefa                     ○ sem evidência     — de 4
+Move trabalho em times sem autoridade           ◐ parcial          2 de 4
+Trata dependência travada como problema próprio ● sustentado       4 de 4   2 episódios
 ```
 
-**Aqui ela vê evidência, não nota.** A nota é do fechamento e é do gestor. O que ela acompanha o
-ano inteiro é o que o registro alcança e o que não alcança.
+**Ela vê a mesma nota que a gestora vê.** É a mesma tela, o mesmo módulo de cálculo e o mesmo
+instante — o dossiê é um componente só, com dois observadores. Não existe versão de rascunho que
+só o gestor enxerga. O que ainda não existe é a **decisão**: subir de nível, abrir caso, esperar
+mais um ciclo. Essa é da gestora e do comitê, e depende de orçamento, timing e calibração, que
+não estão no registro.
 
 **Faz:**
 - clica em qualquer linha e vê os episódios que a sustentam
@@ -262,8 +319,9 @@ chance de o registro receber o que só ela sabe.
 **Gatilho:** o gestor fechou.
 
 **Vê:** o ciclo fechado. Cada comportamento com o nível atribuído e a evidência que o sustenta,
-clicável. A decisão. E, quando houve, **o que o gestor adicionou por discordar da IA** — com o nome
-dele.
+clicável — contra a régua do nível que ela **ocupa**, que é a pergunta do fechamento, enquanto o
+dossiê que ela abre o ano inteiro mostra a do nível alvo. A decisão. E, quando houve, **o que o
+gestor adicionou por discordar da IA** — com o nome dele, e com a evidência que ele trouxe junto.
 
 **Faz:** lê. Pode contestar qualquer linha, e a contestação vai para o gestor.
 

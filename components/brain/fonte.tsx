@@ -19,6 +19,7 @@ import {
   FileText,
   GitPullRequest,
   MessageSquare,
+  PenLine,
   Target,
   UserRoundSearch,
 } from 'lucide-react'
@@ -35,10 +36,24 @@ import { episodioPorId } from '@/data/episodios'
 import type { Evento, Fonte as TipoFonte } from '@/data/tipos'
 import { nomeDe } from '@/lib/memoria'
 
+/** O que o chip é, dito antes do detalhe. As duas variantes de gente têm
+ *  rótulo próprio: quem respondeu não é o mesmo que quem completou. */
+const ETIQUETA: Record<TipoFonte['tipo'], string> = {
+  slack: 'fonte',
+  github: 'fonte',
+  doc: 'fonte',
+  crm: 'fonte',
+  humano: 'evidência obtida perguntando',
+  proprio: 'contexto adicionado pela pessoa',
+}
+
 export function Fonte({ evento }: { evento: Evento }) {
   const [aberto, setAberto] = useState(false)
-  const { Icone, rotulo, detalhe, origem, referencia } = descrever(evento.fonte)
-  const humano = evento.fonte.tipo === 'humano'
+  const { Icone, rotulo, detalhe, origem, referencia, quando } = descrever(evento.fonte)
+  /* Evidência que não veio de ferramenta nenhuma tem marca própria: ou alguém
+   * respondeu uma pergunta, ou a própria pessoa completou o registro. Nos dois
+   * casos a procedência é gente, e é isso que o chip destaca. */
+  const dePessoa = evento.fonte.tipo === 'humano' || evento.fonte.tipo === 'proprio'
   const episodio = evento.episodioId ? episodioPorId(evento.episodioId) : undefined
 
   return (
@@ -50,7 +65,7 @@ export function Fonte({ evento }: { evento: Evento }) {
             onClick={() => setAberto(true)}
             aria-label={`Ver a evidência em ${rotulo}`}
             className={`inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-1.5 py-0.5 align-baseline font-mono text-[0.68rem] transition-colors ${
-              humano
+              dePessoa
                 ? 'bg-comp-suave/50 text-comp hover:bg-comp-suave'
                 : 'text-muted-foreground/70 hover:bg-foreground/[0.06] hover:text-foreground'
             }`}
@@ -60,9 +75,7 @@ export function Fonte({ evento }: { evento: Evento }) {
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-[18rem] flex-col items-start gap-0">
-          <span className="etiqueta block opacity-70">
-            {humano ? 'evidência obtida perguntando' : 'fonte'}
-          </span>
+          <span className="etiqueta block opacity-70">{ETIQUETA[evento.fonte.tipo]}</span>
           <span className="mt-1 block leading-snug">{detalhe}</span>
           <span className="mt-1.5 block font-mono text-[0.65rem] opacity-55">
             clique para ver a evidência
@@ -96,6 +109,17 @@ export function Fonte({ evento }: { evento: Evento }) {
             <Linha rotulo="Referência">
               <span className="font-mono text-[0.78rem] text-muted-foreground">{referencia}</span>
             </Linha>
+            {/* Quando a evidência ENTROU no registro, que é outra data que a do
+                trabalho logo acima: o evento é datado no semestre que descreve, e
+                sem esta linha a data da janela ficava ao lado do nome de quem
+                adicionou, afirmando uma procedência que não é a dela. */}
+            {quando && (
+              <Linha rotulo="Adicionado">
+                <span className="font-mono text-[0.78rem] text-muted-foreground">
+                  {formatarData(quando)}
+                </span>
+              </Linha>
+            )}
             <Linha rotulo="Episódio">
               {episodio ? (
                 episodio.titulo
@@ -185,6 +209,15 @@ function descrever(f: TipoFonte) {
         detalhe: `${nomeDe(f.respondidoPor)} respondeu a uma pergunta do Brain. Esta evidência não estava em fonte nenhuma — ela foi elicitada.`,
         origem: `Resposta de ${nomeDe(f.respondidoPor)}`,
         referencia: `lacuna ${f.lacunaId}`,
+      }
+    case 'proprio':
+      return {
+        Icone: PenLine,
+        rotulo: 'adicionado',
+        detalhe: `${nomeDe(f.adicionadoPor)} adicionou este contexto ao próprio registro. Ninguém perguntou — o registro não alcançava e ela completou.`,
+        origem: `Contexto de ${nomeDe(f.adicionadoPor)}`,
+        referencia: 'adicionado no dossiê',
+        quando: f.em,
       }
   }
 }

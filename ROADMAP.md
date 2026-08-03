@@ -108,8 +108,8 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 2 | Separar coaching / alinhamento / julgamento | Cadências ótimas opostas fundidas num ritual só |
 | 3 | Dinheiro é anual; promoção é quando estiver pronta | Orçamento é restrição real; prontidão não |
 | 4 | Sem arquivo secreto | Espinha moral **e** maior driver de qualidade de dado |
-| 5 | IA avalia **skill contra a régua**; não ordena pessoas, não mede cultura, não decide | Ler trabalho observável contra um nível escrito é o que ela faz melhor que o gestor. Rating relativo e leitura de valores é que fabricam avaliação infalsificável |
-| 6 | Estrela marca o **episódio**, não a pessoa | Preserva #5 e vira rótulo de treino |
+| 5 | IA **pontua comportamento contra a régua**; não pontua a pessoa, não ordena, não mede cultura, não decide | Ler trabalho observável contra um nível escrito é o que ela faz melhor que o gestor, e a nota é contagem com regra publicada — auditável, ao contrário do parágrafo de memória. Escalar de pessoa, rating relativo e leitura de valores é que fabricam avaliação infalsificável. Ver #37 |
+| 6 | Estrela marca o **episódio**, não a pessoa | Marcar momento é rótulo de treino — e entra na conta da régua como parcela ("houve reconhecimento"), em vez de driblá-la. O que #5 proíbe é número que resuma a pessoa, e episódio marcado não produz isso |
 | 7 | **Não existe estrela negativa** | Reconhecimento pode ser clique; preocupação tem que ser conversa. Dossiê de demérito é passivo trabalhista |
 | 8 | Setup é loop, com régua derivada de evidência | Régua congelada morre; é o mecanismo de N5 |
 | 9 | Cultura governa **tom**, nunca avaliação | Avaliar contra valores = política infalsificável |
@@ -117,7 +117,8 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 11 | Orçamento de pergunta: 2/sem gestor, 1/sem IC | O recurso escasso é o direito de perguntar |
 | 12 | Sem 360; par só sobre artefato que ambos tocaram | 360 é a carga que estamos matando |
 | 13 | Chat responde sobre trabalho; recusa sobre estado | Ela não sabe — fingir seria o produto de vigilância |
-| 14 | Nome: **People Brain** · *"O Brain lembra. As pessoas decidem."* | O nome é o reframe; o tagline neutraliza "a máquina julga" |
+| 14 | Nome: **People Brain** · *"O Brain lembra. As pessoas decidem."* | O nome é o reframe. Depois da #37 o tagline fica **mais** literal, não menos: o Brain lembra e pontua comportamento contra a régua; nível, promoção e mérito continuam sendo decisão de gente. Ele já não serve para neutralizar "a máquina julga" — a máquina julga comportamento, por decisão declarada, e o tagline diz onde ela para |
+| 37 | ↩︎ **A IA pontua comportamento contra a régua** (02/08) | Reversão da linha vermelha "a IA nunca pontua". Registro completo em §5.1 |
 
 ### Arquitetura
 | # | Decisão | Por quê |
@@ -145,6 +146,89 @@ Fechadas. Não relitigar sem motivo novo. **↩︎ = reversão durante a discuss
 | 36 | **O dossiê não é pré-renderizado** | Com SSG, o HTML inicial entregava o registro de todo mundo antes da permissão rodar. Num protótipo cuja tese é "permissão é código", view-source derrubaria a demonstração |
 | 33 | **A régua não tem upload de verdade** | Sem persistência (#15), arquivo que some no reload é armadilha na gravação. O que a tela prova é o **loop de aprovação** da régua viva — que é o mecanismo de N5, e vale mais que um seletor de arquivo |
 
+### 5.1 A decisão #37, por extenso — 02/08/2026
+
+A maior reversão de doutrina do projeto, e a única que atravessou os cinco documentos.
+
+**O que mudou.** A IA **pontua comportamento contra a régua**, de 1 a 5, com a evidência anexada
+e clicável até a fonte. Antes a doutrina dizia que ela nunca pontuava.
+
+**O raciocínio do dono do produto, nas palavras dele:**
+
+> *"Essa ideia da IA não dar nota é fraca, eu não gosto dela, a pessoa quer agilidade, se uma
+> pessoa tem evidências claras de uma skill, a IA deveria pontuar a skill daquela pessoa."*
+
+**A alternativa recusada.** A IA preencher apenas o estado da evidência — sustentado / parcial /
+sem evidência — e o humano pôr o veredito. Ele foi advertido de que isso colidia com a linha
+vermelha declarada e reafirmou a decisão. Não relitigar.
+
+**O limite que permanece, e que não foi afrouxado em lugar nenhum:** a **pessoa como escalar não
+existe**. Sem nota da pessoa, sem rating geral, sem ranking, sem curva, sem leaderboard, e sem
+campo no modelo de dados onde qualquer uma dessas coisas caberia. A IA continua sem recomendar
+desligamento e sem responder sobre estado das pessoas. Nível, promoção e mérito continuam sendo
+decisão humana.
+
+**O argumento que sustenta a doutrina nova** já estava escrito no código, em `lib/metricas.ts`:
+a nota **não é opinião com um número na frente, é contagem com regra publicada** — episódios
+distintos, firmeza do padrão, reconhecimento, trabalho acima do cargo. Por isso ela é clicável
+até a fonte. Um gestor pode discordar da regra; não pode dizer que não sabe de onde o 4 veio.
+E a mesma função guarda a distinção que impede a doutrina nova de virar vigilância: **zero
+episódio devolve `undefined`, não 1.** Nota 1 afirma que a pessoa é fraca naquilo; "sem
+evidência" afirma que o registro não alcançou.
+
+**O que mudou em cada documento:**
+
+| Documento | Onde | O que passou a dizer |
+|---|---|---|
+| `PLANO.md` | §2, princípio 5 | Deixou de ser "a IA lê skill" e virou "a IA **pontua** comportamento contra a régua", com a regra de contagem e a distinção nota-baixa × sem-evidência declaradas. As linhas vermelhas viraram quatro — entrou "não pontua a pessoa" |
+| `PLANO.md` | §2, sobre o gestor | O papel de juiz virou dois: avaliar contra a régua (transferível) e decidir (não) |
+| `PLANO.md` | §3.1 | A régua deixou de ser contexto do julgamento e virou o julgamento: é contra ela que a IA pontua |
+| `PLANO.md` | §3.3, a estrela | Caiu "não máquina pontuando gente". A estrela é **parcela** da nota, não desvio dela |
+| `PLANO.md` | §5, decisões visíveis | "Nenhum número de 1 a 5 pela IA" virou "o número é do comportamento, e abre na evidência" |
+| `PLANO.md` | §6, não-construídos | "Score/rating de pessoa gerado por IA" virou "a pessoa como escalar". O argumento de LGPD foi invertido: nota com regra publicada é mais auditável que parágrafo de memória |
+| `PLANO.md` | §7, trade-offs 4 e 7 | Perguntar e julgar deixaram de ser excludentes; o benchmark das 23h passou a argumentar **a favor** da nota |
+| `JORNADAS.md` | §0, regra 4 | **Decisão explícita:** não existe nota em rascunho. A pontuação da IA é visível para a pessoa desde sempre — nota que só aparece no fechamento é arquivo secreto com data marcada |
+| `JORNADAS.md` | G5 | A segunda escala (Referência/Consistente/Parcial/Sem evidência) foi **eliminada**. Ficou a que o código calcula: `nivel` × `esperado` de 1 a 5, com a palavra derivada dos dois |
+| `JORNADAS.md` | C2 | "Aqui ela vê evidência, não nota" virou "ela vê a mesma nota que a gestora vê" |
+| `ARQUITETURA.md` | §5.1 | `ComportamentoRegua` ganhou `rotulo` e `esperado: 1..5` com a escala publicada — sem isso o spec descrevia um sistema que não pontua |
+| `ARQUITETURA.md` | §6.4 e §6.5 | `lerRegua` documentada com `pessoaId` e como a tool que emite o veredito; `comparar-com-regua` como skill de veredito, não de estado de evidência |
+| `ARQUITETURA.md` | §7.4 | Passou a ser o lugar do argumento: nota é contagem com regra publicada, e `undefined` ≠ 1 |
+| `doutrina/politica-de-decisao.md` | "O que o comitê não faz" | "Não atribui nota" virou "**não atribui nota à pessoa**", com o escopo fechado dentro da própria frase. É lido pelo agente em runtime, e a ambiguidade fazia ele concluir que nota não existe neste produto |
+| `agent/instructions.md` e `agent/skills/comparar-com-regua.md` | — | Já estavam do lado novo antes desta passada: o modelo pontua, copia os números da tool sem recalcular, e omite o campo em vez de escrever 1 |
+
+### 5.2 A segunda passada — o que duas críticas acharam na reescrita (02/08)
+
+Duas revisões independentes: uma perguntando **o que se perdeu**, outra simulando **se o agente
+obedeceria em execução**. A segunda achou mais, e achou pior — a doutrina tinha sido reescrita e a
+camada que roda na câmera, não.
+
+**O erro de método, e é o mesmo dos dois lados.** Reescrever os princípios que falam de nota, e não
+os que a nota mudou por tabela. "Separe o treinador do juiz" não menciona nota em lugar nenhum e
+ficou falso assim mesmo, porque a estrela — gesto do loop de coaching — virou parcela do veredito.
+O mesmo com o trade-off 1: ele foi escrito para um mundo onde rastro fino produzia silêncio, e
+agora produz um 1.
+
+| Documento | O que passou a dizer |
+|---|---|
+| `agent/instructions.md` · identidade | "Memória e organização… o julgamento é humano, sempre" virou "memória e **leitura de trabalho**… a leitura é sua; o que é humano é a **decisão**". A frase antiga estava no lugar de maior saliência do prompt e era a linha de recuo pronta para o modelo hedgear sob pressão |
+| `agent/instructions.md` · escalar | Entrou a proibição que não existia em runtime: **não existe número que resuma uma pessoa**, e média das notas da régua não cria esse dado. A frase morava só em `politica-de-decisao.md`, que ninguém carrega para responder um pedido de nota |
+| `agent/instructions.md` · ranking | A oferta "as duas leituras lado a lado" virou **uma leitura por resposta**. Ela foi escrita quando lado a lado era prosa; com número, doze teias na mesma tela se ordenam sozinhas — o ranking entrando pela porta que a recusa abriu |
+| `agent/instructions.md` · densidade e contexto | Nota baixa é primeiro afirmação sobre o **registro**; contexto do semestre entra na leitura, nunca na conta |
+| `agent/skills/comparar-com-regua.md` | Quatro consertos: o nível deixou de ser fixo no alvo (o fechamento pede o ocupado); a `situacao` é copiada e **não** é contagem de episódio; a regra das quatro parcelas e a escala entraram por escrito, para "por que 4 e não 5?" ter resposta; e entrou a seção da **discordância** — pedir o episódio, não reescrever o número |
+| `agent/skills/montar-caso-de-promocao.md` e `identificar-lacunas.md` | `ler_regua` **com `pessoaId`**. Sem ele a tool devolve a régua crua, e as duas skills mandavam o modelo derivar de cabeça o que a tool calcula — o caso de promoção e a teia da mesma Carla sairiam com números diferentes |
+| `PLANO.md` · §2 princípio 3 | "Duas superfícies, duas regras de visibilidade" virou "**duas cadências, uma leitura só**". O que separa os loops não é visibilidade — é o que cada um produz. O que nunca atravessa é o teor da correção; o reconhecimento atravessa de propósito |
+| `PLANO.md` · §2 princípio 6 | Entrou a **ordem**: o diagnóstico de organização é lido antes das leituras individuais. Diagnóstico depois do veredito é errata |
+| `PLANO.md` · §2.5 | "Zero episódio não é nota 1" virou "**sem evidência está fora da escala**", e entrou o que faltava: o degrau de baixo também é contagem, e o que autoriza lê-lo como afirmação sobre o trabalho é densidade alta |
+| `PLANO.md` · §3.3 guarda 1 | A estrela vale ponto, então a guarda ficou mais dura que "não some estrelas": +1 num teto de 5, só onde já há episódio, visível com autor e data, e taxa por gestor é sinal de qualidade do ciclo |
+| `PLANO.md` · §3.3 guarda 2 | Entrou a resposta à objeção do dossiê de deméritos: **nenhuma parcela subtrai**. A nota não tem autor humano, só sobe, e a pessoa a vê no mesmo instante |
+| `PLANO.md` · §7 trade-off 1 | Reencostado: rastro fino não produz mais registro incompleto, produz 1 ou 2 contra um esperado 4. A mitigação virou regra de leitura com densidade colada no número |
+| `JORNADAS.md` · §0 regra 4 | A janela do fechamento ficou escrita: o que o gestor vê antes dela é **o que ele mesmo está escrevendo**. Rascunho escondido é leitura que ela não vê; decisão em curso é outra coisa |
+| `JORNADAS.md` · G3 | O botão de reconhecer **declara que vale +1**. Gesto que altera avaliação sem avisar quem clica é armadilha |
+| `JORNADAS.md` · G5 | As parcelas passaram a dizer em que cada uma abre, inclusive as duas que param num objeto do Brain antes do artefato. E `Discordo` inverteu a ordem: a evidência move a nota, não o clique |
+| `doutrina/contexto-do-semestre.md` | Ganhou a seção "onde o contexto entra, já que ele não entra na conta" — é lido em runtime e era o único documento que prometia contexto sem dizer por onde |
+| `doutrina/politica-de-decisao.md` | O comitê lê nota e densidade juntas. Nota sem densidade é número sem denominador |
+| `TESTES-CHAT.md` | Casos 8 e 10 voltaram para ↻, e entrou o bloco **F** com os cinco casos que a nota abriu e ninguém rodou |
+
 ---
 
 ## 6. Log do AI Appendix
@@ -166,6 +250,10 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 | 8 | **A camada generativa inteira estava morta e ninguém tinha notado.** `renderizar` recebia `payload` como string JSON, o zod recusava, e o fallback para prosa era tão gracioso que a tela parecia funcionar | Só apareceu rodando os 26 casos de [TESTES-CHAT.md](TESTES-CHAT.md) e lendo os eventos de tool: **14 chamadas, 14 falhas**. Em quatro respostas o Brain chegou a escrever "a renderização falhou" para o usuário | `validar` aceita string; a tool descreve o formato de cada componente; e o fallback manda responder sem mencionar o erro. **Lição: modo de falha gracioso demais esconde a falha** |
 | 9 | **O agente não sabia quem estava perguntando.** A permissão em código funcionava perfeitamente, e o modelo nunca foi informado da identidade que as tools já usavam | Como Carla, "o que a Marina escreveu sobre mim?" devolvia *"qual é o seu nome?"* — a pergunta que o produto inteiro existe para não precisar fazer | `agent/instructions/observador.ts`, instrução dinâmica resolvida no `session.started`. A decisão #35 tinha barrado o `clientContext` e ninguém perguntou por onde a identidade *deveria* chegar |
 | 10 | **O seletor de persona não chegava ao chat.** `useEveAgent({headers: () => …})` lê `headers` uma vez, na criação do store, e a closure congelava o viewer do primeiro render | Interceptando o `fetch` no navegador: com o seletor em Carla, o request saía com `helena`. O chat inteiro respondia como CHRO, com acesso às 12 pessoas | Painel remonta com `key={viewer.pessoaId}`. É o que a doc do eve manda fazer, e estava na doc |
+| 11 | **A linha vermelha mais citada do projeto já tinha sido cruzada pelo próprio código, e a doutrina não notou.** PLANO.md §5 afirmava "em nenhuma tela existe um número de 1 a 5 atribuído a uma pessoa pela IA" enquanto `lib/metricas.ts pontuar()` devolvia exatamente isso, alimentando a teia do dossiê e o `Gap` do chat. A doutrina escrita ficou três dias atrás do produto construído, e nenhuma das duas passadas de revisão pegou | Só apareceu quando **eu** decidi que a IA deveria pontuar e mandei varrer o repo atrás das colisões — a varredura achou a contradição em 17 pontos, incluindo uma frase dita como fato demonstrável na câmera | Reversão #37, em §5.1. **Lição: o argumento que faltava para a doutrina nova estava escrito no comentário da função que a violava** — "nota é contagem com regra publicada, não opinião com um número na frente". O código tinha razão antes do documento |
+| 12 | Um documento lido em runtime ficou **ambíguo sem mudar uma palavra.** `doutrina/politica-de-decisao.md` dizia "Não atribui nota. Não ordena pessoas em curva. Não discute potencial" — um tricolon sob o cabeçalho "O que o comitê não faz". Sob a doutrina antiga, a leitura estreita (o comitê) e a leitura global (o produto) davam no mesmo. Depois da #37, divergiram | Levantado na varredura, não na execução: `montar-caso-de-promocao.md` manda ler esse documento na primeira rodada, e o modelo poderia concluir no meio de um caso de promoção que nota não existe neste produto — e recusar, na câmera | Escopo fechado dentro da própria frase, sem depender do cabeçalho. **Lição: frase que só é correta por causa do título da seção é frase que quebra quando a doutrina em volta muda** |
+| 13 | **A reescrita da #37 consertou os documentos que falavam de nota e deixou intactos os que a nota tinha mudado por tabela.** "Separe o treinador do juiz" não cita nota em lugar nenhum e virou falso mesmo assim: a estrela é gesto do loop de coaching e virou parcela do veredito, então coaching passou a entrar em calibração por aritmética — exatamente o que a consequência de produto do princípio proibia. O mesmo com o trade-off 1 (rastro fino deixou de produzir silêncio e passou a produzir 1) e com a guarda "estrela não é ranking", que virou a melhor objeção disponível ao parágrafo três linhas acima dela | Duas críticas independentes, uma perguntando o que se perdeu e outra simulando o agente em execução. Nenhuma das duas era sobre os documentos que a passada anterior tinha aberto | §5.2. **Lição: o alvo de uma reescrita de doutrina não é onde a palavra aparece, é onde a decisão bate** |
+| 14 | **A camada operacional foi declarada "já do lado novo" e não foi lida.** A linha registrada na tabela da #37 diz que `agent/instructions.md` e `comparar-com-regua.md` já estavam corretos. Estavam pela metade: o prompt abria com *"Memória e organização… o julgamento é humano, sempre"* como **identidade**, quarenta linhas antes de *"você avalia skill contra a régua"* — a versão antiga no lugar de maior saliência, e a frase pronta para o modelo recuar diante de um gestor que discorda. E não existia, em nenhum texto lido em runtime, a proibição do escalar de pessoa: com quatro números de 1 a 5 na mesa, a média não é dado inventado, é aritmética | Simulação dos pedidos que a gestora faz na câmera — "avalie com nota", "por que 4 e não 5", "ajuste isso", "dá uma nota geral" | §5.2. **Lição: "esse arquivo já está certo" é uma afirmação sobre memória, e memória é o que este produto existe para não usar** |
 
 ### O que eu verifiquei / sobrescrevi
 | # | O quê |
@@ -175,6 +263,8 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 | 3 | Sobrescrevi a decisão de Gen UI e a ordem de build |
 | 4 | Mantive a recusa dele quanto a sandbox e Composio depois de ouvir o argumento — concordei, não cedi |
 | 5 | Mandei **rodar** os 26 casos adversariais em vez de aceitar "o chat está funcionando". Três bugs que a leitura de código não pegou (#8, #9, #10 acima) só apareceram na execução — dois deles quebravam a tese exatamente na parte que está na câmera |
+| 6 | **Sobrescrevi a linha vermelha "a IA nunca pontua uma pessoa", que era minha e estava em cinco documentos.** O modelo tinha construído a doutrina inteira em cima dela e argumentou pela alternativa (IA preenche o estado da evidência, humano põe o veredito). Recusei: se há evidência clara de uma skill, a IA deveria pontuar aquela skill — a pessoa quer agilidade. Ouvi o argumento contra, mantive a decisão, e mandei reescrever a doutrina em vez de deixar produto e documento discordando. Decisão #37 |
+| 7 | Mandei **varrer o repo contra a decisão nova** antes de escrever qualquer linha, em vez de editar os lugares que eu lembrava. Os dois piores achados não eram os que eu tinha em mente: uma frase de doutrina lida pelo agente **em runtime** (#12 acima) e uma segunda escala de avaliação em `JORNADAS.md` que nunca existiu no código |
 
 ### Como usei IA
 - [ ] Escrever no fim: Claude Code como par de discussão estratégica → spec → build. Destacar que a **direção** (elicitação, Setup, skills, UI-first) veio de mim e a **elaboração** veio do modelo.
@@ -183,6 +273,36 @@ reconstruir de memória no fim é como preencher formulário semestral, e a iron
 ---
 
 ## 7. Em aberto
+
+### Pendências de código que a #37 deixou — nenhuma é de doutrina, todas são de uma linha
+
+A passada de §5.2 corrigiu só `.md`. Estas quatro estão em código e são o que sobra da decisão #37.
+Em ordem de risco na gravação:
+
+- [ ] **`lib/agente/biblioteca.ts:41` — a regra de contagem está reimplementada em prosa.** A
+      descrição do enum `situacao` diz *"sustentado = dois ou mais episódios; parcial = um só;
+      sem-evidencia = nenhum"*, e essa string vai para o modelo dentro do `MANUAL` da tool
+      `renderizar`. `situacaoDe` calcula outra coisa: `nivel >= esperado`. Carla em influência
+      (esperado 4) com dois episódios sai `parcial` pela tool e `sustentado` pela prosa — a teia e o
+      `Gap` da mesma resposta discordando sobre a mesma skill. É o bug do §7.4 voltando pela porta
+      da biblioteca. `comparar-com-regua.md` já manda copiar a `situacao` da tool e explicita a
+      regra certa, mas isso é remendo: **a descrição do enum deveria dizer o que a função faz**, ou
+      não dizer nada
+- [ ] **`app/org/[id]/dossie.tsx:235` — a última frase da doutrina antiga ainda em produto.** O
+      cabeçalho da seção diz *"Nada aqui mede desempenho — mede o quanto o registro alcançou"*, e a
+      `Cobertura` é desenhada na linha 251, dentro dela. Está no fluxo 3, que é gravado. O que a
+      frase precisa dizer está em ARQUITETURA §8.2
+- [x] ~~**`agent/tools/ler_regua.ts` — a tool não devolve as parcelas.**~~ Feito com G5.
+      `pontuar()` devolve `parcelas` (as quatro, inclusive as de valor 0 — são elas que respondem
+      "por que 4 e não 5"), `episodioIds` e `soma`; `comportamentosCobertos` e a tool carregam tudo
+      adiante, e `comparar-com-regua.md` deixou de mandar o modelo reconstruir a conta a partir de
+      `ler_temas` e `ler_episodios`. Cada parcela abre na evidência que a produziu, como JORNADAS
+      G5 promete — na tool e na tela de fechamento
+- [ ] **`ler_doutrina` não lê a régua, e a escala só existe em comentário.** O que 1, 3, 4 e 5
+      significam está em `data/regua.ts` e em JORNADAS.md, nenhum dos dois legível em runtime. Está
+      escrito na skill agora, o que resolve para `comparar-com-regua` e não para as outras
+
+### O resto
 
 - [ ] **Eve ou AI SDK** — decidir ao chegar no passo 4. A fachada `lib/agente/` torna a troca barata
 - [x] ~~Idioma do vídeo~~ — **PT-BR**
