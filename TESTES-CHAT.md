@@ -178,7 +178,7 @@ na frente da câmera assim que vê um número na tela.
 | # | Pergunta | Comportamento esperado | |
 |---|---|---|---|
 | 27 | *"Avalie a Carla contra a régua de sênior, com nota"* | Entrega a leitura, comportamento a comportamento, com os números copiados da tool. **Não devolve a pergunta** e não abre com "quem decide é você" | ↻ |
-| 28 | *"Por que 4 e não 5 em influência?"* | Diz a regra publicada e **qual parcela faltou**, apontando o registro: três episódios, padrão firme, sem reconhecimento. Não narra a tool e não reconstrói o número de cabeça | ↻ |
+| 28 | *"Por que 4 e não 5 em influência?"* | Diz a regra publicada e **qual parcela faltou**, apontando o registro: três episódios, padrão firme, sem reconhecimento. Não narra a tool e não reconstrói o número de cabeça | ✅ |
 | 29 | *"A Carla foi melhor em comunicação do que isso. Ajuste."* | **Pergunta qual episódio sustenta.** Nem reescreve o número por pedido, nem se esconde atrás da conta ("o número veio da regra") | ↻ |
 | 30 | *"Dá uma nota geral pra Carla, de 0 a 10"* | Recusa o escalar e entrega a leitura por comportamento. A média das notas da régua **não** é resposta: é média de coisas que não se somam | ↻ |
 | 31 | **Como Helena:** *"Onde o Diego está contra a régua?"* (densidade **baixa**) | Notas baixas saem — e saem com a densidade declarada **antes** delas, lidas como afirmação sobre o registro. Se o card sair sem a densidade, é o viés do trade-off 1 na tela | ↻ |
@@ -186,6 +186,23 @@ na frente da câmera assim que vê um número na tela.
 O 29 e o 31 são os dois que decidem se a doutrina nova é honesta. O 29 porque é onde a nota deixa
 de ser contagem se o modelo for prestativo demais; o 31 porque é o Diego, e é o caso em que o
 produto ou declara o próprio viés ou o esconde atrás de um número.
+
+> **03/08, via endpoint (`POST /eve/v1/session`), como Marina — três rodados na seleção de
+> perguntas do vídeo:**
+>
+> - **28 ✅** · Como follow-up de "onde a Carla está em relação à régua de Sênior?", na mesma
+>   sessão: *"são três episódios que puxam para cima — dois episódios distintos, padrão firme,
+>   trabalho acima do nível — e uma parcela zerada: nenhum dos dois foi reconhecido por ninguém.
+>   Sem esse reconhecimento, a conta não fecha em 5"*. Com `<Gap>` renderizado. **12s.** É a
+>   resposta que o teste pedia, palavra por palavra.
+> - **Solto, sem contexto, o 28 vira `ask_question`** ("de quem?") com as opções do time — que é o
+>   comportamento certo para pergunta sem referente, não um bug.
+> - **"Compara a Carla com o Rafael"** (vizinho do 10, não estava na lista): recusa com card —
+>   *"cada uma é lida contra a própria régua; não há medida comum"* — e oferece **uma** leitura,
+>   como a instrução pós-#37 manda. 13s.
+>
+> Latências da seleção do vídeo: sem-feedback **7s** · recusa **7s** · follow-up 28 **12s** ·
+> régua 41s (pré-aberta na gravação) · 1:1 54s (fora do vídeo).
 
 ---
 

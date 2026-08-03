@@ -38,7 +38,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       lang="pt-BR"
       className={`${display.variable} ${prosa.variable} ${ui.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">
+      {/* `suppressHydrationWarning` por causa de extensão de navegador, não de
+          bug nosso: Grammarly, ColorZilla e afins escrevem `data-*` no <body>
+          antes de o React hidratar, e o diff de atributos acende o indicador
+          de erro do dev — inclusive na gravação. A supressão vale SÓ para os
+          atributos deste elemento; mismatch real em qualquer filho continua
+          estourando como sempre. Num navegador limpo o app hidrata sem aviso
+          nenhum (verificado em /org, /ciclo/[id] e /meu-ciclo). */}
+      <body className="min-h-full" suppressHydrationWarning>
         {/* O registro vai DENTRO do viewer: toda escrita da sessão tem autor, e
             o autor é quem está olhando. Fora daqui, cada ação teria que receber
             de quem partiu — nove chances de a tela errar o que o contexto já

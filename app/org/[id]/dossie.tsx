@@ -85,7 +85,18 @@ import {
 import { AVISO_ESTRELA, useRegistro } from '@/lib/registro'
 import { useViewer } from '@/lib/viewer'
 
-export function Dossie({ pessoaId }: { pessoaId: string }) {
+export function Dossie({
+  pessoaId,
+  dentroDoFechamento = false,
+}: {
+  pessoaId: string
+  /* O dossiê é a coluna esquerda de `/ciclo/[id]`, e lá ele não é a página —
+   * é metade dela. Sem esta flag o componente carregava a navegação da sua
+   * própria rota para dentro de outra: a seta de voltar apontava para `/org`
+   * (saindo do fechamento por um caminho que ninguém pediu) e o botão "Fechar
+   * o ciclo" continuava aparecendo, ligando para a tela onde já se está. */
+  dentroDoFechamento?: boolean
+}) {
   const { viewer, geracao } = useViewer()
   const { abrirCom } = useChat()
   const { eventosDe, lacunasDe, estreladosDe, lastrosDe } = useRegistro()
@@ -148,11 +159,11 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
   return (
     <div key={geracao} className="mx-auto max-w-4xl px-10 py-12">
       <Link
-        href="/org"
+        href={dentroDoFechamento ? '/ciclo' : '/org'}
         className="etiqueta surgir inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-3" />
-        Organização
+        {dentroDoFechamento ? 'Sair do fechamento' : 'Organização'}
       </Link>
 
       <header className="surgir mt-4 flex items-start justify-between gap-8">
@@ -209,7 +220,7 @@ export function Dossie({ pessoaId }: { pessoaId: string }) {
             {souEu ? 'Perguntar sobre meu registro' : `Perguntar sobre ${primeiroNome(p.nome)}`}
           </Button>
 
-          <EntradaDoCiclo pessoa={p} souEu={souEu} />
+          {!dentroDoFechamento && <EntradaDoCiclo pessoa={p} souEu={souEu} />}
 
           {souEu && (
             <>

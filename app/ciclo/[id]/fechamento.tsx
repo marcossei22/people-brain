@@ -30,9 +30,9 @@
 
 import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowUpRight, Check, HelpCircle, PenLine, Star, X } from 'lucide-react'
+import { ArrowUpRight, Check, HelpCircle, PenLine, Star, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import {
   Dialog,
@@ -112,7 +112,7 @@ export function Fechamento({ pessoaId }: { pessoaId: PessoaId }) {
     <div key={geracao} className="flex min-h-dvh">
       {/* O dossiê como ele sempre foi. Rola com a página. */}
       <div className="min-w-0 flex-1 border-r border-border">
-        <Dossie pessoaId={pessoaId} />
+        <Dossie pessoaId={pessoaId} dentroDoFechamento />
       </div>
 
       {/* A régua avaliada. Fica parada enquanto o dossiê rola atrás: o gesto
@@ -150,15 +150,14 @@ function PainelDaRegua({
 
   return (
     <div className="px-7 py-8">
-      <Link
-        href="/ciclo"
-        className="etiqueta inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-3" />
-        Fechamento do ciclo
-      </Link>
+      {/* A saída desta tela é uma só, e mora no alto da coluna da esquerda,
+          onde o olho já procura ("Sair do fechamento"). Aqui existia uma
+          segunda seta para `/ciclo`: com a do dossiê ainda apontando para
+          `/org`, a tela tinha dois voltares para dois lugares e nenhum deles
+          era de onde se veio. */}
+      <p className="etiqueta">Fechamento do ciclo</p>
 
-      <h2 className="display mt-3 text-[1.35rem] leading-tight tracking-tight">{ciclo.nome}</h2>
+      <h2 className="display mt-2 text-[1.35rem] leading-tight tracking-tight">{ciclo.nome}</h2>
       <p className="mt-1.5 text-[0.82rem] text-muted-foreground">
         {fechada
           ? `Fechado para ${primeiroNome(pessoa.nome)}. As notas abaixo são as que foram assinadas — o registro continua correndo e elas não se movem mais.`
@@ -468,10 +467,20 @@ function AConta({
 /**
  * Discordar — e a pergunta que a IA faz na hora.
  *
- * O campo é de UMA frase, e o episódio é escolhido de uma lista fechada: os
- * episódios que já existem no registro dela. Os que já contam vêm marcados,
- * porque citar um deles não move o número — a evidência não seria nova, e a
- * tela diz isso antes do clique em vez de deixar o gestor descobrir depois.
+ * O campo é DE TEXTO LONGO, e a mudança tem argumento. Em todo o resto do
+ * produto o custo de responder é deliberadamente baixo — uma frase fecha uma
+ * lacuna, um clique reconhece um episódio — porque ali o que se pede é memória,
+ * e memória cara não é dada. Aqui é o contrário: o gestor está **contradizendo
+ * a conta com a própria autoridade**, e o que ele escrever entra no registro da
+ * pessoa com o nome dele, é lido por ela, e passa a valer como evidência em
+ * qualquer leitura futura. Um campo de uma linha convida a frase que não
+ * sustenta o que a nota vai carregar. Onde a escrita vira evidência
+ * permanente, a caixa tem que caber um parágrafo.
+ *
+ * O episódio é escolhido de uma lista fechada: os episódios que já existem no
+ * registro dela. Os que já contam vêm marcados, porque citar um deles não move
+ * o número — a evidência não seria nova, e a tela diz isso antes do clique em
+ * vez de deixar o gestor descobrir depois.
  */
 function FormDiscordo({
   pessoa,
@@ -513,11 +522,12 @@ function FormDiscordo({
         Qual episódio sustenta &ldquo;{rotulo}&rdquo;? O que {primeiroNome(pessoa.nome)} fez?
       </p>
 
-      <Input
+      <Textarea
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        placeholder="Uma frase"
-        className="mt-2.5 h-8 bg-card text-[0.85rem]"
+        placeholder={`O que ${primeiroNome(pessoa.nome)} fez, quando, e por que isso sustenta o comportamento.`}
+        rows={4}
+        className="mt-2.5 min-h-[5.5rem] resize-y bg-card text-[0.85rem] leading-snug"
       />
 
       <p className="etiqueta mt-3 pb-1.5">o episódio</p>
@@ -562,9 +572,9 @@ function FormDiscordo({
       </div>
 
       <p className="mt-2.5 text-[0.76rem] leading-snug text-muted-foreground">
-        A frase entra com o seu nome no registro de {primeiroNome(pessoa.nome)}, que vê tudo o que
-        está lá. A nota é recalculada com o episódio que você citou — quem move o número é a
-        evidência.
+        O que você escrever entra com o seu nome no registro de {primeiroNome(pessoa.nome)}, que vê
+        tudo o que está lá. A nota é recalculada com o episódio que você citou — quem move o número
+        é a evidência.
       </p>
     </form>
   )
